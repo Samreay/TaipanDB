@@ -47,3 +47,4 @@ if __name__ == "__main__":
 
     create_target_table(cursor)
     create_field_table(cursor)
+    create_science_target_table(cursor)
