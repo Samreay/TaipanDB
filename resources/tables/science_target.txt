@@ -1,0 +1,13 @@
+# science_target table
+# Used for storing generic target information
+name           type        nullable        default_value       foreign_key_table   pk       unit    description
+target_id      integer     False           None                target              True     None    "Target"
+is_h0_target   boolean     False           None                None                False    None    "For H0 science"
+is_vpec_target boolean     False           None                None                False    None    "For pec. vel. science"
+is_lowz_target boolean     False           None                None                False    None    "For low z science"
+visits         integer     False           None                None                False    None    "number of anticipated visits"
+repeats        integer     False           None                None                False    None    "number of repeats so far"
+priority       integer     False           None                None                False    None    "priority of target"
+difficulty     integer     False           None                None                False    None    "difficulty of target"
+done           boolean     False           0                   None                False    None    "if observations of target have completed"
+

@@ -1,50 +1,59 @@
 from connection import get_connection
 import logging
+import os
+import pandas as pd
 
 
-def create_target_table(cursor):
-    statement = "CREATE TABLE target (target_id serial PRIMARY KEY, " \
-                "ra double precision not null, " \
-                "dec double precision not null, " \
-                "ux double precision not null, " \
-                "uy double precision not null, " \
-                "uz double precision not null, " \
-                "is_science boolean not null default 1, " \
-                "is_guide boolean not null default 0, " \
-                "is_standard boolean not null default 0," \
-                "done boolean);"
-    cursor.execute(statement)
-    logging.info("Created the target table")
+def create_tables(connection):
+    dirname = os.path.dirname(__file__)
+    tables_dir = os.path.abspath(dirname + "/../resources/tables")
+    logging.info("Creating tables declare in %s" % tables_dir)
 
+    exec_strings = []
+    for table_file in os.listdir(tables_dir):
+        logging.info("Creating table %s" % table_file)
+        table_name = table_file.split(".")[0]
+        string = "CREATE TABLE %s (" % table_name.replace(" ", "_").lower()
+        tab = pd.read_csv(tables_dir + os.sep + table_file, delim_whitespace=True, comment="#", dtype=str,
+                          header=0, quotechar='"', skipinitialspace=True)
+        pks = []
+        for date, column in tab.T.iteritems():
+            col_name = column["name"].replace(" ", "_").lower()
+            string += col_name + " "
+            col_type = column["type"]
+            if col_type.upper() == "DOUBLE":
+                col_type = "double precision"
+            string += col_type + " "
+            col_null = column["nullable"]
+            if col_null.upper() == "FALSE":
+                string += "not null "
+            col_def = column["default_value"]
+            if col_def.upper() != "NONE":
+                string += "default %s " % col_def
+            if column["pk"].upper() == "TRUE":
+                pks.append(col_name)
+            col_ref = column["foreign_key_table"].lower()
+            if col_ref != "none":
+                string += "REFERENCES %s (%s) " % (col_ref, col_name)
+            string += ", "
+        string += "PRIMARY KEY (%s)" % ",".join(pks)
+        string += " );"
+        assert len(pks) > 0, "Table %s has no primary keys!" % table_name
+        logging.debug("Statement is %s" % string)
+        exec_strings.append(string)
 
-def create_field_table(cursor):
-    statement = "CREATE TABLE field (field_id serial PRIMARY KEY, " \
-                "ra double precision not null, " \
-                "dec double precision not null, " \
-                "ux double precision not null, " \
-                "uy double precision not null, " \
-                "uz double precision not null);"
-    cursor.execute(statement)
-    logging.info("Created the field table")
+    # Currently all tables are created at once.
+    # We need a good way of versioning the database.
+    if connection is not None:
+        cursor = connection.cursor()
+        for s in exec_strings:
+            cursor.execute(s)
+        logging.info("Created all tables")
+        cursor.commit()
 
-
-def create_science_target_table(cursor):
-    statement = "CREATE TABLE science_targets (target_id integer not null, " \
-                "is_h0_target boolean not null, " \
-                "is_vpec_target boolean not null, " \
-                "is_lowz_target boolean not null, " \
-                "visits integer default 0, " \
-                "priority integer not null, " \
-                "difficulty integer not null);"
-    cursor.execute(statement)
-    logging.info("Created the science target table")
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    create_target_table(cursor)
-    create_field_table(cursor)
-    create_science_target_table(cursor)
+    conn = None #get_connection()
+    create_tables(conn)
