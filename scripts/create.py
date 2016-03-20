@@ -1,12 +1,9 @@
-from connection import get_connection
 import logging
 import os
 import pandas as pd
 
 
-def create_tables(connection):
-    dirname = os.path.dirname(__file__)
-    tables_dir = os.path.abspath(dirname + "/../resources/tables")
+def create_tables(connection, tables_dir):
     logging.info("Creating tables declare in %s" % tables_dir)
 
     exec_strings = []
@@ -51,9 +48,7 @@ def create_tables(connection):
         logging.info("Created all tables")
         cursor.commit()
 
-
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    conn = None #get_connection()
+    conn = None
     create_tables(conn)
