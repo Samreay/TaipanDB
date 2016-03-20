@@ -1,0 +1,5 @@
+# target_field table
+# Used for storing the target field links
+name        type        nullable        default_value       foreign_key_table   pk      unit    description
+target_id   integer     None            None                target              True    None    "Target id"
+field_id    integer     None            None                field               True    None    "Field id"

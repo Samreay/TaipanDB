@@ -1,5 +1,5 @@
 # version table
-# Used for storing information about a field pointing (the centroid)
+# Stores the versions of the database and the date at which the upgrade was performed
 name        type        nullable        default_value       foreign_key_table   pk      unit    description
 version     varchar(80) None            None                None                True    None    "Current database version"
 date        date        False           CURRENT_DATE        None                False   None    "Date of upgrade"

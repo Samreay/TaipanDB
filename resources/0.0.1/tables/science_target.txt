@@ -1,5 +1,5 @@
 # science_target table
-# Used for storing generic target information
+# Used for storing generic target information for scientific targets
 name           type        nullable        default_value       foreign_key_table   pk       unit    description
 target_id      integer     False           None                target              True     None    "Target"
 is_h0_target   boolean     False           None                None                False    None    "For H0 science"
