@@ -29,8 +29,8 @@ def get_current_version(connection):
     if connection is None:
         return "0.0.0"
     cursor = connection.cursor()
-    cursor = None
     query = "SELECT version FROM version v ORDER BY v.date DESC LIMIT 1"
+    cursor.execute(query)
     result = cursor.fetchall()
     assert len(result) == 1, "Expected one row, but received result of %s" % result
     return result[0]
@@ -56,5 +56,6 @@ def update_to_version(connection, version_dir):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
+    # connection = get_connection()
     connection = None
     update_database(connection)
