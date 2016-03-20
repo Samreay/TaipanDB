@@ -1,0 +1,5 @@
+# tile table
+# Used for storing the target tiles. A tile is a configuration of a field
+name        type        nullable        default_value       foreign_key_table   pk      unit    unique    description
+tile_id     serial      None            None                None                True    None    None      "Target id"
+field_id    integer     None            None                field               False   None    True      "Tile id"

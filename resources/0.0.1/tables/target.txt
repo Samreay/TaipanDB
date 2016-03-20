@@ -1,13 +1,13 @@
 # target table
 # Used for storing generic target information
-name        type        nullable        default_value       foreign_key_table   pk      unit    description
-target_id   serial      None            None                None                True    None    "Target id"
-ra          double      False           None                None                False   deg     "Right ascension"
-dec         double      False           None                None                False   deg     "Declination"
-ux          double      False           None                None                False   None    "x projection on unit sphere"
-uy          double      False           None                None                False   None    "y projection on unit sphere"
-uz          double      False           None                None                False   None    "z projection on unit sphere"
-is_science  boolean     False           None                None                False   None    "is a science target"
-is_guide    boolean     False           None                None                False   None    "is a guide star"
-is_standard boolean     False           None                None                False   None    "is a standard star"
+name        type        nullable        default_value       foreign_key_table   pk      unit    unique   description
+target_id   serial      None            None                None                True    None    None     "Target id"
+ra          double      False           None                None                False   deg     None     "Right ascension"
+dec         double      False           None                None                False   deg     None     "Declination"
+ux          double      False           None                None                False   None    None     "x projection on unit sphere"
+uy          double      False           None                None                False   None    None     "y projection on unit sphere"
+uz          double      False           None                None                False   None    None     "z projection on unit sphere"
+is_science  boolean     False           None                None                False   None    None     "is a science target"
+is_guide    boolean     False           None                None                False   None    None     "is a guide star"
+is_standard boolean     False           None                None                False   None    None     "is a standard star"
 

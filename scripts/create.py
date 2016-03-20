@@ -30,6 +30,8 @@ def create_tables(cursor, tables_dir):
             if column["pk"].upper() == "TRUE":
                 pks.append(col_name)
             col_ref = column["foreign_key_table"].lower()
+            if column["unique"].upper() == "TRUE":
+                string += "UNIQUE "
             if col_ref != "none":
                 string += "REFERENCES %s (%s) " % (col_ref, col_name)
             string += ", "
