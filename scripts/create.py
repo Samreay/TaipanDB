@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 
-def create_tables(connection, tables_dir):
+def create_tables(cursor, tables_dir):
     logging.info("Creating tables declare in %s" % tables_dir)
 
     exec_strings = []
@@ -41,12 +41,24 @@ def create_tables(connection, tables_dir):
 
     # Currently all tables are created at once.
     # We need a good way of versioning the database.
-    if connection is not None:
-        cursor = connection.cursor()
+    if cursor is not None:
         for s in exec_strings:
             cursor.execute(s)
         logging.info("Created all tables")
-        cursor.commit()
+
+
+def insert_into(cursor, table, values, columns=None):
+    if type(values) == list:
+        values2 = values
+    else:
+        values2 = [values]
+    string = "INSERT INTO %s %s VALUES (%s)" % (table, "" if columns is None else "(" + ", ".join(columns) + ")",
+                                                ",".join(["%s"] * len(values2)))
+    logging.debug(string + " with values " + str(values))
+    if cursor is not None:
+        cursor.execute(string, values)
+        logging.debug("Insert successful")
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
