@@ -2,6 +2,7 @@ from connection import get_connection
 from create import create_tables, insert_into
 import os
 import logging
+import imp
 
 
 def update_database(connection):
@@ -50,6 +51,11 @@ def update_to_version(connection, version_dir):
         create_tables(cursor, table_dir)
 
     insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
+
+    execute_file = version_dir + os.sep + "misc" + os.sep + "execute.py"
+    if os.path.exists(execute_file):
+        execute = imp.load_source('execute', execute_file)
+        execute.update(cursor, os.path.dirname(execute_file))
 
     if cursor is not None:
         cursor.commit()
