@@ -11,8 +11,10 @@ def create_tables(cursor, tables_dir):
         logging.info("Creating table %s" % table_file)
         table_name = table_file.split(".")[0]
         string = "CREATE TABLE %s (" % table_name.replace(" ", "_").lower()
-        tab = pd.read_csv(tables_dir + os.sep + table_file, delim_whitespace=True, comment="#", dtype=str,
-                          header=0, quotechar='"', skipinitialspace=True)
+        tab = pd.read_csv(
+            tables_dir + os.sep + table_file, 
+            delim_whitespace=True, comment="#", dtype=str,
+            header=0, quotechar='"', skipinitialspace=True)
         pks = []
         for date, column in tab.T.iteritems():
             col_name = column["name"].replace(" ", "_").lower()
@@ -54,8 +56,9 @@ def insert_into(cursor, table, values, columns=None):
         values2 = values
     else:
         values2 = [values]
-    string = "INSERT INTO %s %s VALUES (%s)" % (table, "" if columns is None else "(" + ", ".join(columns) + ")",
-                                                ",".join(["%s"] * len(values2)))
+    string = "INSERT INTO %s %s VALUES (%s)" % (
+        table, "" if columns is None else "(" + ", ".join(columns) + ")",
+        ",".join(["%s"] * len(values2)))
     logging.debug(string + " with values " + str(values))
     if cursor is not None:
         cursor.execute(string, values)
