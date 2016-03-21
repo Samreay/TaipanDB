@@ -52,10 +52,15 @@ def update_to_version(connection, version_dir):
 
     insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
 
-    execute_file = version_dir + os.sep + "misc" + os.sep + "execute.py"
-    if os.path.exists(execute_file):
-        execute = imp.load_source('execute', execute_file)
-        execute.update(cursor, os.path.dirname(execute_file))
+    ingest_file = version_dir + os.sep + "ingest" + os.sep + "execute.py"
+    if os.path.exists(ingest_file):
+        execute = imp.load_source('execute', ingest_file)
+        execute.update(cursor, os.path.dirname(ingest_file))
+
+    scripts_file = version_dir + os.sep + "scripts" + os.sep + "execute.py"
+    if os.path.exists(scripts_file):
+        execute = imp.load_source('execute', scripts_file)
+        execute.update(cursor, os.path.diranem(scripts_file))
 
     if cursor is not None:
         cursor.commit()
