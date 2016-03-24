@@ -52,13 +52,15 @@ def create_tables(cursor, tables_dir):
 
 
 def insert_into(cursor, table, values, columns=None):
-    if type(values) == list:
+    if isinstance(values, list):
         values2 = values
     else:
         values2 = [values]
     string = "INSERT INTO %s %s VALUES (%s)" % (
-        table, "" if columns is None else "(" + ", ".join(columns) + ")",
-        ",".join(["%s"] * len(values2)))
+        table,
+        "" if columns is None else "(" + ", ".join(columns) + ")",
+        ",".join(["%s"] * len(values2))
+        )
     logging.debug(string + " with values " + str(values))
     if cursor is not None:
         cursor.execute(string, values)
