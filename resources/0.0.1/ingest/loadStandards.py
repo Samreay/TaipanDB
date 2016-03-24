@@ -1,4 +1,5 @@
 import logging
+from astropy.table import Table
 from scripts.create import insert_into
 
 
