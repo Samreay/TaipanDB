@@ -1,9 +1,14 @@
 import logging
+import pandas as pd
+import csv
+import sys
 from scripts.create import insert_into
 from taipan.tiling import generate_SH_tiling
 
 
 def execute(cursor, fields_file=None):
+    """Load field pointings from file to database"""
+
     logging.info("Loading Centroids")
 
     if not fields_file:
@@ -11,21 +16,19 @@ def execute(cursor, fields_file=None):
         return
 
     # Get centroids
-    # We do this by creating TaipanTile objects in memory - that module already
-    # has the necessary code to convert the text lists to RA, Dec tied to a
-    # field
-    # POSSIBLE UPDATE: Divide the current generate_SH_tiling into two functions
-    # - one which parses the input file into coordinates, and the other which
-    # generates TaipanTile objects
-    faux_tiles = generate_SH_tiling(fields_file, randomise_seed=False,
-                                    randomise_pa=False)
-    # Convert this into a table of values
-    values = [[i, faux_tiles[i].ra, faux_tiles[i].dec]
-              for i in range(len(faux_tiles))]
+    with open(fields_file, 'r') as fileobj:
+        datatable = pd.read_csv(fileobj, delim_whitespace=True)
+    values = [[index, row['ra'], row['dec']]
+              for index, row in datatable.iterrows()]
+
     columns = ["FIELD_ID", "RA", "DEC"]
 
     # Insert into database
     if cursor is not None:
         insert_into(cursor, "fields", values, columns=columns)
+        logging.info('Loaded Centroids')
+    else:
+        logging.info('No DB to write to - returning values')
+        return values
 
-    logging.info("Loaded Centroids")
+    return

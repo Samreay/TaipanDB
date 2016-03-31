@@ -15,11 +15,14 @@ def execute(cursor, science_file=None):
 
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
-    values_table1 = list(science_table)
+    values_table1 = [[row['uniqid'], row['ra_1'], row['dec_1'],
+                      True, False, False]
+                     for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE"]
-    values_table2 = list(science_table)
-    columns2 = ["Target", "is_H0", "is_vpec", "is_lowz"]
+    values_table1 = [[row['uniqid'], False, False, False]
+                     for row in science_table]
+    columns2 = ["TARGET_ID", "IS_H0", "IS_VPEC", "IS_LOWZ"]
 
     # Insert into database
     if cursor is not None:
