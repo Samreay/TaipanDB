@@ -20,7 +20,7 @@ def execute(cursor, science_file=None):
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE"]
-    values_table1 = [[row['uniqid'], False, False, False]
+    values_table2 = [[row['uniqid'], False, False, False]
                      for row in science_table]
     columns2 = ["TARGET_ID", "IS_H0", "IS_VPEC", "IS_LOWZ"]
 
