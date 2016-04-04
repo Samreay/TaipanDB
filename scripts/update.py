@@ -3,7 +3,8 @@ from create import create_tables, insert_into
 import os
 import logging
 import imp
-
+import psycopg2
+import sys
 
 def update_database(connection):
     dirname = os.path.dirname(__file__)
@@ -31,7 +32,11 @@ def get_current_version(connection):
         return "0.0.0"
     cursor = connection.cursor()
     query = "SELECT version FROM version v ORDER BY v.date DESC LIMIT 1"
-    cursor.execute(query)
+    try:
+        cursor.execute(query)
+    except psycopg2.ProgrammingError:
+        # If the relation does not exist, we are at version 0.0.0
+        return "0.0.0"
     result = cursor.fetchall()
     assert len(result) == 1, "Expected one row, but received result of %s" % result
     return result[0]
@@ -50,8 +55,6 @@ def update_to_version(connection, version_dir):
     if os.path.exists(table_dir):
         create_tables(cursor, table_dir)
 
-    insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
-
     ingest_file = version_dir + os.sep + "ingest" + os.sep + "execute.py"
     if os.path.exists(ingest_file):
         execute = imp.load_source('execute', ingest_file)
@@ -62,11 +65,15 @@ def update_to_version(connection, version_dir):
         execute = imp.load_source('execute', scripts_file)
         execute.update(cursor, os.path.diranem(scripts_file))
 
+    insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
+
     if cursor is not None:
         cursor.commit()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    # connection = get_connection()
-    connection = None
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        connection = None
+    else:
+        connection = get_connection()
     update_database(connection)

@@ -4,10 +4,12 @@ import psycopg2
 import logging
 
 
-def get_config(conf_filename="cofig.json"):
+def get_config(conf_filename="../config.json"):
     logging.info("Getting config from %s" % conf_filename)
-    filename = __file__
-    config_file = os.path.dirname(filename) + os.sep + conf_filename
+    dir = os.path.dirname(__file__)
+    if not dir:
+        dir = "."
+    config_file = dir + os.sep + conf_filename
     with open(config_file) as data_file:
         config = json.load(data_file)
     return config
