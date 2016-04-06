@@ -26,7 +26,7 @@ def execute(cursor, fields_file=None):
 
     # Insert into database
     if cursor is not None:
-        insert_into(cursor, "fields", values, columns=columns)
+        insert_into(cursor, "field", values, columns=columns)
         logging.info('Loaded Centroids')
     else:
         logging.info('No DB to write to - returning values')

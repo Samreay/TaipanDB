@@ -22,9 +22,11 @@ def update_database(connection):
 
     if current_version not in versions:
         versions.append(current_version)
-
     versions.sort(key=lambda s: map(int, s.split('.')))
     versions_needed_to_update = versions[versions.index(current_version) + 1:]
+    if len(versions_needed_to_update) == 0:
+        logging.info("Database is already up to date")
+        return
     logging.info("Updating from version %s through versions %s" % (current_version, versions_needed_to_update))
     for v in versions_needed_to_update:
         update_to_version(connection, version_dir + os.sep + v)
@@ -41,7 +43,7 @@ def get_current_version(connection):
         # If the relation does not exist, we are at version 0.0.0
         connection.rollback()
         return "0.0.0"
-    result = cursor.fetchall()
+    result = cursor.fetchall()[0]
     assert len(result) == 1, "Expected one row, but received result of %s" % result
     return result[0]
 

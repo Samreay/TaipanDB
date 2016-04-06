@@ -5,8 +5,8 @@ import os
 def update(cursor, filename):
 
     loadCentroids = imp.load_source('loadCentroids', filename + os.sep + 'loadCentroids.py')
-    fields_file = filename + os.sep + 'icover.3.5072.13.13.txt'
-    # loadCentroids.execute(cursor, fields_file=fields_file)
+    fields_file = "/data/0.0.1" + os.sep + 'pointing_centers.radec'
+    loadCentroids.execute(cursor, fields_file=fields_file)
 
     loadGuides = imp.load_source('loadGuides', filename + os.sep + 'loadGuides.py')
     guides_file = filename + os.sep + 'guides.fits'
@@ -17,3 +17,5 @@ def update(cursor, filename):
 
     loadScience = imp.load_source('loadScience', filename + os.sep + 'loadScience.py')
     #loadScience.execute(cursor)
+
+    raise Exception("Remove this when all data is loaded in")
