@@ -39,6 +39,7 @@ def get_current_version(connection):
         cursor.execute(query)
     except psycopg2.ProgrammingError:
         # If the relation does not exist, we are at version 0.0.0
+        connection.rollback()
         return "0.0.0"
     result = cursor.fetchall()
     assert len(result) == 1, "Expected one row, but received result of %s" % result
@@ -54,24 +55,30 @@ def update_to_version(connection, version_dir):
         cursor = None
     else:
         cursor = connection.cursor()
+    try:
+        if os.path.exists(table_dir):
+            create_tables(cursor, table_dir)
 
-    if os.path.exists(table_dir):
-        create_tables(cursor, table_dir)
+        ingest_file = version_dir + os.sep + "ingest" + os.sep + "execute.py"
+        if os.path.exists(ingest_file):
+            execute = imp.load_source('execute', ingest_file)
+            execute.update(cursor, os.path.dirname(ingest_file))
 
-    ingest_file = version_dir + os.sep + "ingest" + os.sep + "execute.py"
-    if os.path.exists(ingest_file):
-        execute = imp.load_source('execute', ingest_file)
-        execute.update(cursor, os.path.dirname(ingest_file))
+        scripts_file = version_dir + os.sep + "scripts" + os.sep + "execute.py"
+        if os.path.exists(scripts_file):
+            execute = imp.load_source('execute', scripts_file)
+            execute.update(cursor, os.path.diranem(scripts_file))
 
-    scripts_file = version_dir + os.sep + "scripts" + os.sep + "execute.py"
-    if os.path.exists(scripts_file):
-        execute = imp.load_source('execute', scripts_file)
-        execute.update(cursor, os.path.diranem(scripts_file))
-
-    insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
-
-    if cursor is not None:
-        cursor.commit()
+        insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
+    except Exception as e:
+        logging.critical(e)
+        logging.warn("Rolling back")
+        connection.rollback()
+        raise
+    else:
+        if cursor is not None:
+            logging.info("Committing. Updated to version %s" % version_dir)
+            connection.commit()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

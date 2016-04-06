@@ -9,5 +9,5 @@ visits         integer     False           None                None             
 repeats        integer     False           None                None                False    None    None    "number of repeats so far"
 priority       integer     False           None                None                False    None    None    "priority of target"
 difficulty     integer     False           None                None                False    None    None    "difficulty of target"
-done           boolean     False           0                   None                False    None    None    "if observations of target have completed"
+done           boolean     False           false               None                False    None    None    "if observations of target have completed"
 

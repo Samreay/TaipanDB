@@ -2,6 +2,6 @@
 # Used for storing observability conditions
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique    description
 field_id    integer     None            None                field               True    None    None      "Field id"
-date        datetime    None            None                None                False   date    None      "Date of observation"
+date        timestamp   None            None                None                False   date    None      "Date of observation"
 airmass     double      None            None                None                False   None    None      "Airmass"
 dark        boolean     None            None                None                False   None    None      "Whether it is dark (or twilight)"

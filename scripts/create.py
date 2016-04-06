@@ -6,11 +6,13 @@ import pandas as pd
 def create_tables(cursor, tables_dir):
     logging.info("Creating tables declare in %s" % tables_dir)
 
+    names = sorted(os.listdir(tables_dir), cmp=lambda x, y: 1 if int(x.split("_")[0]) > int(y.split("_")[0]) else -1)
+    logging.debug("Found table files: %s" % names)
     exec_strings = []
-    for table_file in os.listdir(tables_dir):
-        logging.info("Creating table %s" % table_file)
-        table_name = table_file.split(".")[0]
-        string = "CREATE TABLE %s (" % table_name.replace(" ", "_").lower()
+    tables = []
+    for table_file in names:
+        table_name = table_file.split(".")[0].partition("_")[2].replace(" ", "_").lower()
+        string = "CREATE TABLE %s (" % table_name
         tab = pd.read_csv(
             tables_dir + os.sep + table_file, 
             delim_whitespace=True, comment="#", dtype=str,
@@ -42,11 +44,12 @@ def create_tables(cursor, tables_dir):
         assert len(pks) > 0, "Table %s has no primary keys!" % table_name
         logging.debug("Statement is %s" % string)
         exec_strings.append(string)
+        tables.append(table_name)
 
     # Currently all tables are created at once.
-    # We need a good way of versioning the database.
     if cursor is not None:
-        for s in exec_strings:
+        for s, t in zip(exec_strings, tables):
+            logging.info("Creating table %s" % t)
             cursor.execute(s)
         logging.info("Created all tables")
 
@@ -63,7 +66,7 @@ def insert_into(cursor, table, values, columns=None):
         )
     logging.debug(string + " with values " + str(values))
     if cursor is not None:
-        cursor.execute(string, values)
+        cursor.execute(string, values2)
         logging.debug("Insert successful")
 
 

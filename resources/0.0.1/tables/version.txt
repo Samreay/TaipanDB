@@ -1,5 +1,0 @@
-# version table
-# Stores the versions of the database and the date at which the upgrade was performed
-name        type        nullable        default_value       foreign_key_table   pk      unit    unique    description
-version     varchar(80) None            None                None                True    None    None      "Current database version"
-date        date        False           CURRENT_DATE        None                False   None    None      "Date of upgrade"
