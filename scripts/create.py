@@ -56,7 +56,10 @@ def create_tables(cursor, tables_dir):
 
 def insert_into(cursor, table, values, columns=None):
     if isinstance(values, list):
-        values2 = values
+        if isinstance(values[0], list):
+            values2 = values[0]
+        else:
+            values2 = values
     else:
         values2 = [values]
     string = "INSERT INTO %s %s VALUES (%s)" % (
