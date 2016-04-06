@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 import logging
 import pandas as pd
-import csv
+import os
 import sys
+sys.path.append(os.path.realpath(os.path.abspath(__file__) + os.sep + "../../../.."))
 from scripts.create import insert_into
-from taipan.tiling import generate_SH_tiling
 
 
 def execute(cursor, fields_file=None):

@@ -6,8 +6,11 @@ import imp
 import psycopg2
 import sys
 
+
 def update_database(connection):
     dirname = os.path.dirname(__file__)
+    if not dirname:
+        dirname = "."
     version_dir = os.path.abspath(dirname + "/../resources")
     logging.info("Checking for versions in %s" % version_dir)
 
