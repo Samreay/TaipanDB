@@ -1,6 +1,7 @@
 import logging
 import os
 import pandas as pd
+import numpy as np
 
 
 def create_tables(cursor, tables_dir):
@@ -71,6 +72,22 @@ def insert_into(cursor, table, values, columns=None):
     if cursor is not None:
         cursor.execute(string, values2)
         logging.debug("Insert successful")
+
+
+def extract_from(cursor, table, columns=None):
+    string = "SELECT %s FROM %s" % (
+        "" if columns is None else "(" + ", ".join(columns) + ")",
+        table,
+        )
+    logging.debug(string)
+    if cursor is not None:
+        cursor.execute(string)
+        result = cursor.fetchall()
+        logging.debug("Extract successful")
+
+    # TBC: Structure the result as a structured numpy table
+
+    return result
 
 
 if __name__ == "__main__":
