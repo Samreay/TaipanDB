@@ -1,5 +1,5 @@
 from connection import get_connection
-from create import create_tables, insert_into
+from create import create_tables, insert_row
 import os
 import logging
 import imp
@@ -36,7 +36,7 @@ def get_current_version(connection):
     if connection is None:
         return "0.0.0"
     cursor = connection.cursor()
-    query = "SELECT version FROM version v ORDER BY v.date DESC LIMIT 1"
+    query = "SELECT version FROM version v ORDER BY v.version_date DESC LIMIT 1"
     try:
         cursor.execute(query)
     except psycopg2.ProgrammingError:
@@ -71,7 +71,7 @@ def update_to_version(connection, version_dir):
             execute = imp.load_source('execute', scripts_file)
             execute.update(cursor, os.path.diranem(scripts_file))
 
-        insert_into(cursor, "version", os.path.basename(version_dir), columns=["version"])
+        insert_row(cursor, "version", os.path.basename(version_dir), columns=["version"])
     except Exception as e:
         logging.critical(e)
         logging.warn("Rolling back")

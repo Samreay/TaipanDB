@@ -1,6 +1,6 @@
 import logging
 from astropy.table import Table
-from scripts.create import insert_into
+from scripts.create import insert_many_rows
 
 from taipan.core import polar2cart
 
@@ -30,8 +30,8 @@ def execute(cursor, science_file=None):
 
     # Insert into database
     if cursor is not None:
-        insert_into(cursor, "target", values_table1, columns=columns1)
-        insert_into(cursor, "science_target", values_table2, columns=columns2)
+        insert_many_rows(cursor, "target", values_table1, columns=columns1)
+        insert_many_rows(cursor, "science_target", values_table2, columns=columns2)
         logging.info("Loaded Science")
     else:
         logging.info("No database - however, dry-run of loading successful")

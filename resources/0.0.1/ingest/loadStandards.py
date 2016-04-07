@@ -1,6 +1,6 @@
 import logging
 from astropy.table import Table
-from scripts.create import insert_into
+from scripts.create import insert_many_rows
 
 from taipan.core import polar2cart
 
@@ -24,7 +24,7 @@ def execute(cursor, standards_file=None):
 
     # Insert into database
     if cursor is not None:
-        insert_into(cursor, "target", values_table, columns=columns)
+        insert_many_rows(cursor, "target", values_table, columns=columns)
         logging.info("Loaded Standards")
     else:
         logging.info('No database - returning values to console')

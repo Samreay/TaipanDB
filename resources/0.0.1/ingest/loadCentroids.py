@@ -6,7 +6,7 @@ import sys
 sys.path.append(os.path.realpath(os.path.abspath(__file__)
                 + os.sep + "../../../.."))
 
-from scripts.create import insert_into
+from scripts.create import insert_many_rows
 from taipan.core import polar2cart
 
 
@@ -30,7 +30,7 @@ def execute(cursor, fields_file=None):
 
     # Insert into database
     if cursor is not None:
-        insert_into(cursor, "field", values, columns=columns)
+        insert_many_rows(cursor, "field", values, columns=columns)
         logging.info('Loaded Centroids')
     else:
         logging.info('No DB to write to - returning values')

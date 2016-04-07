@@ -79,22 +79,42 @@ def create_tables(cursor, tables_dir):
         logging.info("Created all tables")
 
 
-def insert_into(cursor, table, values, columns=None):
+def insert_many_rows(cursor, table, values, columns=None, batch=10):
+
+    values = [tuple(v) for v in values]
+    index = 0
+    string = "INSERT INTO %s %s VALUES %s" % (
+        table,
+        "" if columns is None else "(" + ", ".join(columns) + ")",
+        "%s"
+    )
+    logging.debug("MANY ROW INSERT: " + string + "... total of %d elements" % len(values))
+
+    if cursor is not None:
+        while index < len(values):
+            end = index + batch
+            if end > len(values):
+                end = len(values)
+            rows = values[index:end]
+            index = end
+            current_string = string % ",".join(["%s"] * len(rows))
+            cursor.execute(current_string, rows)
+
+
+def insert_row(cursor, table, values, columns=None):
     if isinstance(values, list):
         if isinstance(values[0], list):
-            values2 = values[0]
-        else:
-            values2 = values
+            raise ValueError("A nested list should call the insert_many function")
     else:
-        values2 = [values]
+        values = [values]
     string = "INSERT INTO %s %s VALUES (%s)" % (
         table,
         "" if columns is None else "(" + ", ".join(columns) + ")",
-        ",".join(["%s"] * len(values2))
+        ",".join(["%s"] * len(values))
         )
     logging.debug(string + " with values " + str(values))
     if cursor is not None:
-        cursor.execute(string, values2)
+        cursor.execute(string, values)
         logging.debug("Insert successful")
 
 
