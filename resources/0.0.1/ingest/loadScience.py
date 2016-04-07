@@ -19,7 +19,7 @@ def execute(cursor, science_file=None):
     # (This is dependent on the structure of science_file)
     values_table1 = [[row['uniqid'], row['ra'], row['dec'],
                       True, False, False] 
-                      + list(polar2cart((row['ra'], row['dec']))
+                      + list(polar2cart((row['ra'], row['dec'])))
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE", "UX", "UY", "UZ"]

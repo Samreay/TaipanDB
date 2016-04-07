@@ -2,6 +2,8 @@ import logging
 from astropy.table import Table
 from scripts.create import insert_into
 
+from taipan.core import polar2cart
+
 
 def execute(cursor, standards_file=None):
     logging.info("Loading Stnadards")
@@ -15,9 +17,10 @@ def execute(cursor, standards_file=None):
 
     values_table = [[row['objID'], row['ra_SCOS'], row['dec_SCOS'],
                      False, True, False]
+                    + list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in standards_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE"]
+               "IS_GUIDE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

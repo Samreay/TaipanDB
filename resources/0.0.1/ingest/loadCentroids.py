@@ -3,8 +3,11 @@ import logging
 import pandas as pd
 import os
 import sys
-sys.path.append(os.path.realpath(os.path.abspath(__file__) + os.sep + "../../../.."))
+sys.path.append(os.path.realpath(os.path.abspath(__file__)
+                + os.sep + "../../../.."))
+
 from scripts.create import insert_into
+from taipan.core import polar2cart
 
 
 def execute(cursor, fields_file=None):
@@ -20,9 +23,10 @@ def execute(cursor, fields_file=None):
     with open(fields_file, 'r') as fileobj:
         datatable = pd.read_csv(fileobj, delim_whitespace=True)
     values = [[index, row['ra'], row['dec']]
+              + list(polar2cart((row['ra'], row['dec'])))
               for index, row in datatable.iterrows()]
 
-    columns = ["FIELD_ID", "RA", "DEC"]
+    columns = ["FIELD_ID", "RA", "DEC", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:
