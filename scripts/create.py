@@ -12,7 +12,7 @@ import numpy as np
 # psql-numpy data type relationship
 # TBC: How to handle char, varchar etc? Given they will have (n) at the 
 # end of them
-PSQL_TO_NUMPY_DTYPE =- {
+PSQL_TO_NUMPY_DTYPE = {
     "smallint": "int16",
     "integer": "int32",
     "bigint": "int64",
