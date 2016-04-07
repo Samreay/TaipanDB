@@ -10,7 +10,7 @@ def update(cursor, filename):
 
     loadGuides = imp.load_source('loadGuides', filename + os.sep + 'loadGuides.py')
     guides_file = "/data/resources/0.0.1" + os.sep + 'guides.fits'
-    #loadGuides.execute(cursor, guides_file=guides_file)
+    loadGuides.execute(cursor, guides_file=guides_file)
 
     loadStandards = imp.load_source('loadStandards', filename + os.sep + 'loadStandards.py')
     #loadStandards.execute(cursor)
