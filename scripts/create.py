@@ -4,6 +4,30 @@ import pandas as pd
 import numpy as np
 
 
+# ------
+# HELPER FUNCTIONS
+# ------
+
+
+# psql-numpy data type relationship
+# TBC: How to handle char, varchar etc? Given they will have (n) at the 
+# end of them
+PSQL_TO_NUMPY_DTYPE =- {
+    "smallint": "int16",
+    "integer": "int32",
+    "bigint": "int64",
+    "decimal": "float64",
+    "numeric": "float64",
+    "real": "float32",
+    "double": "float64",
+    "smallserial": "int16",
+    "serial": "int32",
+    "bigserial": "int64",
+    "boolean": "bool",
+}
+
+
+
 def create_tables(cursor, tables_dir):
     logging.info("Creating tables declare in %s" % tables_dir)
 
@@ -75,8 +99,23 @@ def insert_into(cursor, table, values, columns=None):
 
 
 def extract_from(cursor, table, columns=None):
+    if cursor is not None:
+        # Get the column names from the table itself
+        cursor.execute("SELECT column_name, data_type"
+            " FROM information_schema.columns"
+            " WHERE table_name='%s'" % (table, ))
+        table_structure = cursor.fetchall()
+        table_columns, dtypes = zip(*table_structure)
+        if columns is None:
+            columns = table_columns
+        else:
+            columns_lower = [x.lower() for x in columns]
+            dtypes = [dtypes[i] for i in range(len(dtypes))
+                      if table_columns[i].lower() 
+                      in columns_lower]
+    
     string = "SELECT %s FROM %s" % (
-        "" if columns is None else "(" + ", ".join(columns) + ")",
+        "*" if columns is None else "(" + ", ".join(columns) + ")",
         table,
         )
     logging.debug(string)
@@ -84,8 +123,15 @@ def extract_from(cursor, table, columns=None):
         cursor.execute(string)
         result = cursor.fetchall()
         logging.debug("Extract successful")
+    else:
+        result = None
+        return result
 
-    # TBC: Structure the result as a structured numpy table
+    # Re-format the result as a structured numpy table
+    result = np.asarray(result, dtype={
+        "names": columns,
+        "formats": [PSQL_TO_NUMPY_DTYPE[dtype] for dtype in dtypes],
+        })
 
     return result
 
