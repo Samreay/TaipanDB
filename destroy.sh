@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 dropdb --if-exists taipandb
 dropuser --if-exists taipan
 createdb -h localhost -p 5432 -U postgres taipandb

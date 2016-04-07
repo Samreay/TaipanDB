@@ -1,0 +1,5 @@
+psycopg2
+numpy
+pandas
+astropy
+# taipan
