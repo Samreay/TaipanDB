@@ -79,7 +79,7 @@ def create_tables(cursor, tables_dir):
         logging.info("Created all tables")
 
 
-def insert_many_rows(cursor, table, values, columns=None, batch=10):
+def insert_many_rows(cursor, table, values, columns=None, batch=100):
 
     values = [tuple(v) for v in values]
     index = 0
