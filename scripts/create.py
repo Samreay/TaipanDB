@@ -143,7 +143,7 @@ def insert_row(cursor, table, values, columns=None):
         logging.debug("Insert successful")
 
 
-def extract_from(cursor, table, columns=None):
+def extract_from(cursor, table, conditions=None, columns=None):
     if cursor is not None:
         # Get the column names from the table itself
         cursor.execute("SELECT column_name, data_type"
@@ -163,8 +163,14 @@ def extract_from(cursor, table, columns=None):
         "*" if columns is None else "(" + ", ".join(columns) + ")",
         table,
         )
+
+    if conditions:
+        conditions_string = ' WHERE '.join([' = '.join(map(str, x)) 
+                                            for x in conditions])
+        string += conditions_string
+
     logging.debug(string)
-    
+
     if cursor is not None:
         cursor.execute(string)
         result = cursor.fetchall()
@@ -206,6 +212,12 @@ def extract_from_joined(cursor, tables, columns):
         "*" if columns is None else "(" + ", ".join(columns) + ")",
         ' NATURAL JOIN '.join(tables),
         )
+
+    if conditions:
+        conditions_string = ' WHERE '.join([' = '.join(map(str, x)) 
+                                            for x in conditions])
+        string += conditions_string
+
     logging.debug(string)
 
     if cursor is not None:
