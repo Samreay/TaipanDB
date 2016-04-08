@@ -8,10 +8,11 @@ def execute(cursor):
     guides_db = extract_from(cursor, 'target', conditions=[
         ('is_guide', True),
         ],
-        columns=['target_id', 'ra', 'dec'])
+        columns=['target_id', 'ra', 'dec', 'ux', 'uy', 'uz'])
 
     return_objects = [TaipanTarget(
-        g['target_id'], g['ra'], g['dec'], guide=True
+        g['target_id'], g['ra'], g['dec'], guide=True,
+        ucposn=(g['ux'], g['uy'], g['uz']),
         ) for g in guides_db]
 
     logging.info('Extracted %d guides from database' % guides_db.shape[0])
