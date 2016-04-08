@@ -12,6 +12,8 @@ import numpy as np
 # psql-numpy data type relationship
 # TBC: How to handle char, varchar etc? Given they will have (n) at the 
 # end of them
+# Adding helper function to allow for more complex logic in the future,
+# if required
 PSQL_TO_NUMPY_DTYPE = {
     "smallint": "int16",
     "integer": "int32",
@@ -25,6 +27,12 @@ PSQL_TO_NUMPY_DTYPE = {
     "bigserial": "int64",
     "boolean": "bool",
 }
+
+def psql_to_numpy_dtype(psql_dtype):
+    """
+    Convert psql data type to numpy data type
+    """
+    return PSQL_TO_NUMPY_DTYPE(psql_dtype)
 
 
 
@@ -150,7 +158,7 @@ def extract_from(cursor, table, columns=None):
     # Re-format the result as a structured numpy table
     result = np.asarray(result, dtype={
         "names": columns,
-        "formats": [PSQL_TO_NUMPY_DTYPE[dtype] for dtype in dtypes],
+        "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
         })
 
     return result
