@@ -30,8 +30,22 @@ PSQL_TO_NUMPY_DTYPE = {
 # you're SURE that you won't come across a char(n) or varchar(n)
 def psql_to_numpy_dtype(psql_dtype):
     """
-    Convert psql data type to numpy data type
+    Converts a PSQL data type to the corresponding numpy data type. Used for
+    converting the return of a psycopg2 query to a numpy structured array.
+
+    Parameters
+    ----------
+    psql_dtype:
+        The PSQL data type to be converted. Note that, for all data types except
+        char(n) and varchar(n), the function will simply perform a lookup in the
+        dictionary PSQL_TO_NUMPY_DTYPE.
+
+    Returns
+    -------
+    numpy_dtype:
+        The corresponding numpy data type.
     """
+
     # Handle char, varchar
     if 'char(' in psql_dtype:
         regex = re.compile(r'^[a-z]*char\((?P<len>[0-9]*)\)$')
@@ -42,11 +56,27 @@ def psql_to_numpy_dtype(psql_dtype):
         return 'S%s' % (match.group('len'))
 
     # All other types
-    return PSQL_TO_NUMPY_DTYPE(psql_dtype)
+    return PSQL_TO_NUMPY_DTYPE[psql_dtype]
 
 
 
 def create_tables(cursor, tables_dir):
+    """
+    Create database tables as per the configuration file(s) in tables_dir.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor to provide access to the database.
+    tables_dir:
+        The (relative or absolute) path to the directory containing the
+        configuration file(s) to be converted into database tables.
+
+    Returns
+    -------
+    Nil. Database tables created using the cursor.
+    """
+
     logging.info("Creating tables declare in %s" % tables_dir)
 
     names = sorted(os.listdir(tables_dir), 
@@ -103,6 +133,33 @@ def create_tables(cursor, tables_dir):
 
 
 def insert_many_rows(cursor, table, values, columns=None, batch=100):
+    """
+    Insert multiple rows into a database table.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    table:
+        The name of the table to be manipulated.
+    values:
+        The values to be added to the table, as a list of lists (although
+        it should work for an iterable of iterables). In each sub-list, values
+        should be in the order of the database columns, unless the columns
+        argument is also passed; in that case, values should be in order
+        corresponding to the columns parameter.
+    columns:
+        List of column names that correspond to the ordering of values. Can also
+        be used to restrict the number of columns to write to (i.e. allow
+        default table values for columns if not required). Defaults to None,
+        which assumes that you wish to write information to all columns.
+    batch:
+        Interger, denoting how many rows to write in each pass. Defaults to 100.
+
+    Returns
+    -------
+    Nil. Cursor writes values to table.
+    """
 
     values = [tuple(v) for v in values]
     index = 0
@@ -126,6 +183,30 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
 
 
 def insert_row(cursor, table, values, columns=None):
+    """
+    Insert a row into a database table.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    table:
+        The name of the table to be manipulated.
+    values:
+        The values to be added to the table, as a list. Values
+        should be in the order of the database columns, unless the columns
+        argument is also passed; in that case, values should be in order
+        corresponding to the columns parameter.
+    columns:
+        List of column names that correspond to the ordering of values. Can also
+        be used to restrict the number of columns to write to (i.e. allow
+        default table values for columns if not required). Defaults to None,
+        which assumes that you wish to write information to all columns.
+
+    Returns
+    -------
+    Nil. Cursor writes values to table.
+    """
     if isinstance(values, list):
         if isinstance(values[0], list):
             raise ValueError("A nested list should"
@@ -144,6 +225,30 @@ def insert_row(cursor, table, values, columns=None):
 
 
 def extract_from(cursor, table, conditions=None, columns=None):
+    """
+    Extract rows from a database table.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    table:
+        The name of the table to be read.
+    conditions:
+        List of tuples denoting conditions to be supplied, in the form
+        [(column1, condition1), (column2, condition2), ...]
+        All conditions are assumed to be equalities. Defaults to None.
+    columns:
+        List of column names to retrieve from the database. Defaults to None,
+        which returns all available columns.
+
+    Returns
+    -------
+    result:
+        A numpy structured array of all table rows which satisfy conditions (if
+        given). Individual entry elements may be called by column name.
+    """
+
     if cursor is not None:
         # Get the column names from the table itself
         cursor.execute("SELECT column_name, data_type"
@@ -188,11 +293,35 @@ def extract_from(cursor, table, conditions=None, columns=None):
     return result
 
 
-def extract_from_joined(cursor, tables, columns=None):
+def extract_from_joined(cursor, tables, conditions=None, columns=None):
     """
-    Extract information from Taipan DB tables using a table join.
-    Required for, e.g., the science targets.
+    Extract rows from a database table join.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    tables:
+        List of table names to be joined. Tables are joined using NATURAL JOIN,
+        which requires that the join-ing column have the same name in each
+        table. If this is not possible, some other solution will need to be
+        implemented.
+    conditions:
+        List of tuples denoting conditions to be supplied, in the form
+        [(column1, condition1), (column2, condition2), ...]
+        All conditions are assumed to be equalities. Defaults to None.
+    columns:
+        List of column names to retrieve from the database. Defaults to None,
+        which returns all available columns.
+
+    Returns
+    -------
+    result:
+        A numpy structured array of all joined table rows which satisfy 
+        conditions (if given). Individual entry elements may be called by 
+        column name.
     """
+    
     if cursor is not None:
         # Get the column names from the table itself
         cursor.execute("SELECT column_name, data_type"
