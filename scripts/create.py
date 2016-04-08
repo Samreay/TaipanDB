@@ -188,7 +188,7 @@ def extract_from(cursor, table, conditions=None, columns=None):
     return result
 
 
-def extract_from_joined(cursor, tables, columns):
+def extract_from_joined(cursor, tables, columns=None):
     """
     Extract information from Taipan DB tables using a table join.
     Required for, e.g., the science targets.

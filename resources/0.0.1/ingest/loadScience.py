@@ -23,10 +23,10 @@ def execute(cursor, science_file=None):
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE", "UX", "UY", "UZ"]
-    values_table2 = [[row['uniqid'],
+    values_table2 = [[row['uniqid'], row['priority'],
                       row['is_H0'], row['is_vpec'], row['is_lowz']]
                      for row in science_table]
-    columns2 = ["TARGET_ID", "IS_H0", "IS_VPEC", "IS_LOWZ"]
+    columns2 = ["TARGET_ID", "PRIORITY", "IS_H0", "IS_VPEC", "IS_LOWZ"]
 
     # Insert into database
     if cursor is not None:
