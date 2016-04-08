@@ -39,12 +39,17 @@ def psql_to_numpy_dtype(psql_dtype):
 def create_tables(cursor, tables_dir):
     logging.info("Creating tables declare in %s" % tables_dir)
 
-    names = sorted(os.listdir(tables_dir), cmp=lambda x, y: 1 if int(x.split("_")[0]) > int(y.split("_")[0]) else -1)
+    names = sorted(os.listdir(tables_dir), 
+                   cmp=lambda x, y: 1 if int(
+                        x.split("_")[0]
+                        ) > int(y.split("_")[0]) else -1)
     logging.debug("Found table files: %s" % names)
     exec_strings = []
     tables = []
     for table_file in names:
-        table_name = table_file.split(".")[0].partition("_")[2].replace(" ", "_").lower()
+        table_name = table_file.split(".")[
+            0
+            ].partition("_")[2].replace(" ", "_").lower()
         string = "CREATE TABLE %s (" % table_name
         tab = pd.read_csv(
             tables_dir + os.sep + table_file, 
@@ -96,7 +101,8 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
         "" if columns is None else "(" + ", ".join(columns) + ")",
         "%s"
     )
-    logging.debug("MANY ROW INSERT: " + string + "... total of %d elements" % len(values))
+    logging.debug("MANY ROW INSERT: " + string 
+                  + "... total of %d elements" % len(values))
 
     if cursor is not None:
         while index < len(values):
@@ -112,7 +118,8 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
 def insert_row(cursor, table, values, columns=None):
     if isinstance(values, list):
         if isinstance(values[0], list):
-            raise ValueError("A nested list should call the insert_many function")
+            raise ValueError("A nested list should"
+                             " call the insert_many function")
     else:
         values = [values]
     string = "INSERT INTO %s %s VALUES (%s)" % (
