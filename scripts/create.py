@@ -164,6 +164,7 @@ def extract_from(cursor, table, columns=None):
         table,
         )
     logging.debug(string)
+    
     if cursor is not None:
         cursor.execute(string)
         result = cursor.fetchall()
@@ -179,6 +180,50 @@ def extract_from(cursor, table, columns=None):
         })
 
     return result
+
+
+def extract_from_joined(cursor, tables, columns):
+    """
+    Extract information from Taipan DB tables using a table join.
+    Required for, e.g., the science targets.
+    """
+    if cursor is not None:
+        # Get the column names from the table itself
+        cursor.execute("SELECT column_name, data_type"
+            " FROM information_schema.columns"
+            " WHERE table_name LIKE '%s'" % ('|'.join(tables), ))
+        tables_structure = cursor.fetchall()
+        table_structure = cursor.fetchall()
+        table_columns, dtypes = zip(*table_structure)
+        if columns is None:
+            columns = table_columns
+        else:
+            columns_lower = [x.lower() for x in columns]
+            dtypes = [dtypes[i] for i in range(len(dtypes))
+                      if table_columns[i].lower() 
+                      in columns_lower]
+    string = 'SELECT %s FROM %s' % (
+        "*" if columns is None else "(" + ", ".join(columns) + ")",
+        ' NATURAL JOIN '.join(tables),
+        )
+    logging.debug(string)
+
+    if cursor is not None:
+        cursor.execute(string)
+        result = cursor.fetchall()
+        logging.debug("Extract successful")
+    else:
+        result = None
+        return result
+
+    # Re-format the result as a structured numpy table
+    result = np.asarray(result, dtype={
+        "names": columns,
+        "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
+        })
+
+    return result
+
 
 
 if __name__ == "__main__":
