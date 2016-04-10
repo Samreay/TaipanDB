@@ -1,5 +1,8 @@
 import logging
 from astropy.table import Table
+import sys
+import os
+sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
 from scripts.create import insert_many_rows
 
 from taipan.core import polar2cart

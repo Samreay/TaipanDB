@@ -1,5 +1,8 @@
 import logging
-from scripts.create import extract_from
+import sys
+import os
+sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
+from scripts.extract import extract_from
 from taipan.core import TaipanTarget
 
 def execute(cursor):

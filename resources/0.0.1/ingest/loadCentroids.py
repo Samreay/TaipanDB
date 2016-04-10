@@ -3,8 +3,7 @@ import logging
 import pandas as pd
 import os
 import sys
-sys.path.append(os.path.realpath(os.path.abspath(__file__)
-                + os.sep + "../../../.."))
+sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
 
 from scripts.create import insert_many_rows
 from taipan.core import polar2cart
