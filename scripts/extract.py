@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 import re
+import psycopg2
+
 
 # psql-numpy data type relationship
 PSQL_TO_NUMPY_DTYPE = {
@@ -193,8 +195,33 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     return result
 
 
-def execute_select(statement):
-    assert statement.upper().find("SELECT") == 0, "You must submit a SELECT statement, that begins with SELECT"
+def execute_select(connection, statement):
+    """ Execute an arbitrary SELECT statement.
 
+    Uses a new cursor.
+
+    Parameters
+    ----------
+    connection : psycopg2 connection
+        The database connection with which to generate a cursor from
+    statement : str
+        The SELECT statement query to execute
+
+    Returns
+    -------
+        list
+            The results of the query, each row being an element in the list.
+    """
+    cursor = connection.cursor()
+    assert statement.upper().find("SELECT") == 0, "You must submit a SELECT statement, that begins with SELECT"
+    try:
+        logging.info("Executing statement: %s" % statement)
+        cursor.execute(statement)
+    except psycopg2.ProgrammingError as e:
+        logging.error(e)
+        return []
+    result = cursor.fetchall()
+    logging.info("Found %d rows" % len(result))
+    return result
 
 
