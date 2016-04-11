@@ -1,11 +1,11 @@
+from scripts.create import insert_many_rows
+from taipan.core import polar2cart
 import logging
 from astropy.table import Table
 import sys
 import os
 sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
-from scripts.create import insert_many_rows
 
-from taipan.core import polar2cart
 
 def execute(cursor, guides_file=None):
     logging.info("Loading Guides")
@@ -17,7 +17,8 @@ def execute(cursor, guides_file=None):
     # Get guides
     guides_table = Table.read(guides_file)
 
-    values_table = [[row['objID'], row['ra_SCOS'], row['dec_SCOS'],
+    values_table = [[row['objID'], float(row['ra_SCOS']),
+                     float(row['dec_SCOS']),
                      False, False, True]
                     + list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in guides_table]
