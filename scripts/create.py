@@ -3,6 +3,85 @@ import os
 import pandas as pd
 
 
+# -----
+# UTILITY FUNCTIONS
+# -----
+def query_yes_no(question, default="no"):
+    """Ask a yes/no question via raw_input() and return their answer.
+
+    Parameters
+    ----------
+    question:
+        A string that is presented to the user.
+    default:
+        The presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    Returns
+    -------
+    answer:
+        True for "yes" or False for "no".
+    """
+
+    valid = { "yes": True,
+              "y": True,
+              "ye": True,
+              "no": False,
+              "n": False }
+
+    if default is None:
+        prompt = "[y/n] "
+    elif default == "yes":
+        prompt = "[Y/n] "
+    elif default == "no":
+        prompt = "[y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write('%s %s' % (question, prompt))
+        choice = raw_input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
+
+
+def destroy_tables(cursor):
+    """
+    DROP all tables owned by the database user specified in the cursor.
+
+    Parameters
+    ----------
+    cursor:
+        Database cursor used for access.
+
+    Returns
+    -------
+    Nil. User will be prompted to confirm that they want to blow away the
+    tables.
+    """
+
+    # Confirm the deletion
+    confirm = query_yes_no('Are you SURE you want to drop all tables?',
+                           default='No')
+    if confirm:
+        confirm = query_yes_no('Are you REALLY, REALLY SURE?', default='No')
+    if not confirm:
+        return
+
+    # Find out who the user is
+    conndict = dict([s.split('=') for s in cursor.connection.dsn.split(' ')])
+
+    string = 'DROP OWNED BY %s CASCADE' % (conndict['user'])
+    cursor.execute(string)
+    return
+
+
 def create_tables(cursor, tables_dir):
     """
     Create database tables as per the configuration file(s) in tables_dir.
