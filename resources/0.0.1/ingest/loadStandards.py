@@ -2,7 +2,8 @@ import logging
 from astropy.table import Table
 import os
 import sys
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
+sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__))
+                                 + "/../../.."))
 from scripts.create import insert_many_rows
 
 from taipan.core import polar2cart
@@ -18,8 +19,11 @@ def execute(cursor, standards_file=None):
     # Get guides
     standards_table = Table.read(standards_file)
 
-    values_table = [[row['objID'], row['ra_SCOS'], row['dec_SCOS'], False, True, False] +
-                    list(polar2cart((row['ra_SCOS'], row['dec_SCOS']))) for row in standards_table]
+    values_table = [[row['objID'], float(row['ra_SCOS']),
+                     float(row['dec_SCOS']),
+                     False, True, False] +
+                    list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
+                    for row in standards_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "UX", "UY", "UZ"]
 
