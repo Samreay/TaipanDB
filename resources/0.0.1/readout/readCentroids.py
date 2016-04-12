@@ -1,7 +1,8 @@
 import logging
 import sys
 import os
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
+sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__))
+                                 + "/../../.."))
 from scripts.extract import extract_from
 from taipan.core import TaipanTile
 
@@ -13,7 +14,8 @@ def execute(cursor):
                                 columns=['field_id', 'ra', 'dec',
                                          'ux', 'uy', 'uz'])
 
-    return_objects = [TaipanTile(c['ra'], c['dec']) for c in centroids_db]
+    return_objects = [TaipanTile(c['ra'], c['dec'], field_id=c['field_id'])
+                      for c in centroids_db]
 
     logging.info('Extracted %d centroids from database' % centroids_db.shape[0])
     return return_objects
