@@ -95,7 +95,7 @@ def extract_from(cursor, table, conditions=None, columns=None):
                       in columns_lower]
 
     string = "SELECT %s FROM %s" % (
-        "*" if columns is None else "(" + ", ".join(columns) + ")",
+        "*" if columns is None else ", ".join(columns),
         table,
         )
 
@@ -172,7 +172,7 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
                       if table_columns[i].lower()
                       in columns_lower]
     string = 'SELECT %s FROM %s' % (
-        "*" if columns is None else "(" + ", ".join(columns) + ")",
+        "*" if columns is None else ", ".join(columns),
         ' NATURAL JOIN '.join(tables),
         )
 
@@ -218,7 +218,9 @@ def execute_select(connection, statement):
             The results of the query, each row being an element in the list.
     """
     cursor = connection.cursor()
-    assert statement.upper().find("SELECT") == 0, "You must submit a SELECT statement, that begins with SELECT"
+    assert statement.upper().find(
+        "SELECT"
+    ) == 0, "You must submit a SELECT statement, that begins with SELECT"
     try:
         logging.info("Executing statement: %s" % statement)
         cursor.execute(statement)
