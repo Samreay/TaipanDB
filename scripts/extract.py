@@ -116,7 +116,7 @@ def extract_from(cursor, table, conditions=None, columns=None):
 
     # Re-format the result as a structured numpy table
     logging.debug('Attempting to make numpy structured array from:')
-    logging.debug(len(result), len(result[0]))
+    logging.debug(len(result))
     logging.debug(columns)
     logging.debug(dtypes)
     result = np.asarray(result, dtype={
