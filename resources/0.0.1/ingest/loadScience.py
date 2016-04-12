@@ -21,14 +21,14 @@ def execute(cursor, science_file=None):
 
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
-    values_table1 = [[row['uniqid'] + int(1e9)*row['uniqid'],
+    values_table1 = [[row['uniqid'] + 975647564*row['uniqid'],
                       row['ra'], row['dec'],
                       True, False, False] 
                       + list(polar2cart((row['ra'], row['dec'])))
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE", "UX", "UY", "UZ"]
-    values_table2 = [[row['uniqid'] + int(1e9)*row['uniqid'],
+    values_table2 = [[row['uniqid'] + 975647564*row['uniqid'],
                       row['priority'],
                       row['is_H0'], row['is_vpec'], row['is_lowz']]
                      for row in science_table]
