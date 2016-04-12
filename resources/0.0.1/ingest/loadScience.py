@@ -28,7 +28,7 @@ def execute(cursor, science_file=None):
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE", "UX", "UY", "UZ"]
-    values_table2 = [[row['uniqid'] + int(1e9)*row['uniqid']
+    values_table2 = [[row['uniqid'] + int(1e9)*row['uniqid'],
                       row['priority'],
                       row['is_H0'], row['is_vpec'], row['is_lowz']]
                      for row in science_table]
