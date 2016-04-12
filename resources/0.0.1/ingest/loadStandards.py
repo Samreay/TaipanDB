@@ -24,7 +24,7 @@ def execute(cursor, standards_file=None):
                      False, True, False] +
                     list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in standards_table]
-    columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+    columns = ["TARGET_ID_E", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "UX", "UY", "UZ"]
     print columns
     print values_table[0]
