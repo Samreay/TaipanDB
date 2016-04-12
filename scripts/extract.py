@@ -84,6 +84,7 @@ def extract_from(cursor, table, conditions=None, columns=None):
             " FROM information_schema.columns"
             " WHERE table_name='%s'" % (table, ))
         table_structure = cursor.fetchall()
+        logging.debug(table_structure)
         table_columns, dtypes = zip(*table_structure)
         if columns is None:
             columns = table_columns
@@ -114,6 +115,9 @@ def extract_from(cursor, table, conditions=None, columns=None):
         return result
 
     # Re-format the result as a structured numpy table
+    logging.debug('Attempting to make numpy structured array from:')
+    logging.debug(columns)
+    logging.debug(dtypes)
     result = np.asarray(result, dtype={
         "names": columns,
         "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
