@@ -1,7 +1,8 @@
 # target table
 # Used for storing generic target information
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique   description
-target_id   bigserial   None            None                None                True    None    None     "Target id"
+target_id   serial      None            None                None                True    None    None     "Target id (internal)"
+target_id_e bigint      True            None                None                False   None    False    "Target id (external)"
 ra          double      False           None                None                False   deg     None     "Right ascension"
 dec         double      False           None                None                False   deg     None     "Declination"
 ux          double      False           None                None                False   None    None     "x projection on unit sphere"

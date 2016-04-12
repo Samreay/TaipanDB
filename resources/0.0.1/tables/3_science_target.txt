@@ -1,7 +1,7 @@
 # science_target table
 # Used for storing generic target information for scientific targets
 name           type        nullable        default_value       foreign_key_table   pk       unit    unique  description
-target_id      bigint      False           None                target              True     None    None    "Target"
+target_id      integer     False           None                target              True     None    True    "Target id (internal)"
 is_h0_target   boolean     False           None                None                False    None    None    "For H0 science"
 is_vpec_target boolean     False           None                None                False    None    None    "For pec. vel. science"
 is_lowz_target boolean     False           None                None                False    None    None    "For low z science"
