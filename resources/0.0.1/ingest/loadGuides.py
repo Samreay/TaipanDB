@@ -22,7 +22,7 @@ def execute(cursor, guides_file=None):
                      False, False, True]
                     + list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in guides_table]
-    columns = ["TARGET_ID_E", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+    columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "UX", "UY", "UZ"]
 
     # Insert into database
