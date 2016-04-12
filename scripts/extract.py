@@ -12,7 +12,7 @@ PSQL_TO_NUMPY_DTYPE = {
     "decimal": "float64",
     "numeric": "float64",
     "real": "float32",
-    "double": "float64",
+    "double precision": "float64",
     "smallserial": "int16",
     "serial": "int32",
     "bigserial": "int64",
