@@ -99,8 +99,8 @@ def extract_from(cursor, table, conditions=None, columns=None):
         )
 
     if conditions:
-        conditions_string = ' WHERE '.join([' = '.join(map(str, x))
-                                            for x in conditions])
+        conditions_string = ' WHERE ' + ' AND '.join([' = '.join(map(str, x))
+                                                      for x in conditions])
         string += conditions_string
 
     logging.debug(string)
