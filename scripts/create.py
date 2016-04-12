@@ -68,9 +68,9 @@ def destroy_tables(cursor):
 
     # Confirm the deletion
     confirm = query_yes_no('Are you SURE you want to drop all tables?',
-                           default='No')
+                           default='no')
     if confirm:
-        confirm = query_yes_no('Are you REALLY, REALLY SURE?', default='No')
+        confirm = query_yes_no('Are you REALLY, REALLY SURE?', default='no')
     if not confirm:
         return
 
