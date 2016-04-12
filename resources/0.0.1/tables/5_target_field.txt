@@ -1,5 +1,5 @@
 # target_field table
 # Used for storing the target tile links
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique  description
-target_id   integer     None            None                target              True    None    None    "Target id"
+target_id   bigint      None            None                target              True    None    None    "Target id"
 tile_id     integer     None            None                tile                True    None    None    "Tile id"
