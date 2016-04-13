@@ -71,7 +71,7 @@ def update(cursor, table, data, columns=None):
                                                    for x in columns[1:]]))
     string += "FROM %s " % values_string
     string += "AS c(%s) " % ','.join(columns)
-    string += " WHERE c.%s = t.%s" % (columns[0], columns[0])
+    string += "WHERE c.%s = t.%s" % (columns[0], columns[0])
     logging.debug(string)
 
     return
