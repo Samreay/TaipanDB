@@ -53,6 +53,7 @@ def update(cursor, table, data, columns=None):
     Nil. Data is pushed into the table at the appropriate rows.
     """
 
+    logging.info('Inserting data into table %s' % table)
     # Get the column names if they weren't passed
     if columns is None and cursor is not None:
         # Get the columns from the table itself
@@ -72,6 +73,10 @@ def update(cursor, table, data, columns=None):
     string += "FROM %s " % values_string
     string += "AS c(%s) " % ','.join(columns)
     string += "WHERE c.%s = t.%s" % (columns[0], columns[0])
-    logging.debug(string)
+    # logging.debug(string)
+
+    cursor.execute(string)
+    logging.info('Inserted %d rows of %s into table %s'
+                 % (len(data), ', '.join(columns), table, ))
 
     return
