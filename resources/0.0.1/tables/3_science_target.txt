@@ -5,9 +5,9 @@ target_id      bigint      False           None                target           
 is_h0_target   boolean     False           None                None                False    None    None    "For H0 science"
 is_vpec_target boolean     False           None                None                False    None    None    "For pec. vel. science"
 is_lowz_target boolean     False           None                None                False    None    None    "For low z science"
-visits         integer     False           None                None                False    None    None    "number of anticipated visits"
-repeats        integer     False           None                None                False    None    None    "number of repeats so far"
-priority       integer     False           None                None                False    None    None    "priority of target"
-difficulty     integer     False           None                None                False    None    None    "difficulty of target"
+visits         integer     False           0                   None                False    None    None    "number of anticipated visits"
+repeats        integer     False           0                   None                False    None    None    "number of repeats so far"
+priority       integer     False           0                   None                False    None    None    "priority of target"
+difficulty     integer     False           1                   None                False    None    None    "difficulty of target"
 done           boolean     False           false               None                False    None    None    "if observations of target have completed"
 
