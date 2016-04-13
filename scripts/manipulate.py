@@ -75,8 +75,13 @@ def update(cursor, table, data, columns=None):
     string += "WHERE c.%s = t.%s" % (columns[0], columns[0])
     # logging.debug(string)
 
-    cursor.execute(string)
-    logging.info('Inserted %d rows of %s into table %s'
-                 % (len(data), ', '.join(columns), table, ))
+    if cursor is not None:
+        cursor.execute(string)
+        logging.info('Inserted %d rows of %s into table %s'
+                     % (len(data), ', '.join(columns), table, ))
+    else:
+        logging.info('No database update (no cursor), but parsing %d rows '
+                     'of %s into table %s parsed successfully'
+                     % (len(data), ', '.join(columns), table,))
 
     return
