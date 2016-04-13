@@ -28,7 +28,7 @@ def execute(cursor, use_only_notdone=True):
     logging.info('Reading science targets from database')
 
     if use_only_notdone:
-        conditions = {"done": True}
+        conditions = [("done", True)]
     else:
         conditions = None
 
