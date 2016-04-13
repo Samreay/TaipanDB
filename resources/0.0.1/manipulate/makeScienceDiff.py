@@ -6,7 +6,7 @@ from scripts.extract import extract_from_joined
 from scripts.manipulate import update
 
 
-def execute(cursor, target_list, use_only_notdone=True):
+def execute(cursor, use_only_notdone=True):
     """
     Compute the difficulties of TaipanTargets and write them back to the
     database.
