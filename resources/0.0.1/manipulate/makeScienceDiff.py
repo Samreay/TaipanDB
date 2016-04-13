@@ -4,7 +4,7 @@ import logging
 from taipan.core import compute_target_difficulties
 from taipan.core import TaipanTarget
 from scripts.extract import extract_from_joined
-from scripts.manipulate import update
+from scripts.manipulate import update_rows
 
 
 def execute(cursor, use_only_notdone=True):
@@ -53,7 +53,8 @@ def execute(cursor, use_only_notdone=True):
     data = [(t.idn, t.difficulty) for t in return_objects]
 
     # Write the results to the science_target table
-    update(cursor, 'science_target', data, columns=['target_id', 'difficulty'])
+    update_rows(cursor, 'science_target', data,
+                columns=['target_id', 'difficulty'])
     logging.info('Wrote back %d rows of science_target' % len(data))
 
     return return_objects
