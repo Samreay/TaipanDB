@@ -46,7 +46,8 @@ def psql_to_numpy_dtype(psql_dtype):
         regex = re.compile(r'^[a-z]*char\((?P<len>[0-9]*)\)$')
         match = regex.search(psql_dtype)
         if not match:
-            raise ValueError('Invalid char data type passed to psql_to_numpy_dtype')
+            raise ValueError('Invalid char data type passed to'
+                             ' psql_to_numpy_dtype')
         return 'S%s' % (match.group('len'))
 
     # All other types
@@ -158,9 +159,11 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
 
     if cursor is not None:
         # Get the column names from the table itself
-        cursor.execute("SELECT column_name, data_type"
-                       " FROM information_schema.columns"
-                       " WHERE table_name LIKE '%s'" % ('|'.join(tables), ))
+        table_string = "SELECT column_name, data_type FROM" \
+                       " information_schema.columns " \
+                       "WHERE table_name LIKE '%s'" % ('|'.join(tables), )
+        logging.debug(table_string)
+        cursor.execute(table_string)
         table_structure = cursor.fetchall()
         try:
             table_columns, dtypes = zip(*table_structure)
@@ -175,6 +178,9 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
             dtypes = [dtypes[i] for i in range(len(dtypes))
                       if table_columns[i].lower()
                       in columns_lower]
+        logging.debug('Found these columns with these data types:')
+        logging.debug(columns)
+        logging.debug(dtypes)
     string = 'SELECT %s FROM %s' % (
         "*" if columns is None else ", ".join(columns),
         ' NATURAL JOIN '.join(tables),
