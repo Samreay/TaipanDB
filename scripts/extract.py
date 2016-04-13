@@ -161,7 +161,8 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
         # Get the column names from the table itself
         table_string = "SELECT column_name, data_type FROM" \
                        " information_schema.columns " \
-                       "WHERE table_name IN ('%s')" % (','.join(tables), )
+                       "WHERE table_name IN (%s)" %\
+                       (','.join(map(lambda x: "'%s'" % x, tables)), )
         logging.debug(table_string)
         cursor.execute(table_string)
         table_structure = cursor.fetchall()
