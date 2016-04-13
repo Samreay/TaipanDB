@@ -18,5 +18,5 @@ def execute(cursor):
         ucposn=(g['ux'], g['uy'], g['uz']),
         ) for g in targets_db]
 
-    logging.info('Extracted %d targets from database' % return_objects.shape[0])
+    logging.info('Extracted %d targets from database' % len(return_objects))
     return return_objects
