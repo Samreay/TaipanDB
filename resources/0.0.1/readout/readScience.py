@@ -10,8 +10,9 @@ def execute(cursor):
     logging.info('Reading guides from database')
 
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
-        conditions=[('is_science', True)],
-        columns=['target_id', 'ra', 'dec', 'ux', 'uy', 'uz', 'priority'])
+                                     conditions=[('is_science', True)],
+                                     columns=['target_id', 'ra', 'dec',
+                                              'ux', 'uy', 'uz', 'priority'])
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
