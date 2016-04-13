@@ -82,8 +82,8 @@ def extract_from(cursor, table, conditions=None, columns=None):
     if cursor is not None:
         # Get the column names from the table itself
         cursor.execute("SELECT column_name, data_type"
-            " FROM information_schema.columns"
-            " WHERE table_name='%s'" % (table, ))
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table, ))
         table_structure = cursor.fetchall()
         logging.debug(table_structure)
         table_columns, dtypes = zip(*table_structure)
@@ -161,7 +161,7 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
         # Get the column names from the table itself
         table_string = "SELECT column_name, data_type FROM" \
                        " information_schema.columns " \
-                       "WHERE table_name LIKE '%s'" % ('|'.join(tables), )
+                       "WHERE table_name IN ('%s')" % (','.join(tables), )
         logging.debug(table_string)
         cursor.execute(table_string)
         table_structure = cursor.fetchall()
