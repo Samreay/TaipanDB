@@ -190,7 +190,7 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     if conditions:
         conditions_string = ' WHERE ' + ' AND '.join([' = '.join(map(str, x))
                                                       for x in conditions])
-        string += ' WHERE ' + conditions_string
+        string += conditions_string
 
     logging.debug(string)
 
