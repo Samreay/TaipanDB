@@ -2,6 +2,7 @@
 
 import logging
 from taipan.core import compute_target_difficulties
+from taipan.core import TaipanTarget
 from scripts.extract import extract_from_joined
 from scripts.manipulate import update
 
