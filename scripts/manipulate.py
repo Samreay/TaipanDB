@@ -61,7 +61,7 @@ def update(cursor, table, data, columns=None):
                        " WHERE table_name='%s'" % (table,))
 
     # Reformat the data array into something that can be sent to psycopg
-    values_string = ",".join([tuple(row) for row in data])
+    values_string = ",".join([str(tuple(row)) for row in data])
     values_string = "( values %s )" % values_string
 
     string = "UPDATE %s AS t SET %s " % (table,
