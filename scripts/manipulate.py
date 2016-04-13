@@ -65,7 +65,7 @@ def update(cursor, table, data, columns=None):
     values_string = "( values %s )" % values_string
 
     string = "UPDATE %s AS t SET %s " % (table,
-                                         ','.join(["%s=c%s" % (x, x)
+                                         ','.join(["%s=c.%s" % (x, x)
                                                    for x in columns]))
     string += "FROM %s " % values_string
     string += "AS c(%s) " % ','.join(columns)
