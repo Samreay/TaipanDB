@@ -38,7 +38,7 @@ def execute(cursor, science_file=None):
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
     values_table1 = [[row['uniqid'],
-                      row['ra'], row['dec'],
+                      float(row['ra']), float(row['dec']),
                       True, False, False] 
                       + list(polar2cart((row['ra'], row['dec'])))
                      for row in science_table]
@@ -46,7 +46,8 @@ def execute(cursor, science_file=None):
                 "IS_GUIDE", "UX", "UY", "UZ"]
     values_table2 = [[row['uniqid'],
                       row['priority'],
-                      row['is_H0'], row['is_vpec'], row['is_lowz']]
+                      bool(row['is_H0']), bool(row['is_vpec']),
+                      bool(row['is_lowz'])]
                      for row in science_table]
     columns2 = ["TARGET_ID", "PRIORITY", "IS_H0", "IS_VPEC", "IS_LOWZ"]
 
