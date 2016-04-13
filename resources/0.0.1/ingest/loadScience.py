@@ -27,11 +27,11 @@ def execute(cursor, science_file=None):
     for row in science_table:
         if row['uniqid'] in seen_ids:
             row['uniqid'] += int(1e9) * row['uniqid']
-        else:
-            seen_ids.add(row['uniqid'])
+        seen_ids.add(row['uniqid'])
 
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
+    logging.debug('Creating tables for database load')
     values_table1 = [[row['uniqid'],
                       row['ra'], row['dec'],
                       True, False, False] 
@@ -45,6 +45,7 @@ def execute(cursor, science_file=None):
                      for row in science_table]
     columns2 = ["TARGET_ID", "PRIORITY", "IS_H0", "IS_VPEC", "IS_LOWZ"]
 
+    logging.debug('Loading to cursor')
     # Insert into database
     if cursor is not None:
         insert_many_rows(cursor, "target", values_table1, columns=columns1)
