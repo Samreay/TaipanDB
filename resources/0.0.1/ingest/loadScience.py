@@ -49,7 +49,8 @@ def execute(cursor, science_file=None):
                       bool(row['is_H0']), bool(row['is_vpec']),
                       bool(row['is_lowz'])]
                      for row in science_table]
-    columns2 = ["TARGET_ID", "PRIORITY", "IS_H0", "IS_VPEC", "IS_LOWZ"]
+    columns2 = ["TARGET_ID", "PRIORITY", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                "IS_LOWZ_TARGET"]
 
     logging.debug('Loading to cursor')
     # Insert into database
