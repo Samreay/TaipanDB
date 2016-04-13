@@ -159,11 +159,15 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     if cursor is not None:
         # Get the column names from the table itself
         cursor.execute("SELECT column_name, data_type"
-            " FROM information_schema.columns"
-            " WHERE table_name LIKE '%s'" % ('|'.join(tables), ))
-        tables_structure = cursor.fetchall()
+                       " FROM information_schema.columns"
+                       " WHERE table_name LIKE '%s'" % ('|'.join(tables), ))
         table_structure = cursor.fetchall()
-        table_columns, dtypes = zip(*table_structure)
+        try:
+            table_columns, dtypes = zip(*table_structure)
+        except ValueError:
+            # This occurs when one of the tables in empty
+            logging.info('At least one of the requested tables has no columns')
+            return []
         if columns is None:
             columns = table_columns
         else:
