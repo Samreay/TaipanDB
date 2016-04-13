@@ -29,6 +29,11 @@ def execute(cursor, science_file=None):
             row['uniqid'] += int(1e9) * row['uniqid']
         seen_ids.add(row['uniqid'])
 
+    if len(seen_ids) != len(science_table):
+        raise RuntimeError('Number of unique IDs (%d) does not match '
+                           'length of science_table array (%d)'
+                           % (len(seen_ids), len(science_table), ))
+
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
