@@ -24,10 +24,10 @@ def execute(cursor, science_file=None):
     # by adding id*1e9
     logging.debug('TEST USE ONLY - logging IDs and removing duplicates')
     seen_ids = set([])
-    for row in science_table:
-        if row['uniqid'] in seen_ids:
-            row['uniqid'] += int(1e9) * row['uniqid']
-        seen_ids.add(row['uniqid'])
+    for i in range(len(science_table)):
+        if science_table['uniqid'][i] in seen_ids:
+            science_table['uniqid'][i] += int(1e9) * science_table['uniqid'][i]
+        seen_ids.add(science_table[i]['uniqid'])
 
     if len(seen_ids) != len(science_table):
         raise RuntimeError('Number of unique IDs (%d) does not match '
