@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python scripts/update.py
+python -m src.scripts.update
