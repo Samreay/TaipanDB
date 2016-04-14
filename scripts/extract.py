@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import re
 import psycopg2
+from utils import generate_conditions_string
 
 
 # psql-numpy data type relationship
@@ -65,9 +66,12 @@ def extract_from(cursor, table, conditions=None, columns=None):
     table:
         The name of the table to be read.
     conditions:
-        List of tuples denoting conditions to be supplied, in the form
-        [(column1, condition1), (column2, condition2), ...]
-        All conditions are assumed to be equalities. Defaults to None.
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        so all rows will be returned.
     columns:
         List of column names to retrieve from the database. Defaults to None,
         which returns all available columns.
@@ -101,9 +105,8 @@ def extract_from(cursor, table, conditions=None, columns=None):
         )
 
     if conditions:
-        conditions_string = ' WHERE ' + ' AND '.join([' = '.join(map(str, x))
-                                                      for x in conditions])
-        string += conditions_string
+        conditions_string = generate_conditions_string(conditions)
+        string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
 
@@ -142,9 +145,13 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
         table. If this is not possible, some other solution will need to be
         implemented.
     conditions:
-        List of tuples denoting conditions to be supplied, in the form
-        [(column1, condition1), (column2, condition2), ...]
-        All conditions are assumed to be equalities. Defaults to None.
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        so all rows will be returned.
     columns:
         List of column names to retrieve from the database. Defaults to None,
         which returns all available columns.
@@ -188,9 +195,8 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
         )
 
     if conditions:
-        conditions_string = ' WHERE ' + ' AND '.join([' = '.join(map(str, x))
-                                                      for x in conditions])
-        string += conditions_string
+        conditions_string = generate_conditions_string(conditions)
+        string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
 
