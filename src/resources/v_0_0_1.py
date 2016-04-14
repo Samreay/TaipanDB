@@ -15,10 +15,12 @@ def update(cursor):
     fields_file = data_dir + "pointing_centers.radec"
     loadCentroids.execute(cursor, fields_file=fields_file)
 
-    guides_file = data_dir + "guides.fits"
+    guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             "reduced.guides_nodups.fits"
     loadGuides.execute(cursor, guides_file=guides_file)
 
-    standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.reduced.standards_nodups.fits'
+    standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+                                'reduced.standards_nodups.fits'
     loadStandards.execute(cursor, standards_file=standards_file)
 
     science_file = data_dir + 'priority_science.v0.101_20160331.fits'
