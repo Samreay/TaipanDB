@@ -6,6 +6,7 @@
 
 from scripts.create import destroy_tables, create_tables
 from scripts.connection import get_connection
+import logging
 from ingest import *
 from manipulate import *
 
@@ -29,27 +30,38 @@ def execute(cursor):
 
     # Create & destroy the tables
     # Note this requires user input
+    logging.info('INIT - destroying & recreating tables')
     destroy_tables(cursor)
     create_tables(cursor, tables_dir)
 
     # Populate the tables
+    logging.info('INIT - loading centroids')
     loadCentroids.execute(cursor, fields_file=datadir+'pointing_centers.radec')
     cursor.connection.commit()
+
+    logging.info('INIT - loading guides')
     loadGuides.execute(cursor, guides_file=datadir+'SCOSxAllWISE.photometry.'
                                                    'forTAIPAN.reduced.guides_'
                                                    'nodups.fits')
     cursor.connection.commit()
+
+    logging.info('INIT - loading standards')
     loadStandards.execute(cursor, standards_file='SCOSxAllWISE.photometry.'
                                                  'forTAIPAN.reduced.standards_'
                                                  'nodups.fits')
     cursor.connection.commit()
+
+    logging.info('INIT - loading science targets')
     loadScience.execute(cursor, science_file='priority_science.v0.101_'
                                              '20160331.fits')
     cursor.connection.commit()
 
     # Update the difficulties for the science targets
+    logging.info('INIT - computing & entering sci target difficulties')
     makeScienceDiff.execute(cursor)
     cursor.connection.commit()
+
+    logging.info('INIT - init complete')
 
 
 if __name__ == '__main__':
