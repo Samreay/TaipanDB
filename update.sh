@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python -m src.scripts.update
+python3 -m src.scripts.update
