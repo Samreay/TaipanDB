@@ -1,9 +1,7 @@
 import logging
 import sys
 import os
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__))
-                                 + "/../../.."))
-from scripts.extract import extract_from_joined
+from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
 
 
@@ -11,7 +9,7 @@ def execute(cursor):
     logging.info('Reading science targets from database')
 
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
-                                     conditions=[('is_science', True)],
+                                     conditions=[('is_science', "=", True)],
                                      columns=['target_id', 'ra', 'dec',
                                               'ux', 'uy', 'uz', 'priority'])
 
