@@ -19,7 +19,8 @@ def execute(cursor, standards_file=None):
     # Get guides
     standards_table = Table.read(standards_file)
 
-    values_table = [[row['objID'], float(row['ra_SCOS']),
+    values_table = [[row['objID'] + int(1e9)*row['reference'],
+                     float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
                      False, True, False] +
                     list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))

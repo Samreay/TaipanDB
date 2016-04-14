@@ -22,29 +22,18 @@ def execute(cursor, science_file=None):
     # FOR TEST/FUDGE USE ONLY
     # Step through the table, and where we find a duplicate ID, alter it
     # by adding id*1e9
-    logging.debug('TEST USE ONLY - logging IDs and removing duplicates')
-    seen_ids = set([])
-    for i in range(len(science_table)):
-        if science_table['uniqid'][i] in seen_ids:
-            science_table['uniqid'][i] += int(1e9) * science_table['uniqid'][i]
-        seen_ids.add(science_table[i]['uniqid'])
-
-    if len(seen_ids) != len(science_table):
-        raise RuntimeError('Number of unique IDs (%d) does not match '
-                           'length of science_table array (%d)'
-                           % (len(seen_ids), len(science_table), ))
 
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
-    values_table1 = [[row['uniqid'],
+    values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
                       float(row['ra']), float(row['dec']),
                       True, False, False] 
                       + list(polar2cart((row['ra'], row['dec'])))
                      for row in science_table]
     columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                 "IS_GUIDE", "UX", "UY", "UZ"]
-    values_table2 = [[row['uniqid'],
+    values_table2 = [[row['uniqid'] + int(1e9)*row['reference'],
                       row['priority'],
                       bool(row['is_H0']), bool(row['is_vpec']),
                       bool(row['is_lowz'])]
