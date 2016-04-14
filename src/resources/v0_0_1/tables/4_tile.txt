@@ -3,3 +3,5 @@
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique    description
 tile_id     serial      None            None                None                True    None    None      "Target id"
 field_id    integer     None            None                field               False   None    True      "Tile id"
+is_queued   boolean     None            False               None                None    None    None      "Is the tile queued to observe?"
+is_observed boolean     None            False               None                None    None    None      "Has the tile been to observed?"
