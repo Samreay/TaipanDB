@@ -1,11 +1,6 @@
 import logging
 from astropy.table import Table
-import os
-import sys
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__))
-                                 + "/../../.."))
-from scripts.create import insert_many_rows
-
+from ....scripts.create import insert_many_rows
 from taipan.core import polar2cart
 
 
@@ -27,8 +22,6 @@ def execute(cursor, standards_file=None):
                     for row in standards_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "UX", "UY", "UZ"]
-    print columns
-    print values_table[0]
 
     # Insert into database
     if cursor is not None:

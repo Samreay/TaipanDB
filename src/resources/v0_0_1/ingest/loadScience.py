@@ -1,11 +1,6 @@
 import logging
 from astropy.table import Table
-import sys
-import os
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__))
-                                 + "/../../.."))
-from scripts.create import insert_many_rows
-
+from ....scripts.create import insert_many_rows
 from taipan.core import polar2cart
 
 
@@ -26,7 +21,7 @@ def execute(cursor, science_file=None):
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
-    values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
+    values_table1 = [[row['uniqid'],
                       float(row['ra']), float(row['dec']),
                       True, False, False] 
                       + list(polar2cart((row['ra'], row['dec'])))

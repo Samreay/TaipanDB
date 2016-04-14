@@ -1,10 +1,7 @@
-from scripts.create import insert_many_rows
+from ....scripts.create import insert_many_rows
 from taipan.core import polar2cart
 import logging
 from astropy.table import Table
-import sys
-import os
-sys.path.append(os.path.realpath(os.path.dirname(os.path.abspath(__file__)) + "/../../.."))
 
 
 def execute(cursor, guides_file=None):
@@ -17,7 +14,7 @@ def execute(cursor, guides_file=None):
     # Get guides
     guides_table = Table.read(guides_file)
 
-    values_table = [[row['objID'] + int(1e9)*row['reference'],
+    values_table = [[row['objID'],
                      float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
                      False, False, True]

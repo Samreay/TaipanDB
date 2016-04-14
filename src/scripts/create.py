@@ -102,10 +102,7 @@ def create_tables(cursor, tables_dir):
 
     logging.info("Creating tables declare in %s" % tables_dir)
 
-    names = sorted(os.listdir(tables_dir), 
-                   cmp=lambda x, y: 1 if int(
-                        x.split("_")[0]
-                        ) > int(y.split("_")[0]) else -1)
+    names = sorted(os.listdir(tables_dir), key=lambda x: x.split("_")[0])
     logging.debug("Found table files: %s" % names)
     exec_strings = []
     tables = []

@@ -166,7 +166,7 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
 
     if cursor is not None:
         # Get the column names from the table itself
-        table_string = "SELECT column_name, data_type FROM" \
+        table_string = "SELECT DISTINCT column_name, data_type FROM" \
                        " information_schema.columns " \
                        "WHERE table_name IN (%s)" %\
                        (','.join(map(lambda x: "'%s'" % x, tables)), )
@@ -183,9 +183,9 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
             columns = table_columns
         else:
             columns_lower = [x.lower() for x in columns]
-            dtypes = [dtypes[i] for i in range(len(dtypes))
+            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for i in range(len(dtypes))
                       if table_columns[i].lower()
-                      in columns_lower]
+                      in columns_lower])
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)

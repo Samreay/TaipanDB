@@ -1,10 +1,10 @@
-from connection import get_connection
-from create import create_tables, insert_row
+from .connection import get_connection
+from .create import create_tables, insert_row
 import os
 import logging
-import imp
-import psycopg2
+import importlib.util
 import sys
+from pkg_resources import parse_version
 
 
 def update_database(connection):
@@ -14,68 +14,67 @@ def update_database(connection):
     version_dir = os.path.abspath(dirname + "/../resources")
     logging.info("Checking for versions in %s" % version_dir)
 
-    versions = os.listdir(version_dir)
-
-    logging.info("Found versions %s" % versions)
+    versions = get_versions(version_dir)
+    version_keys = list(versions.keys())
+    print(version_keys)
+    logging.info("Found versions %s" % version_keys)
 
     current_version = get_current_version(connection)
 
-    if current_version not in versions:
-        versions.append(current_version)
-    versions.sort(key=lambda s: map(int, s.split('.')))
-    versions_needed_to_update = versions[versions.index(current_version) + 1:]
+    if current_version not in version_keys:
+        version_keys.append(current_version)
+    version_keys.sort()
+    versions_needed_to_update = version_keys[version_keys.index(current_version) + 1:]
     if len(versions_needed_to_update) == 0:
         logging.info("Database is already up to date")
         return
     logging.info("Updating from version %s through versions %s" % (current_version, versions_needed_to_update))
     for v in versions_needed_to_update:
-        update_to_version(connection, version_dir + os.sep + v)
+        update_to_version(connection, v, versions[v])
+
+
+def get_versions(version_dir):
+    version_files = [v for v in os.listdir(version_dir) if os.path.isfile(version_dir + os.sep + v) and not v.endswith(".pyc") and not v.startswith("__init__")]
+
+    modules = [__import__("src.resources." + v[:-3], fromlist=['']) for v in version_files]
+    versions = [v[2:-3].replace("_", ".") for v in version_files]
+
+    version_dict = {parse_version(k): v for k, v in zip(versions, modules)}
+    return version_dict
 
 
 def get_current_version(connection):
     if connection is None:
-        return "0.0.0"
+        return parse_version("0.0.0")
     cursor = connection.cursor()
     query = "SELECT version FROM version v ORDER BY v.version_date DESC LIMIT 1"
     try:
         cursor.execute(query)
-    except psycopg2.ProgrammingError:
+    except Exception:
         # If the relation does not exist, we are at version 0.0.0
         connection.rollback()
-        return "0.0.0"
-    result = cursor.fetchall()[0]
+        return parse_version("0.0.0")
+    result = parse_version(cursor.fetchall()[0])
     assert len(result) == 1, "Expected one row, but received result of %s" % result
     return result[0]
 
 
-def update_to_version(connection, version_dir):
-    logging.info("Updating to version %s" % os.path.basename(version_dir))
-
-    table_dir = version_dir + os.sep + "tables"
+def update_to_version(connection, version, version_module):
+    logging.info("Updating to version %s" % version)
 
     if connection is None:
         cursor = None
     else:
         cursor = connection.cursor()
     try:
-        if os.path.exists(table_dir):
-            create_tables(cursor, table_dir)
+        version_module.update(cursor)
 
-        ingest_file = version_dir + os.sep + "ingest" + os.sep + "execute.py"
-        if os.path.exists(ingest_file):
-            execute = imp.load_source('execute', ingest_file)
-            execute.update(cursor, os.path.dirname(ingest_file))
-
-        scripts_file = version_dir + os.sep + "scripts" + os.sep + "execute.py"
-        if os.path.exists(scripts_file):
-            execute = imp.load_source('execute', scripts_file)
-            execute.update(cursor, os.path.diranem(scripts_file))
-
-        insert_row(cursor, "version", os.path.basename(version_dir), columns=["version"])
+        insert_row(cursor, "version", os.path.basename("%s" % version), columns=["version"])
     except Exception as e:
         logging.critical(e)
         logging.warn("Rolling back")
-        connection.rollback()
+        if connection is not None:
+            connection.rollback()
         raise
     else:
         if cursor is not None:
