@@ -1,0 +1,8 @@
+# tiling_config table
+# Used for storing information about when a tile was configured/observed
+name        type        nullable        default_value       foreign_key_table   pk      unit    unique   description
+tile_pk     integer     False           None                tile                True    None    None     "Tile pk (internal use)"
+field_id    integer     False           None                field               True    None    False    "Field id"
+tile_id     integer     False           None                tile                True    None    False    "Tile id"
+date_config timestamp   False           None                None                None    None    None     "Date tile was configured"
+date_obs    timestamp   False           None                None                None    None    None     "Date tile was observed"

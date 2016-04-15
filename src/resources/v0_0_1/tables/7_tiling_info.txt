@@ -1,0 +1,14 @@
+# tiling_info table
+# Used for storing information about the *best* tile for each field
+name        type        nullable        default_value       foreign_key_table   pk      unit    unique   description
+field_id    integer     False           None                field               True    None    None     "Field id"
+tile_pk     integer     False           None                tile                True    None    None     "Best tile at field posn."
+n_sci_rem   integer     None            None                None                None    None    None     "Sci. targets remaining in field"
+n_sci_obs   integer     None            None                None                None    None    None     "Sci. targets observed in field"
+n_sci_alloc integer     None            None                None                None    None    None     "Sci. targets allocated to tile"
+diff_sum    integer     True            None                None                None    None    None     "Score - difficulty sum"
+diff_prod   integer     True            None                None                None    None    None     "Score - difficulty product"
+prior_sum   integer     True            None                None                None    None    None     "Score - priority sum"
+prior_prod  integer     True            None                None                None    None    None     "Score - priority product"
+cw_sum      double      True            None                None                None    None    None     "Score - combined weighted sum"
+cw_prod     double      True            None                None                None    None    None     "Score - combined weighted product"

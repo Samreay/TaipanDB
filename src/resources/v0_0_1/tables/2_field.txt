@@ -7,3 +7,5 @@ dec         double      False           None                None                
 ux          double      False           None                None                False   None    None     "x projection on unit sphere"
 uy          double      False           None                None                False   None    None     "y projection on unit sphere"
 uz          double      False           None                None                False   None    None     "z projection on unit sphere"
+num_tiles   integer     False           0                   None                False   None    None     "Number of tiles created from field"
+num_visits  integer     False           0                   None                False   None    None     "Number of tiles observed in field"
