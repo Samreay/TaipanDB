@@ -21,7 +21,7 @@ def execute(cursor, science_file=None):
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
-    values_table1 = [[row['uniqid'],
+    values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
                       float(row['ra']), float(row['dec']),
                       True, False, False] 
                       + list(polar2cart((row['ra'], row['dec'])))
