@@ -13,9 +13,10 @@ def execute(cursor, standards_file=None):
 
     # Get guides
     standards_table = Table.read(standards_file)
-    logging.debug(standards_table)
+    # logging.debug(standards_table)
 
-    values_table = [[row['objID'] + int(1e9)*row['reference'],
+    values_table = [[row['objID'],
+                     # + int(1e9)*row['reference'],
                      float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
                      False, True, False] +
