@@ -36,7 +36,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     query_result = extract_from(cursor, 'tile',
                                 conditions=[('(tile_id,field_id)',
                                              'IN',
-                                             '(VALUES (%s))' %
+                                             'VALUES (%s)' %
                                              (','.join([str((1, t.field_id))
                                                         for t in tile_list]),
                                               ))],
