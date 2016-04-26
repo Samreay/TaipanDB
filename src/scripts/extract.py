@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import re
 import psycopg2
-from utils import generate_conditions_string
+from .utils import generate_conditions_string
 
 
 # psql-numpy data type relationship
