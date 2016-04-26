@@ -3,7 +3,8 @@
 
 def str_psql(x):
     if isinstance(x, str):
-        return "'%s'" % (x,)
+        if 'VALUES' not in x:
+            return "'%s'" % (x,)
     return str(x)
 
 
