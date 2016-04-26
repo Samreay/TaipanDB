@@ -3,8 +3,8 @@
 import logging
 from taipan.core import compute_target_difficulties
 from taipan.core import TaipanTarget
-from scripts.extract import extract_from_joined
-from scripts.manipulate import update_rows
+from ....scripts.extract import extract_from_joined
+from ....scripts.manipulate import update_rows
 
 
 def execute(cursor, use_only_notdone=True):
