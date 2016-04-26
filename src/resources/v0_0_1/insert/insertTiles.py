@@ -34,7 +34,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     # Read back the primary keys of the tiles we just created
     query_result = extract_from(cursor, 'tile',
-                                conditions=[('(tile_id,field_id)',
+                                conditions=[('tile_id,field_id',
                                              'IN',
                                              '(VALUES (%s))' %
                                              (','.join([str((1, t.field_id))
