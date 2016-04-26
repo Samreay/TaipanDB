@@ -4,7 +4,7 @@ import psycopg2
 import logging
 
 
-def get_config(conf_filename="../config.json"):
+def get_config(conf_filename="../../config.json"):
     logging.info("Getting config from %s" % conf_filename)
     dir = os.path.dirname(__file__)
     if not dir:
