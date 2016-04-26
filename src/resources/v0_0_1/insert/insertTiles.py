@@ -16,7 +16,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     # each field
     # TODO: Expand to allow arbitraty tile_id - this will required tile_id
     # TODO: in the tiler/simulator
-    write_to_tile = [[1, t['field_id'], is_queued, is_observed]
+    write_to_tile = [[1, t.field_id, is_queued, is_observed]
                      for t in tile_list]
     columns_to_tile = ['tile_id', 'field_id', 'is_queued', 'is_observed']
 
