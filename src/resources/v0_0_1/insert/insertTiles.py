@@ -3,6 +3,7 @@
 import logging
 from taipan.core import TaipanTile
 from scripts.create import insert_many_rows
+from scripts.extract import extract_from
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False):
