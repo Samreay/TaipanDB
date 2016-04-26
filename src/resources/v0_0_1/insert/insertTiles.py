@@ -37,7 +37,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                                 conditions=[('(tile_id,field_id',
                                              'IN'
                                              '(VALUES (%s))' %
-                                             (','.join([(1, t.field_id)
+                                             (','.join([str((1, t.field_id))
                                                         for t in tile_list]),
                                               ))],
                                 columns='tile_pk, field_id, tile_id')
