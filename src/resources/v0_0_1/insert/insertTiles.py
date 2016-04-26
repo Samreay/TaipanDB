@@ -40,7 +40,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                                              (','.join([str((1, t.field_id))
                                                         for t in tile_list]),
                                               ))],
-                                columns='tile_pk, field_id, tile_id')
+                                columns=['tile_pk', 'field_id', 'tile_id'])
     # Re-format to something more useful
     pk_dict = {q[1]: q[0] for q in query_result}
 
