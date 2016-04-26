@@ -34,22 +34,22 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     # Read back the primary keys of the tiles we just created
     query_result = extract_from(cursor, 'tile',
-                                conditions=[('(tile_id,field_id',
-                                             'IN'
+                                conditions=[('(tile_id,field_id)',
+                                             'IN',
                                              '(VALUES (%s))' %
                                              (','.join([str((1, t.field_id))
                                                         for t in tile_list]),
                                               ))],
                                 columns='tile_pk, field_id, tile_id')
     # Re-format to something more useful
-    pk_dict = {q[0]: (q[1], q[2]) for q in query_result}
+    pk_dict = {q[1]: q[0] for q in query_result}
 
     # Construct the list of target field assignments to write to database
     target_assigns = []
     for t in tile_list:
-        target_assign = [[t.fibres[f], f, tile_pk] for f in t.fibres
+        target_assign = [[t.fibres[f], f, pk_dict[t.field_id]] for f in t.fibres
                          if t.fibres[f] is not None]
-        target_blank = [[None, f, tile_pk] for f in t.fibres
+        target_blank = [[None, f, pk_dict[t.field_id]] for f in t.fibres
                         if t.fibres[f] is None]
         target_assigns += target_assign
         target_assigns += target_blank
