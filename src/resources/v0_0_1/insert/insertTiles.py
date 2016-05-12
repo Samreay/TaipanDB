@@ -47,7 +47,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     # Construct the list of target field assignments to write to database
     target_assigns = []
     for t in tile_list:
-        target_assign = [[t.fibres[f], f, pk_dict[t.field_id]] for f in t.fibres
+        target_assign = [[t.fibres[f].idn, f, pk_dict[t.field_id]] for f in t.fibres
                          if t.fibres[f] is not None]
         target_blank = [[None, f, pk_dict[t.field_id]] for f in t.fibres
                         if t.fibres[f] is None]
