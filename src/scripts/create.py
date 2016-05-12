@@ -174,7 +174,7 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
         default table values for columns if not required). Defaults to None,
         which assumes that you wish to write information to all columns.
     batch:
-        Interger, denoting how many rows to write in each pass. Defaults to 100.
+        Integer, denoting how many rows to write in each pass. Defaults to 100.
 
     Returns
     -------

@@ -7,15 +7,15 @@ from .utils import generate_conditions_string
 
 # psql-numpy data type relationship
 PSQL_TO_NUMPY_DTYPE = {
-    "smallint": "int16",
-    "integer": "int32",
+    "smallint": "int64",
+    "integer": "int64",
     "bigint": "int64",
     "decimal": "float64",
     "numeric": "float64",
-    "real": "float32",
+    "real": "float64",
     "double precision": "float64",
-    "smallserial": "int16",
-    "serial": "int32",
+    "smallserial": "int64",
+    "serial": "int64",
     "bigserial": "int64",
     "boolean": "bool",
     "text": "str",
