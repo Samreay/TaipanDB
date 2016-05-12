@@ -27,8 +27,3 @@ def update(cursor):
     loadScience.execute(cursor, science_file=science_file)
 
     makeScienceDiff.execute(cursor)
-
-
-
-
-
