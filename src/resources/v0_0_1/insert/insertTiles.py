@@ -49,7 +49,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     for t in tile_list:
         target_assign = [[t.fibres[f].idn, f, pk_dict[t.field_id]]
                          for f in t.fibres
-                         if t.fibres[f] is not None and t.fibres[f] != 'sky']
+                         if t.fibres[f] is not None
+                         and not isinstance(t.fibres[f], str)]
         target_blank = [[None, f, pk_dict[t.field_id]] for f in t.fibres
                         if t.fibres[f] is None]
         target_assigns += target_assign
