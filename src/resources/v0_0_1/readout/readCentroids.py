@@ -9,7 +9,8 @@ def execute(cursor):
     logging.info('Reading tile centroids from database')
 
     centroids_db = extract_from(cursor, 'field',
-                                columns=['field_id', 'ra', 'dec', 'ux', 'uy', 'uz'])
+                                columns=['field_id', 'ra', 'dec',
+                                         'ux', 'uy', 'uz'])
 
     return_objects = [TaipanTile(c['ra'], c['dec'], field_id=c['field_id'])
                       for c in centroids_db]
