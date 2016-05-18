@@ -126,6 +126,7 @@ def extract_from(cursor, table, conditions=None, columns=None):
     result = np.asarray(result, dtype={
         "names": columns,
         "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
+        "titles": columns,
         })
 
     return result
