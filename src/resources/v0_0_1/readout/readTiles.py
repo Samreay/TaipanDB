@@ -76,7 +76,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
                                    candidate_targets[next(target_gen)])
         # Any bugs not listed in the database are 'sky' - set
         # these as such
-        for bug in [bug in BUGPOS_OFFSET if bug not in bugs['bug_id']]:
+        for bug in [bug for bug in BUGPOS_OFFSET if bug not in bugs['bug_id']]:
             new_tile.set_fibre(bug, 'sky')
 
         # Append the new_tile to the return list
