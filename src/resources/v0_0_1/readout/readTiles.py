@@ -1,18 +1,37 @@
 import logging
 from ....scripts.extract import extract_from, extract_from_joined
-from taipan.core import TaipanTile
+from taipan.core import TaipanTile, BUGPOS_OFFSET
 
 import readScience as rS
+import readGuides as rG
+import readStandards as rSt
 
 
-def execute(cursor, target_list=None):
+def execute(cursor, candidate_targets=None, guide_targets=None,
+            standard_targets=None):
+
     logging.info('Reading tiles from database')
 
-    if target_list is None:
+    if candidate_targets is None:
         # Will need to read the targets in from the database so we have
         # something to build the tiles from
-        return_target_list = True
-        target_list = rS.execute(cursor)
+        logging.debug('Reading in list of science targets from DB')
+        return_candidate_targets = True
+        candidate_targets = rS.execute(cursor)
+
+    if guide_targets is None:
+        # Will need to read the targets in from the database so we have
+        # something to build the tiles from
+        logging.debug('Reading in list of guide targets from DB')
+        return_candidate_targets = True
+        guide_targets = rG.execute(cursor)
+
+    if standard_targets is None:
+        # Will need to read the targets in from the database so we have
+        # something to build the tiles from
+        logging.debug('Reading in list of standard targets from DB')
+        return_candidate_targets = True
+        standard_targets = rS.execute(cursor)
 
     # Get the fibre assignments
     fibreassigns = extract_from_joined(cursor,
@@ -35,14 +54,36 @@ def execute(cursor, target_list=None):
 
     pks = list(set([row['tile_pk'] for row in fibreassigns]))
     for pk in pks:
-        # TODO: Get the field ID (what's an efficient means?)
-        # TODO: Get the field RA and DEC from fieldposns
+        # Get the field ID
+        # TODO: Determine a more efficient way to do this
+        fid = [row['field_id'] for row in fibreassigns if
+               row['tile_pk'] == pk][0]
+        # Get the field RA and DEC from fieldposns
+        ra, dec = [(row['ra'], row['dec']) for row in fieldposns if
+                   row['field_id'] == fid][0]
         # Create the tile
-        new_tile = TaipanTile(...)
-        # TODO: Assign TaipanTarget objects from target_list to the tile
-        # TODO: Any bugs not listed in the database are 'sky' - set
-        #       these as such
+        new_tile = TaipanTile(ra, dec, field_id=fid, pk=pk)
+        # Assign TaipanTarget objects from candidate_targets to the tile
+        bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
+        for bugassign in bugs:
+            if bugassign['target_id'] is not None:
+                target_gen = (i for i,v in
+                              enumerate(candidate_targets +
+                                        guide_targets +
+                                        standard_targets) if
+                              v.idn == bugassign['target_id'])
+                new_tile.set_fibre(bugassign['bug_id'],
+                                   candidate_targets[next(target_gen)])
+        # Any bugs not listed in the database are 'sky' - set
+        # these as such
+        for bug in [bug in BUGPOS_OFFSET if bug not in bugs['bug_id']]:
+            new_tile.set_fibre(bug, 'sky')
 
-    if return_target_list:
-        return tile_list, target_list
+        # Append the new_tile to the return list
+        tile_list.append(new_tile)
+
+
+    if return_candidate_targets:
+        return tile_list, candidate_targets, guide_targets, standard_targets
+
     return tile_list
