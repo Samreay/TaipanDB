@@ -4,6 +4,7 @@ import logging
 from taipan.core import TaipanTile
 from ....scripts.create import insert_many_rows
 from ....scripts.extract import extract_from
+from ...v0_0_1 import SKY_TARGET_ID
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False):
@@ -15,8 +16,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     # First pass - assume we are just writing the first tile for
     # each field
-    # TODO: Expand to allow arbitraty tile_id - this will required tile_id
-    # TODO: in the tiler/simulator
+    # TODO: Expand to allow arbitraty tile_id - this will required detecting
+    # TODO: the number of tiles per field already in the database
     write_to_tile = [[1, t.field_id, is_queued, is_observed]
                      for t in tile_list]
     columns_to_tile = ['tile_id', 'field_id', 'is_queued', 'is_observed']
@@ -53,10 +54,10 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                          for f in t.fibres
                          if t.fibres[f] is not None and
                          not isinstance(t.fibres[f], str)]
-        target_blank = [[None, f, pk_dict[t.field_id]] for f in t.fibres
-                        if t.fibres[f] is None]
+        target_sky = [[SKY_TARGET_ID, f, pk_dict[t.field_id]] for f in t.fibres
+                      if t.fibres[f] == 'sky']
         target_assigns += target_assign
-        target_assigns += target_blank
+        target_assigns += target_sky
 
     columns_to_target_field = ['target_id', 'bug_id', 'tile_pk']
 
