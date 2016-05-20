@@ -71,7 +71,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
     for pk in pks:
         # Assign TaipanTarget objects from candidate_targets to the tile
         # Select out the relevant rows of fibreassigns
-        logging.debug('Selecting entries for tile PK %d' % row['tile_pk'])
+        logging.debug('Selecting entries for tile PK %d' % pk)
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
 
         # Create the tile
