@@ -76,7 +76,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
         all_targets = candidate_targets + guide_targets + standard_targets
         for bugassign in bugs:
-            if bugassign['target_id'] != SKY_TARGET_ID:
+            if bugassign['target_id'] >= 0:
                 target_gen = (i for i,v in
                               enumerate(all_targets) if
                               v.idn == bugassign['target_id'])
@@ -87,7 +87,6 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
         # Append the new_tile to the return list
         tile_list.append(new_tile)
-
 
     if return_targets:
         return tile_list, candidate_targets, guide_targets, standard_targets
