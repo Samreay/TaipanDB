@@ -70,7 +70,8 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
 
         # Create the tile
-        new_tile = TaipanTile(ra, dec, field_id=bugs[0]['field_id'],
+        new_tile = TaipanTile(bugs[0]['ra'], bugs[0]['dec'],
+                              field_id=bugs[0]['field_id'],
                               pk=bugs[0]['tile_pk'])
 
         # Assign the targets
