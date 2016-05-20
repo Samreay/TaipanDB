@@ -46,7 +46,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
     # Get the fibre assignments
     fibreassigns = extract_from_joined(cursor,
-                                       ['field_id', 'tile', 'target_field'],
+                                       ['field', 'tile', 'target_field'],
                                        conditions=None,
                                        columns=['tile_pk',
                                                 'field_id',
