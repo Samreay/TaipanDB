@@ -40,7 +40,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         # something to build the tiles from
         logging.debug('Reading in list of standard targets from DB')
         return_targets = True
-        standard_targets = rS.execute(cursor)
+        standard_targets = rSt.execute(cursor)
 
     # Get the fibre assignments
     fibreassigns = extract_from_joined(cursor,
