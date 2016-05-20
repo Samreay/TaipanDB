@@ -1,7 +1,8 @@
 import logging
 from astropy.table import Table
-from ....scripts.create import insert_many_rows
+from ....scripts.create import insert_many_rows, insert_row
 from taipan.core import polar2cart
+from ...v0_0_1 import SKY_TARGET_ID
 
 
 def execute(cursor, standards_file=None):
@@ -32,5 +33,12 @@ def execute(cursor, standards_file=None):
     else:
         logging.info('No database - returning values to console')
         return values_table
+
+    # Insert the special target to be used as the sky target
+    if cursor is not None:
+        logging.info('Inserting special sky target into DB')
+        insert_row(cursor, "target", [SKY_TARGET_ID, 0.0, 0.0,  # ID, RA, DEC
+                                      0.0, 0.0, 0.0,            # ux, uy, uz
+                                      False, False, False])     # sci, gui, stan
 
     return
