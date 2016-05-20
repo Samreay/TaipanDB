@@ -82,7 +82,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
                                         standard_targets) if
                               v.idn == bugassign['target_id'])
                 new_tile.set_fibre(bugassign['bug_id'],
-                                   candidate_targets[next(target_gen).idn])
+                                   candidate_targets[next(target_gen)].idn)
             else:
                 new_tile.set_fibre(bugassign['bug_id'], 'sky')
 
