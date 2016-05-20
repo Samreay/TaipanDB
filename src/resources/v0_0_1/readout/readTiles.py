@@ -7,6 +7,26 @@ import readScience as rS
 import readGuides as rG
 import readStandards as rSt
 
+from bisect import bisect_left
+
+
+def index(a, x):
+    """
+    Bisect based method for efficient searching in ordered lists
+    Parameters
+    ----------
+    a - Input list
+    x - Value to search for
+
+    Returns
+    -------
+    i - The index of the left-most value in a exactly equal to x
+    """
+    i = bisect_left(a, x)
+    if i != len(a) and a[i] == x:
+        return i
+    raise ValueError('Value x is not in list a!')
+
 
 def execute(cursor, candidate_targets=None, guide_targets=None,
             standard_targets=None):
@@ -84,7 +104,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         for bugassign in bugs:
             if bugassign['target_id'] != SKY_TARGET_ID:
                 new_tile.set_fibre(bugassign['bug_id'],
-                                   all_targets[all_targets_ids.index(
+                                   all_targets[index(all_targets_ids,
                                        bugassign['target_id']
                                    )])
             else:
