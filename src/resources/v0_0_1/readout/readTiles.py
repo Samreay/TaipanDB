@@ -44,7 +44,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
     all_targets = candidate_targets + guide_targets + standard_targets
     logging.debug('Sorting all-targets list...')
-    all_targets.sort(lambda x: x.idn)
+    all_targets.sort(key=lambda x: x.idn)
     logging.debug('Generating list of sorted target IDs')
     all_targets_ids = [t.idn for t in all_targets]
 
