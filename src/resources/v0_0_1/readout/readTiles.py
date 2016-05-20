@@ -43,6 +43,10 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         standard_targets = rSt.execute(cursor)
 
     all_targets = candidate_targets + guide_targets + standard_targets
+    logging.debug('Sorting all-targets list...')
+    all_targets.sort(lambda x: x.idn)
+    logging.debug('Generating list of sorted target IDs')
+    all_targets_ids = [t.idn for t in all_targets]
 
     # Get the fibre assignments
     fibreassigns = extract_from_joined(cursor,
@@ -79,13 +83,10 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         logging.debug('Assigning targets')
         for bugassign in bugs:
             if bugassign['target_id'] != SKY_TARGET_ID:
-                logging.debug('Forming generator')
-                target_gen = (i for i,v in
-                              enumerate(all_targets) if
-                              v.idn == bugassign['target_id'])
-                logging.debug('Applying generator')
                 new_tile.set_fibre(bugassign['bug_id'],
-                                   all_targets[next(target_gen)])
+                                   all_targets[all_targets_ids.index(
+                                       bugassign['target_id']
+                                   )])
             else:
                 new_tile.set_fibre(bugassign['bug_id'], 'sky')
 
