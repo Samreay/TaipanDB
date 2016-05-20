@@ -74,15 +74,14 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         new_tile = TaipanTile(ra, dec, field_id=fid, pk=pk)
         # Assign TaipanTarget objects from candidate_targets to the tile
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
+        all_targets = candidate_targets + guide_targets + standard_targets
         for bugassign in bugs:
             if bugassign['target_id'] != SKY_TARGET_ID:
                 target_gen = (i for i,v in
-                              enumerate(candidate_targets +
-                                        guide_targets +
-                                        standard_targets) if
+                              enumerate(all_targets) if
                               v.idn == bugassign['target_id'])
                 new_tile.set_fibre(bugassign['bug_id'],
-                                   candidate_targets[next(target_gen)])
+                                   all_targets[next(target_gen)])
             else:
                 new_tile.set_fibre(bugassign['bug_id'], 'sky')
 
