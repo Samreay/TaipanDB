@@ -42,41 +42,40 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
         return_targets = True
         standard_targets = rSt.execute(cursor)
 
+    all_targets = candidate_targets + guide_targets + standard_targets
+
     # Get the fibre assignments
     fibreassigns = extract_from_joined(cursor,
-                                       ['tile', 'target_field'],
+                                       ['field_id', 'tile', 'target_field'],
                                        conditions=None,
                                        columns=['tile_pk',
                                                 'field_id',
+                                                'ra',
+                                                'dec',
                                                 'bug_id',
                                                 'target_id'])
-    # Get the position information for the fields
-    fieldposns = extract_from(cursor,
-                              'field',
-                              conditions=None,
-                              columns=['field_id', 'ra', 'dec'])
 
     tile_list = []
 
     # Re-construct the tiles from the list we got from the database
     # Construct a list of tile_pks present
 
+    # TODO: This block is *very* slow - look for improvements
+    logging.debug('Getting list of unique tile PKs')
     pks = list(set([row['tile_pk'] for row in fibreassigns]))
+    logging.debug('Assigning targets to tiles...')
     for pk in pks:
-        # Get the field ID
-        # TODO: Determine a more efficient way to do this
-        fid = [row['field_id'] for row in fibreassigns if
-               row['tile_pk'] == pk][0]
-        # Get the field RA and DEC from fieldposns
-        ra, dec = [(row['ra'], row['dec']) for row in fieldposns if
-                   row['field_id'] == fid][0]
-        # Create the tile
-        new_tile = TaipanTile(ra, dec, field_id=fid, pk=pk)
         # Assign TaipanTarget objects from candidate_targets to the tile
+        # Select out the relevant rows of fibreassigns
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
-        all_targets = candidate_targets + guide_targets + standard_targets
+
+        # Create the tile
+        new_tile = TaipanTile(ra, dec, field_id=bugs[0]['field_id'],
+                              pk=bugs[0]['tile_pk'])
+
+        # Assign the targets
         for bugassign in bugs:
-            if bugassign['target_id'] >= 0:
+            if bugassign['target_id'] != SKY_TARGET_ID:
                 target_gen = (i for i,v in
                               enumerate(all_targets) if
                               v.idn == bugassign['target_id'])
