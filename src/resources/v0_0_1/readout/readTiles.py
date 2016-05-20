@@ -67,6 +67,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
     for pk in pks:
         # Assign TaipanTarget objects from candidate_targets to the tile
         # Select out the relevant rows of fibreassigns
+        logging.debug('Selecting entries for tile PK %d' % row['tile_pk'])
         bugs = [row for row in fibreassigns if row['tile_pk'] == pk]
 
         # Create the tile
@@ -75,11 +76,14 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
                               pk=bugs[0]['tile_pk'])
 
         # Assign the targets
+        logging.debug('Assigning targets')
         for bugassign in bugs:
             if bugassign['target_id'] != SKY_TARGET_ID:
+                logging.debug('Forming generator')
                 target_gen = (i for i,v in
                               enumerate(all_targets) if
                               v.idn == bugassign['target_id'])
+                logging.debug('Applying generator')
                 new_tile.set_fibre(bugassign['bug_id'],
                                    all_targets[next(target_gen)])
             else:
