@@ -83,8 +83,6 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
     # Re-construct the tiles from the list we got from the database
     # Construct a list of tile_pks present
-
-    # TODO: This block is *very* slow - look for improvements
     logging.debug('Getting list of unique tile PKs')
     pks = list(set([row['tile_pk'] for row in fibreassigns]))
     logging.debug('Assigning targets to tiles...')
