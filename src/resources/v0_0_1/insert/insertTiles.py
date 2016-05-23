@@ -80,7 +80,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                       'prior_sum',
                       'prior_prod',
                       'cw_sum',
-                      'cw_prod',]
+                      'cw_prod',
+                      ]
     tiling_scores = [[t.pk,
                       t.field_id,
                       t.calculate_tile_score(method='completeness'),
@@ -92,13 +93,14 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                       t.calculate_tile_score(method='combined-weighted-prod'),
                       ]
                      for t in tile_list]
+    logging.debug(tiling_scores)
     if len(tiling_scores[0]) != len(columns_scores):
         raise RuntimeError('There is a programming error in insertTiles, '
                            'where tiling scores are computed - please check')
+
     logging.debug('Writing tile scores to DB')
     insert_many_rows(cursor, 'tiling_info', tiling_scores,
                      columns=columns_scores)
-
 
     logging.info('Inserting tiles complete!')
     return
