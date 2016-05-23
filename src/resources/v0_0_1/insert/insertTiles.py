@@ -3,8 +3,28 @@
 import logging
 from taipan.core import TaipanTile
 from ....scripts.create import insert_many_rows
-from ....scripts.extract import extract_from
+from ....scripts.extract import extract_from, extract_from_joined
 from ...v0_0_1 import SKY_TARGET_ID
+
+from ..readout import readScience as rSc
+
+
+def compute_sci_targets_complete(cursor, tile, tgt_list):
+    """
+    Compute the number of science targets remaining in a particular field
+
+    Parameters
+    ----------
+    tile
+    tgt_list
+
+    Returns
+    -------
+
+    """
+
+    # Get the list of targets
+    query_result = rSc.execute(cursor)
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False):
