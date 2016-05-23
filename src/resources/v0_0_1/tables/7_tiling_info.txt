@@ -2,7 +2,7 @@
 # Used for storing information about the *best* tile for each field
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique   description
 field_id    integer     False           None                field               True    None    None     "Field id"
-tile_pk     integer     False           None                tile                True    None    None     "Best tile at field posn."
+tile_pk     integer     False           None                tile                True    None    None     "Tile PK"
 n_sci_rem   integer     None            None                None                None    None    None     "Sci. targets remaining in field"
 n_sci_obs   integer     None            None                None                None    None    None     "Sci. targets observed in field"
 n_sci_alloc integer     None            None                None                None    None    None     "Sci. targets allocated to tile"

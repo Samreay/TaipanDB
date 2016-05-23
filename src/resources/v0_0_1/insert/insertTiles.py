@@ -32,6 +32,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     # keys that the database auto-generated, so quit here if cursor is None
     if cursor is None:
         logging.info('No cursor provided - aborting insert')
+        return
 
     # Read back the primary keys of the tiles we just created
     query_result = extract_from(cursor, 'tile',
@@ -44,6 +45,9 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                                 columns=['tile_pk', 'field_id', 'tile_id'])
     # Re-format to something more useful
     pk_dict = {q[1]: q[0] for q in query_result}
+    # Back-fill the tile_list with the newly-assigned PKs
+    for tile in tile_list:
+        tile.pk = pk_dict[tile.field_id]
 
     # Construct the list of target field assignments to write to database
     target_assigns = []
@@ -62,10 +66,39 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     columns_to_target_field = ['target_id', 'bug_id', 'tile_pk']
 
     # Write the target assignments to DB
-    if cursor is not None:
-        logging.debug('Writing to "target_field" table...')
-        insert_many_rows(cursor, "target_field", target_assigns,
-                         columns=columns_to_target_field)
+    logging.debug('Writing to "target_field" table...')
+    insert_many_rows(cursor, "target_field", target_assigns,
+                     columns=columns_to_target_field)
+
+    logging.debug('Adding tile score info to tiling_info table')
+    logging.debug('Computing tile scores')
+    columns_scores = ['tile_pk',
+                      'field_id',
+                      'n_sci_alloc',
+                      'diff_sum',
+                      'diff_prod',
+                      'prior_sum',
+                      'prior_prod',
+                      'cw_sum',
+                      'cw_prod',]
+    tiling_scores = [[t.pk,
+                      t.field_id,
+                      t.calculate_tile_score(method='completeness'),
+                      t.calculate_tile_score(method='difficulty-sum'),
+                      t.calculate_tile_score(method='difficulty-prod'),
+                      t.calculate_tile_score(method='priority-sum'),
+                      t.calculate_tile_score(method='priority-prod'),
+                      t.calculate_tile_score(method='combined-weighted-sum'),
+                      t.calculate_tile_score(method='combined-weighted-prod'),
+                      ]
+                     for t in tile_list]
+    if len(tiling_scores[0]) != len(columns_scores):
+        raise RuntimeError('There is a programming error in insertTiles, '
+                           'where tiling scores are computed - please check')
+    logging.debug('Writing tile scores to DB')
+    insert_many_rows(cursor, 'tiling_info', tiling_scores,
+                     columns=columns_scores)
+
 
     logging.info('Inserting tiles complete!')
     return
