@@ -76,21 +76,21 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                       'field_id',
                       'n_sci_alloc',
                       'diff_sum',
-                      'diff_prod',
+                      # 'diff_prod',
                       'prior_sum',
-                      'prior_prod',
+                      # 'prior_prod',
                       'cw_sum',
-                      'cw_prod',
+                      # 'cw_prod',
                       ]
     tiling_scores = [[t.pk,
                       t.field_id,
                       t.calculate_tile_score(method='completeness'),
                       t.calculate_tile_score(method='difficulty-sum'),
-                      t.calculate_tile_score(method='difficulty-prod'),
+                      # t.calculate_tile_score(method='difficulty-prod'),
                       t.calculate_tile_score(method='priority-sum'),
-                      t.calculate_tile_score(method='priority-prod'),
+                      # t.calculate_tile_score(method='priority-prod'),
                       t.calculate_tile_score(method='combined-weighted-sum'),
-                      t.calculate_tile_score(method='combined-weighted-prod'),
+                      # t.calculate_tile_score(method='combined-weighted-prod'),
                       ]
                      for t in tile_list]
     logging.debug(tiling_scores)
