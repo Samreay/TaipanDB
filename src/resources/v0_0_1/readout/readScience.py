@@ -11,10 +11,12 @@ def execute(cursor):
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
                                      conditions=[('is_science', "=", True)],
                                      columns=['target_id', 'ra', 'dec',
-                                              'ux', 'uy', 'uz', 'priority'])
+                                              'ux', 'uy', 'uz', 'priority',
+                                              'difficulty'])
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
+        difficulty=g['difficulty'],
         ucposn=(g['ux'], g['uy'], g['uz']),
         ) for g in targets_db]
 
