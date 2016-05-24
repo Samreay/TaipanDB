@@ -56,17 +56,15 @@ def execute(cursor):
     logging.debug('Calculating target numbers for each field')
     # i = 0
     # for tile in tile_list:
-    n_sci_obs = map(len, targets_in_range_multi(
+    n_sci_obs = map(len, targets_in_range_tiles(
         [(t.ra, t.dec) for t in tile_list],
         sci_obs_targets,
-        TILE_RADIUS
     ))
     n_sci_obs = {tile_list[i].field_id : n_sci_obs[i] for
                  i in range(len(n_sci_obs))}
-    n_sci_rem = map(len, targets_in_range_multi(
+    n_sci_rem = map(len, targets_in_range_tiles(
         [(t.ra, t.dec) for t in tile_list],
         sci_rem_targets,
-        TILE_RADIUS
     ))
     n_sci_rem = {tile_list[i].field_id: n_sci_rem[i] for
                  i in range(len(n_sci_rem))}
