@@ -28,6 +28,8 @@ def execute(cursor):
                             x['dec'],
                             field_id=x['field_id']) for
                  x in field_db]
+    logging.debug('Have %d tiles representing %d unique fields' %
+                  (len(tile_db), len(tile_list), ))
 
     # Read in all science targets in two lists - those which are 'done', and
     # those which are not
