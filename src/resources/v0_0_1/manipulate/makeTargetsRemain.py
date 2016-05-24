@@ -26,7 +26,7 @@ def execute(cursor):
                 field in fields]
     tile_list = [TaipanTile(x['ra'],
                             x['dec'],
-                            field=x['field_id']) for
+                            field_id=x['field_id']) for
                  x in field_db]
 
     # Read in all science targets in two lists - those which are 'done', and
