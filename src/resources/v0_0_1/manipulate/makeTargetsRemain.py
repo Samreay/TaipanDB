@@ -54,11 +54,17 @@ def execute(cursor):
     n_sci_obs = {}
     n_sci_rem = {}
     logging.debug('Calculating target numbers for each field')
+    i = 0
     for tile in tile_list:
         n_sci_obs[tile.field_id] = len(tile.available_targets(
             sci_obs_targets))
         n_sci_rem[tile.field_id] = len(tile.available_targets(
             sci_rem_targets))
+        i += 1
+        if i % 100 == 0:
+            logging.debug('Completed %d of %d' %
+                          (i, len(tile_list)))
+
 
     # Construct a list to write back on a per-tile basis
     logging.debug('Converting to array for write to DB')
