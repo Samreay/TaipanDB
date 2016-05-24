@@ -54,9 +54,12 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     # Create the data to write to the DB
     write_to_tile = []
+    field_tile_id_pairs = []
     for t in tile_list:
-        write_to_tile.append([tile_id_max[t.field_id] + 1 | 0,
+        write_to_tile.append([tile_id_max[t.field_id] + 1,
                               t.field_id, is_queued, is_observed])
+        field_tile_id_pairs.append((tile_id_max[t.field_id] + 1,
+                                    t.field_id))
         tile_id_max[t.field_id] += 1
 
     columns_to_tile = ['tile_id', 'field_id', 'is_queued', 'is_observed']
@@ -78,8 +81,9 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
                                 conditions=[('(tile_id,field_id)',
                                              'IN',
                                              '(%s)' %
-                                             (','.join([str((1, t.field_id))
-                                                        for t in tile_list]),
+                                             (','.join([str(p) for
+                                                        p in
+                                                        field_tile_id_pairs]),
                                               ))],
                                 columns=['tile_pk', 'field_id', 'tile_id'])
     # Re-format to something more useful
