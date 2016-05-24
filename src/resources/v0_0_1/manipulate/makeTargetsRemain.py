@@ -6,8 +6,8 @@ import logging
 
 from src.scripts.extract import extract_from_joined
 from src.scripts.manipulate import update_rows
-from taipan.core import TaipanTarget, TaipanTile
-
+from taipan.core import TaipanTarget, TaipanTile, targets_in_range_multi
+from taipan.core import TILE_RADIUS
 
 def execute(cursor):
     logging.info('Bulk-computing sci targets observed/remaining for tiles')
@@ -51,20 +51,29 @@ def execute(cursor):
     # For each field number, compute the n_sci_obs and n_sci_rem (store in a
     # dict indexed by field ID)
     logging.debug('Generating data to write back to DB')
-    n_sci_obs = {}
-    n_sci_rem = {}
+    # n_sci_obs = {}
+    # n_sci_rem = {}
     logging.debug('Calculating target numbers for each field')
-    i = 0
-    for tile in tile_list:
-        n_sci_obs[tile.field_id] = len(tile.available_targets(
-            sci_obs_targets))
-        n_sci_rem[tile.field_id] = len(tile.available_targets(
-            sci_rem_targets))
-        i += 1
-        if i % 100 == 0:
-            logging.debug('Completed %d of %d' %
-                          (i, len(tile_list)))
-
+    # i = 0
+    # for tile in tile_list:
+    n_sci_obs = map(len, targets_in_range_multi(
+        [(t.ra, t.dec) for t in tile_list],
+        sci_obs_targets,
+        TILE_RADIUS
+    ))
+    n_sci_obs = {tile_list[i].field_id : n_sci_obs[i] for
+                 i in range(len(n_sci_obs))}
+    n_sci_rem = map(len, targets_in_range_multi(
+        [(t.ra, t.dec) for t in tile_list],
+        sci_rem_targets,
+        TILE_RADIUS
+    ))
+    n_sci_rem = {tile_list[i].field_id: n_sci_rem[i] for
+                 i in range(len(n_sci_rem))}
+    # i += 1
+    # if i % 100 == 0:
+    #     logging.debug('Completed %d of %d' %
+    #                   (i, len(tile_list)))
 
     # Construct a list to write back on a per-tile basis
     logging.debug('Converting to array for write to DB')
