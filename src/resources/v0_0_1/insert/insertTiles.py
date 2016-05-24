@@ -41,16 +41,16 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     # Read out the already existing tile_id
     tile_ids = extract_from(cursor, 'tile',
                             columns=['field_id', 'tile_id'])
-    fields = list(set([t.['field_id'] for t in tile_ids]))
-    tile_id_max = {field : max([t.['tile_id'] for t in tile_ids if
+    fields = list(set([t['field_id'] for t in tile_ids]))
+    tile_id_max = {field : max([t['tile_id'] for t in tile_ids if
                                 t['field_id'] == field]) | 0 for
                    field in fields}
     # Now, include fields into the mix that don't have DB entries yet
     for field in [t.field_id for t in tile_list]:
         try:
-            _ = tile_id_max[field_id]
+            _ = tile_id_max[field]
         except KeyError:
-            tile_id_max[field_id] = 0
+            tile_id_max[field] = 0
 
     # Create the data to write to the DB
     write_to_tile = []
