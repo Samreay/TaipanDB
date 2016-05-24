@@ -52,9 +52,9 @@ def execute(cursor):
     n_sci_obs = {}
     n_sci_rem = {}
     for tile in tile_list:
-        n_sci_obs[tile['field_id']] = len(tile.available_targets(
+        n_sci_obs[tile.field_id] = len(tile.available_targets(
             sci_obs_targets))
-        n_sci_rem[tile['field_id']] = len(tile.available_targets(
+        n_sci_rem[tile.field_id] = len(tile.available_targets(
             sci_rem_targets))
 
     # Construct a list to write back on a per-tile basis
