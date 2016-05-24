@@ -51,6 +51,7 @@ def execute(cursor):
     logging.debug('Generating data to write back to DB')
     n_sci_obs = {}
     n_sci_rem = {}
+    logging.debug('Calculating target numbers for each field')
     for tile in tile_list:
         n_sci_obs[tile.field_id] = len(tile.available_targets(
             sci_obs_targets))
@@ -58,6 +59,7 @@ def execute(cursor):
             sci_rem_targets))
 
     # Construct a list to write back on a per-tile basis
+    logging.debug('Converting to array for write to DB')
     write_back = [[tile['tile_pk'],
                    n_sci_obs[tile['field_id']],
                    n_sci_rem[tile['field_id']]] for tile in tile_db]
