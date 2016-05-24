@@ -34,12 +34,31 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
         logging.info('No list of tiles passed - aborting insert')
         return
 
-    # First pass - assume we are just writing the first tile for
-    # each field
-    # TODO: Expand to allow arbitraty tile_id - this will required detecting
-    # TODO: the number of tiles per field already in the database
-    write_to_tile = [[1, t.field_id, is_queued, is_observed]
-                     for t in tile_list]
+    # Deprecated first pass - assume we are writing first tile for each field
+    # write_to_tile = [[1, t.field_id, is_queued, is_observed]
+    #                  for t in tile_list]
+
+    # Read out the already existing tile_id
+    tile_ids = extract_from(cursor, 'tile',
+                            columns=['field_id', 'tile_id'])
+    fields = list(set([t.['field_id'] for t in tile_ids]))
+    tile_id_max = {field : max([t.['tile_id'] for t in tile_ids if
+                                t['field_id'] == field]) | 0 for
+                   field in fields}
+    # Now, include fields into the mix that don't have DB entries yet
+    for field in [t.field_id for t in tile_list]:
+        try:
+            _ = tile_id_max[field_id]
+        except KeyError:
+            tile_id_max[field_id] = 0
+
+    # Create the data to write to the DB
+    write_to_tile = []
+    for t in tile_list:
+        write_to_tile.append([tile_id_max[t.field_id] + 1 | 0,
+                              t.field_id, is_queued, is_observed])
+        tile_id_max[t.field_id] += 1
+
     columns_to_tile = ['tile_id', 'field_id', 'is_queued', 'is_observed']
 
     # Write to the tile table
