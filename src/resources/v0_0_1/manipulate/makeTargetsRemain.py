@@ -6,8 +6,7 @@ import logging
 
 from src.scripts.extract import extract_from_joined
 from src.scripts.manipulate import update_rows
-from taipan.core import TaipanTarget, TaipanTile, targets_in_range_multi
-from taipan.core import TILE_RADIUS
+from taipan.core import TaipanTarget, TaipanTile, targets_in_range_tiles
 
 def execute(cursor):
     logging.info('Bulk-computing sci targets observed/remaining for tiles')
