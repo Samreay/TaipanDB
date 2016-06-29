@@ -48,7 +48,7 @@ def execute(cursor, metrics=None):
         col_vals = execute_select(cursor.connection,
                                   'SELECT %s FROM tiling_info' %
                                   (metrics[i], ))
-        if np.all([c is None for c in col_vals]):
+        if np.all([c[0] is None for c in col_vals]):
             to_pop.append(i)
     for i in to_pop[::-1]:
         burn = metrics.pop(i)
