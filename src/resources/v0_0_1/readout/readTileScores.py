@@ -26,7 +26,8 @@ def execute(cursor, metrics=None):
         raise RuntimeError('readTileScores requires a cursor to be specified')
     if metrics is not None and not isinstance(metrics, list):
         raise ValueError('metrics must be a list of metric names')
-    if metrics is not None and np.all([isinstance(m, str) for m in metrics]):
+    if metrics is not None and not np.all([isinstance(m, str) for
+                                           m in metrics]):
         raise ValueError('metric must be a list of metric names (i.e. strings)')
 
     # Get the metric names if the list of passed metrics is None
