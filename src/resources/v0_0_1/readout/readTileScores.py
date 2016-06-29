@@ -1,5 +1,5 @@
 import logging
-from ....scripts.extract import extract_from, extract_from_joined, get_columns
+from ....scripts.extract import execute_select, extract_from_joined, get_columns
 
 import numpy as np
 
@@ -45,7 +45,12 @@ def execute(cursor, metrics=None):
         # triggering the ValueError from extract_from(_joined)
         # Alternatively, do we modify tiling_info to hold values of 0 by
         # default, rathen than null (or a special value?)
-        pass
+        col_vals = execute_select('SELECT %s FROM tiling_info' %
+                                  (metrics[i], ))
+        if np.all([c is None for c in col_vals]):
+            to_pop.append(i)
+    for i in to_pop[::-1]:
+        burn = metrics.pop(i)
 
     # Fetch the metrics from the tiling info table
     return extract_from_joined(cursor, ['field', 'tile', 'tiling_info', ],

@@ -274,7 +274,7 @@ def execute_select(connection, statement):
         logging.error(e)
         return []
     result = cursor.fetchall()
-    logging.info("Found %d rows" % len(result))
+    logging.debug("Found %d rows" % len(result))
     return result
 
 
