@@ -55,6 +55,35 @@ def psql_to_numpy_dtype(psql_dtype):
     return PSQL_TO_NUMPY_DTYPE[psql_dtype]
 
 
+def get_columns(cursor, table):
+    """
+    Return the columns names and data types for a particular table.
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor to interact with the database
+    table:
+        Name of the table to be investigated
+
+    Returns
+    -------
+    table_columns:
+        A list of the table columns in table
+    dtypes:
+        The SQL data types of table_columns.
+
+    """
+    if cursor is not None:
+        # Get the column names from the table itself
+        cursor.execute("SELECT column_name, data_type"
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table,))
+        table_structure = cursor.fetchall()
+        logging.debug(table_structure)
+        table_columns, dtypes = zip(*table_structure)
+        return table_columns, dtypes
+
+
 def extract_from(cursor, table, conditions=None, columns=None):
     """
     Extract rows from a database table.
