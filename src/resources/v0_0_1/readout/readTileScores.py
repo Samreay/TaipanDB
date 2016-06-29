@@ -37,6 +37,16 @@ def execute(cursor, metrics=None):
                    t != 'field_id' or
                    t != 'tile_pk']
 
+    # Check each of the metrics in turn
+    # If the metric is None everywhere, exclude it from being returned
+    to_pop = []
+    for i in range(len(metrics)):
+        # TODO: Figure out how to see if all the values are null without
+        # triggering the ValueError from extract_from(_joined)
+        # Alternatively, do we modify tiling_info to hold values of 0 by
+        # default, rathen than null (or a special value?)
+        pass
+
     # Fetch the metrics from the tiling info table
     return extract_from_joined(cursor, ['field', 'tile', 'tiling_info', ],
                                conditions=[
