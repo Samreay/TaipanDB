@@ -35,10 +35,15 @@ def execute(cursor, conditions, tables_to_join=None):
                                  'names (i.e. strings)')
 
     if tables_to_join:
-        return extract_from_joined(cursor, ['tile'] + tables_to_join,
-                                   conditions=conditions, columns=['tile_pk'])
+        tile_pks = extract_from_joined(cursor, ['tile'] + tables_to_join,
+                                       conditions=conditions,
+                                       columns=['tile_pk'])
     else:
-        return extract_from(cursor, 'tile', conditions=conditions,
-                            columns=['tile_pk'])
+        tile_pks =  extract_from(cursor, 'tile', conditions=conditions,
+                                 columns=['tile_pk'])
+
+    # Flatten the tile_pks list
+    tile_pks = [p[0] for p in tile_pks]
+    return tile_pks
 
 
