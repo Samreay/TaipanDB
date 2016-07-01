@@ -41,10 +41,6 @@ def execute(cursor, metrics=None):
     # If the metric is None everywhere, exclude it from being returned
     to_pop = []
     for i in range(len(metrics)):
-        # TODO: Figure out how to see if all the values are null without
-        # triggering the ValueError from extract_from(_joined)
-        # Alternatively, do we modify tiling_info to hold values of 0 by
-        # default, rathen than null (or a special value?)
         col_vals = execute_select(cursor.connection,
                                   'SELECT %s FROM tiling_info' %
                                   (metrics[i], ))
