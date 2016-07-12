@@ -4,7 +4,7 @@ from ....scripts.extract import execute_select, extract_from_joined, get_columns
 import numpy as np
 
 
-def execute(cursor, metrics=None):
+def execute(cursor, metrics=Non):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
@@ -46,6 +46,7 @@ def execute(cursor, metrics=None):
                                   (metrics[i], ))
         if np.all([c[0] is None for c in col_vals]):
             to_pop.append(i)
+
     for i in to_pop[::-1]:
         burn = metrics.pop(i)
 
