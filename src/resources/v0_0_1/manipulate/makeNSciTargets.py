@@ -31,8 +31,20 @@ def execute(cursor):
 
     logging.info('Doing a bulk calculation of per-field target statuses')
 
-    # Read targets (including their statuses)
-    logging.debug('Extracting targets...')
+    # Read completed targets
+    logging.debug('Extracting observed targets...')
+    targets_stats_array = extract_from_joined(cursor,
+                                              ['target', 'science_target'],
+                                              conditions=[
+                                                  ('is_science', "=", True),
+                                                  ('done', "=", True),
+                                              ],
+                                              columns=['target_id', 'ra', 'dec',
+                                                       'ux', 'uy', 'uz'])
+
+    return
+
+
     targets_stats_array = extract_from_joined(cursor,
                                               ['target', 'science_target',
                                                'tile', 'target_field'],
