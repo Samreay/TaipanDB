@@ -41,6 +41,7 @@ def execute(cursor):
                                               ],
                                               columns=['target_id', 'ra', 'dec',
                                                        'ux', 'uy', 'uz'])
+    logging.debug('Extracted %d observed targets' % len(targets_stats_array))
 
     return
 
