@@ -43,3 +43,5 @@ def execute(cursor):
                                                        'ux', 'uy', 'uz',
                                                        'done', 'tile_pk'])
     logging.debug('Extracted %d targets' % len(targets_stats_array))
+
+    return
