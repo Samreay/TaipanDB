@@ -70,6 +70,7 @@ def execute(cursor):
     # - Have no entries in target_field;
     # - Have entries in target_field, but all the related tiles are set to
     #   'observed' and the target isn't marked as 'done'
+    logging.debug('Extracting currently unassigned targets...')
     target_stats_array_a = extract_from_joined(cursor,
                                                ['target', 'science_target',
                                                 'target_field'],
@@ -101,16 +102,3 @@ def execute(cursor):
 
     return
 
-
-    targets_stats_array = extract_from_joined(cursor,
-                                              ['target', 'science_target',
-                                               'tile', 'target_field'],
-                                              conditions=[
-                                                  ('is_science', "=", True),
-                                              ],
-                                              columns=['target_id', 'ra', 'dec',
-                                                       'ux', 'uy', 'uz',
-                                                       'done', 'tile_pk'])
-    logging.debug('Extracted %d targets' % len(targets_stats_array))
-
-    return
