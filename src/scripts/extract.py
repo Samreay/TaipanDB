@@ -312,7 +312,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
-        table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2}'.format(
+        table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2})'.format(
             tables[0], tables[i], join_on_column
         ) for i in range(1, len(tables))])
     string = 'SELECT %s FROM %s' % (
