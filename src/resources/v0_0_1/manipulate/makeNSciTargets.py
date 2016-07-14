@@ -45,7 +45,8 @@ def execute(cursor):
                                                   ('done', "=", True),
                                               ],
                                               columns=['target_id', 'ra', 'dec',
-                                                       'ux', 'uy', 'uz'])
+                                                       'ux', 'uy', 'uz'],
+                                              distinct=True)
     # logging.debug('Extracted %d observed targets' % len(targets_stats_array))
     no_completed_targets = len(targets_stats_array)
 
@@ -84,7 +85,8 @@ def execute(cursor):
         ],
         columns=['target_id', 'ra',
                  'dec',
-                 'ux', 'uy', 'uz'])
+                 'ux', 'uy', 'uz'],
+        distinct=True)
     logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
     target_stats_array_b = extract_from_left_joined(
         cursor,

@@ -257,7 +257,8 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
 
 
 def extract_from_left_joined(cursor, tables, join_on_column,
-                             conditions=None, columns=None):
+                             conditions=None, columns=None,
+                             distinct=False):
     """
     Extract rows from a database table join made using the LEFT JOIN construct.
     LEFT JOIN will result all table rows from the left table(s) in the query,
@@ -288,6 +289,10 @@ def extract_from_left_joined(cursor, tables, join_on_column,
     columns:
         List of column names to retrieve from the database. Defaults to None,
         which returns all available columns.
+    distinct:
+        Boolean value, denoting whether or not to eliminate duplicate rows from
+        the query. Defaults to False (i.e. duplicate rows will NOT be
+        eliminated).
 
     Returns
     -------
@@ -325,7 +330,12 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2})'.format(
             tables[0], tables[i], join_on_column
         ) for i in range(1, len(tables))])
-    string = 'SELECT %s FROM %s' % (
+
+    distinct_str = ''
+    if distinct:
+        distinct_str = 'DISTINCT'
+    string = 'SELECT %s %s FROM %s' % (
+        distinct_str,
         "*" if columns is None else ", ".join(columns),
         '%s %s' % (tables[0], table_string, )
         )
