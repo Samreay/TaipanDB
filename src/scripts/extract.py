@@ -246,6 +246,95 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     return result
 
 
+def extract_from_left_joined(cursor, tables, conditions=None, columns=None):
+    """
+    Extract rows from a database table join made using the LEFT JOIN construct.
+    LEFT JOIN will result all table rows from the left table(s) in the query,
+    even if they match no rows on the right side of the join.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    tables:
+        List of table names to be joined. Tables are joined 'blindly' with
+        LEFT JOIN, which requires that the join-ing column have the same name
+        in each table. If this is not possible, some other solution will need
+        to be implemented.
+    conditions:
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. The exception is
+        looking for columns with value NULL, which should be denoted using the
+        string 'NULL'. Defaults to None, so all rows will be returned.
+    columns:
+        List of column names to retrieve from the database. Defaults to None,
+        which returns all available columns.
+
+    Returns
+    -------
+    result:
+        A numpy structured array of all joined table rows which satisfy
+        conditions (if given). Individual entry elements may be called by
+        column name.
+    """
+
+    if cursor is not None:
+        # Get the column names from the table itself
+        table_string = "SELECT DISTINCT column_name, data_type FROM" \
+                       " information_schema.columns " \
+                       "WHERE table_name IN (%s)" %\
+                       (','.join(map(lambda x: "'%s'" % x, tables)), )
+        logging.debug(table_string)
+        cursor.execute(table_string)
+        table_structure = cursor.fetchall()
+        try:
+            table_columns, dtypes = zip(*table_structure)
+        except ValueError:
+            # This occurs when one of the tables in empty
+            logging.info('At least one of the requested tables has no columns')
+            return []
+        if columns is None:
+            columns = table_columns
+        else:
+            columns_lower = [x.lower() for x in columns]
+            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for i in range(len(dtypes))
+                      if table_columns[i].lower()
+                      in columns_lower])
+        logging.debug('Found these columns with these data types:')
+        logging.debug(columns)
+        logging.debug(dtypes)
+    string = 'SELECT %s FROM %s' % (
+        "*" if columns is None else ", ".join(columns),
+        ' LEFT JOIN '.join(tables),
+        )
+
+    if conditions:
+        conditions_string = generate_conditions_string(conditions)
+        string += ' WHERE %s' % conditions_string
+
+    logging.debug(string)
+
+    if cursor is not None:
+        cursor.execute(string)
+        result = cursor.fetchall()
+        logging.debug("Extract successful")
+    else:
+        result = None
+        return result
+
+    # Re-format the result as a structured numpy table
+    result = np.asarray(result, dtype={
+        "names": columns,
+        "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
+        })
+
+    return result
+
+
 def execute_select(connection, statement):
     """ Execute an arbitrary SELECT statement.
 
