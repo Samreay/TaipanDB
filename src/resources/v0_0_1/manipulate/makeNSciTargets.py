@@ -159,10 +159,10 @@ def execute(cursor):
     # Compute the number of targets
     tgt_per_field = targets_per_field(
         field_tiles,
-        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+        [TaipanTarget(row['target.target_id'], row['ra'], row['dec'],
                       ucposn=(row['ux'], row['uy'], row['uz'])) for
          row in target_stats_array_a] +
-        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+        [TaipanTarget(row['target.target_id'], row['ra'], row['dec'],
                       ucposn=(row['ux'], row['uy'], row['uz'])) for
          row in target_stats_array_b]
     )
