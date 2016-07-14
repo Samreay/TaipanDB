@@ -246,7 +246,8 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     return result
 
 
-def extract_from_left_joined(cursor, tables, conditions=None, columns=None):
+def extract_from_left_joined(cursor, tables, join_on_column,
+                             conditions=None, columns=None):
     """
     Extract rows from a database table join made using the LEFT JOIN construct.
     LEFT JOIN will result all table rows from the left table(s) in the query,
@@ -261,6 +262,10 @@ def extract_from_left_joined(cursor, tables, conditions=None, columns=None):
         LEFT JOIN, which requires that the join-ing column have the same name
         in each table. If this is not possible, some other solution will need
         to be implemented.
+    join_on_column:
+        The name of the table column to perform the left join on. Note that
+        this column must exist in all tables, otherwise a ProgrammingError
+        will be thrown.
     conditions:
         conditions:
         A list of three-tuples defining conditions, e.g.:
@@ -307,9 +312,12 @@ def extract_from_left_joined(cursor, tables, conditions=None, columns=None):
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
+        table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2}'.format(
+            tables[0], tables[i], join_on_column
+        ) for i in range(1, len(tables))])
     string = 'SELECT %s FROM %s' % (
         "*" if columns is None else ", ".join(columns),
-        ' LEFT JOIN '.join(tables),
+        '%s %s' % (tables[0], table_string, )
         )
 
     if conditions:
