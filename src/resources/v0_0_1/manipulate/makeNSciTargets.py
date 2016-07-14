@@ -92,7 +92,7 @@ def execute(cursor):
             ('done', '=', False),
             ('tile_pk', 'IS', 'NULL'),
         ],
-        columns=['target_id', 'ra',
+        columns=['target.target_id', 'ra',
                  'dec',
                  'ux', 'uy', 'uz'])
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
