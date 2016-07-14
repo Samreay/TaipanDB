@@ -53,7 +53,7 @@ def execute(cursor):
     # - They can't be marked as done in science_target
     # - The assigned tile must not be marked observed
     logging.debug('Extracting assigned targets...')
-    target_stats_array = extract_from_joined(cursor,
+    targets_stats_array = extract_from_joined(cursor,
                                              ['target', 'science_target',
                                               'target_field', 'tile'],
                                              conditions=[
