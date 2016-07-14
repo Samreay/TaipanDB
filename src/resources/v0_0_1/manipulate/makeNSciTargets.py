@@ -6,7 +6,6 @@ import logging
 import numpy as np
 from taipan.core import TaipanTarget
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
-from ....scripts.manipulate import
 from ..readout.readCentroids import execute as rCexec
 
 
