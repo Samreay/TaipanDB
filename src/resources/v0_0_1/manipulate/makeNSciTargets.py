@@ -60,7 +60,7 @@ def execute(cursor):
                                               conditions=[
                                                   ('is_science', '=', True),
                                                   ('done', '=', False),
-                                                  ('is_observed', '=', False),
+                                                  # ('is_observed', '=', False),
                                               ],
                                               columns=['target_id', 'ra', 'dec',
                                                        'ux', 'uy', 'uz'])
