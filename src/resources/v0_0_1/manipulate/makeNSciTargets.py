@@ -73,7 +73,8 @@ def execute(cursor):
     logging.debug('Extracting currently unassigned targets...')
     target_stats_array_a = extract_from_joined(cursor,
                                                ['target', 'science_target',
-                                                'target_field'],
+                                                'target_field', 'tile',
+                                                'field'],
                                                conditions=[
                                                    ('is_science', '=', True),
                                                    ('done', '=', False),
@@ -83,8 +84,8 @@ def execute(cursor):
                                                         'ux', 'uy', 'uz'])
     target_stats_array_b = extract_from_joined(cursor,
                                                ['target', 'science_target',
-                                                'field', 'tile',
-                                                'target_field'],
+                                                'target_field', 'tile',
+                                                'field'],
                                                conditions=[
                                                    ('is_science', '=', True),
                                                    ('done', '=', False),
