@@ -55,7 +55,7 @@ def execute(cursor):
     logging.debug('Extracting assigned targets...')
     target_stats_array = extract_from_joined(cursor,
                                              ['target', 'science_target',
-                                              'target_field', 'tile', 'field'],
+                                              'target_field', 'tile'],
                                              conditions=[
                                                  ('is_science', '=', True),
                                                  ('done', '=', False),
