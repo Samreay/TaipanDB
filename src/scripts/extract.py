@@ -323,6 +323,8 @@ def extract_from_left_joined(cursor, tables, join_on_column,
             columns = table_columns
         else:
             columns_lower = [x.lower() for x in columns]
+            logging.debug('Searching for dtypes for columns: %s' %
+                          ', '.join(columns_lower))
             columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for i in range(len(dtypes))
                       if table_columns[i].lower()
                       in columns_lower])
