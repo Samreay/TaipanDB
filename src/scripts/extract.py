@@ -313,6 +313,8 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         table_structure = cursor.fetchall()
         try:
             table_columns, dtypes = zip(*table_structure)
+            logging.debug('All available columns: %s' %
+                          ', '.join(table_columns))
         except ValueError:
             # This occurs when one of the tables in empty
             logging.info('At least one of the requested tables has no columns')
