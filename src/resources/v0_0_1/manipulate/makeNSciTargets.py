@@ -80,8 +80,10 @@ def execute(cursor):
                                                    ('done', '=', False),
                                                    ('is_observed', '=', True),
                                                ],
-                                               columns=['target_id', 'ra', 'dec',
+                                               columns=['target_id', 'ra',
+                                                        'dec',
                                                         'ux', 'uy', 'uz'])
+    logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
     target_stats_array_b = extract_from_joined(cursor,
                                                ['target', 'science_target',
                                                 'target_field'],
@@ -93,6 +95,7 @@ def execute(cursor):
                                                columns=['target_id', 'ra',
                                                         'dec',
                                                         'ux', 'uy', 'uz'])
+    logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
     target_stats_array = np.concatenate((target_stats_array_a,
                                          target_stats_array_b, ))
     logging.debug('Extracted %d assigned targets (%d from no assignments, '
