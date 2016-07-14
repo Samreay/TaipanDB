@@ -91,19 +91,28 @@ def execute(cursor):
     # - They can't be marked as done in science_target
     # - The assigned tile must not be marked observed
     logging.debug('Extracting assigned targets...')
-    targets_stats_array = extract_from_joined(cursor,
+    target_stats_array = extract_from_joined(cursor,
                                              ['target', 'science_target',
                                               'target_field', 'tile'],
-                                              conditions=[
-                                                  ('is_science', '=', True),
-                                                  ('done', '=', False),
-                                                  ('is_observed', '=', False),
-                                              ],
-                                              columns=['target_id', 'ra', 'dec',
-                                                       'ux', 'uy', 'uz'],
-                                              distinct=True)
+                                             conditions=[
+                                                 ('is_science', '=', True),
+                                                 ('done', '=', False),
+                                                 ('is_observed', '=', False),
+                                             ],
+                                             columns=['target_id', 'ra', 'dec',
+                                                      'ux', 'uy', 'uz'],
+                                             distinct=True)
     # logging.debug('Extracted %d assigned targets' % len(targets_stats_array))
-    no_assigned_targets = len(targets_stats_array)
+    no_assigned_targets = len(target_stats_array)
+
+    # Compute the number of targets
+    tgt_per_field = targets_per_field(
+        field_tiles,
+        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+                      ucposn=(row['ux'], row['uy'], row['uz'])) for
+         row in target_stats_array]
+    )
+    logging.debug(tgt_per_field)
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -146,6 +155,19 @@ def execute(cursor):
     no_remaining_targets = len(target_stats_array_a) + len(
         target_stats_array_b
     )
+
+    # Compute the number of targets
+    tgt_per_field = targets_per_field(
+        field_tiles,
+        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+                      ucposn=(row['ux'], row['uy'], row['uz'])) for
+         row in target_stats_array_a] +
+        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+                      ucposn=(row['ux'], row['uy'], row['uz'])) for
+         row in target_stats_array_b]
+    )
+    logging.debug(tgt_per_field)
+
     logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
                   (no_completed_targets + no_assigned_targets +
                    no_remaining_targets,
