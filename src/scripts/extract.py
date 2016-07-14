@@ -160,7 +160,8 @@ def extract_from(cursor, table, conditions=None, columns=None):
     return result
 
 
-def extract_from_joined(cursor, tables, conditions=None, columns=None):
+def extract_from_joined(cursor, tables, conditions=None, columns=None,
+                        distinct=False):
     """
     Extract rows from a database table join.
 
@@ -184,6 +185,10 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
     columns:
         List of column names to retrieve from the database. Defaults to None,
         which returns all available columns.
+    distinct:
+        Boolean value, denoting whether or not to eliminate duplicate rows from
+        the query. Defaults to False (i.e. duplicate rows will NOT be
+        eliminated).
 
     Returns
     -------
@@ -218,7 +223,12 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None):
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
-    string = 'SELECT %s FROM %s' % (
+
+    distinct_str = ''
+    if distinct:
+        distinct_str = 'DISTINCT'
+    string = 'SELECT %s %s FROM %s' % (
+        distinct_str,
         "*" if columns is None else ", ".join(columns),
         ' NATURAL JOIN '.join(tables),
         )

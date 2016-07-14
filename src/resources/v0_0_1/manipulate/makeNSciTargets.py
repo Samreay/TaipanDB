@@ -60,10 +60,11 @@ def execute(cursor):
                                               conditions=[
                                                   ('is_science', '=', True),
                                                   ('done', '=', False),
-                                                  # ('is_observed', '=', False),
+                                                  ('is_observed', '=', False),
                                               ],
                                               columns=['target_id', 'ra', 'dec',
-                                                       'ux', 'uy', 'uz'])
+                                                       'ux', 'uy', 'uz'],
+                                              distinct=True)
     # logging.debug('Extracted %d assigned targets' % len(targets_stats_array))
     no_assigned_targets = len(targets_stats_array)
 
