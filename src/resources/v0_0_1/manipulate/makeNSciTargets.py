@@ -146,6 +146,7 @@ def execute(cursor):
                  'dec',
                  'ux', 'uy', 'uz'])
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
+    logging.debug(target_stats_array_b)
     # target_stats_array = np.concatenate((target_stats_array_a,
     #                                      target_stats_array_b, ))
     # logging.debug('Extracted %d assigned targets (%d from no assignments, '
