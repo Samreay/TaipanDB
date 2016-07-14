@@ -84,12 +84,11 @@ def execute(cursor):
                                                         'ux', 'uy', 'uz'])
     target_stats_array_b = extract_from_joined(cursor,
                                                ['target', 'science_target',
-                                                'target_field', 'tile',
-                                                'field'],
+                                                'target_field'],
                                                conditions=[
                                                    ('is_science', '=', True),
                                                    ('done', '=', False),
-                                                   ('tile_pk', 'IS', None),
+                                                   ('tile_pk', 'IS', 'NULL'),
                                                ],
                                                columns=['target_id', 'ra',
                                                         'dec',
