@@ -6,7 +6,32 @@ import logging
 import numpy as np
 from taipan.core import TaipanTarget
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
-from ....scripts.manipulate import update_rows
+from ....scripts.manipulate import
+from ..readout.readCentroids import execute as rCexec
+
+
+def targets_per_field(fields, targets):
+    """
+    INTERNAL HELPER FUNCTION
+    Take a list of TaipanTiles, a list of TaipanTargets, and work out the
+    number of targets on each tile. No exclusion checking.
+
+    Parameters
+    ----------
+    fields:
+        List of TaipanTiles to consider. Should only be one tile per field.
+    targets:
+        List of TaipanTargets to consider.
+
+    Returns
+    -------
+    output:
+        A list of (field, no_of_targets) tuples.
+    """
+
+    output = [(tile.field_id, len(tile.available_targets(targets))) for
+              tile in fields]
+    return output
 
 
 def execute(cursor):
@@ -36,6 +61,9 @@ def execute(cursor):
     # the target count for that tile/field - targets can and will appear in
     # multiple fields
 
+    # Read in the fields information
+    field_tiles = rCexec(cursor)
+
     # Read completed targets
     logging.debug('Extracting observed targets...')
     targets_stats_array = extract_from_joined(cursor,
@@ -49,6 +77,15 @@ def execute(cursor):
                                               distinct=True)
     # logging.debug('Extracted %d observed targets' % len(targets_stats_array))
     no_completed_targets = len(targets_stats_array)
+
+    # Compute the number of targets
+    tgt_per_field = targets_per_field(
+        field_tiles,
+        [TaipanTarget(row['target_id'], row['ra'], row['dec'],
+                      ucposn=(row['ux'], row['uy'], row['uz'])) for
+         row in targets_stats_array]
+    )
+    logging.debug(tgt_per_field)
 
     # Read targets that are assigned, but yet to be observed
     # Targets must fulfil two criteria:
