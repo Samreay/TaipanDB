@@ -74,6 +74,7 @@ def execute(cursor):
     target_stats_array_a = extract_from_left_joined(
         cursor,
         ['target', 'science_target', 'target_field', 'tile'],
+        'target_id',
         conditions=[
             ('is_science', '=', True),
             ('done', '=', False),
@@ -86,6 +87,7 @@ def execute(cursor):
     target_stats_array_b = extract_from_left_joined(
         cursor,
         ['target', 'science_target', 'target_field'],
+        'target_id',
         conditions=[
             ('is_science', '=', True),
             ('done', '=', False),
