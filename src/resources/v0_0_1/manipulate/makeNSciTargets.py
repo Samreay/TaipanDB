@@ -46,7 +46,8 @@ def execute(cursor):
                                               ],
                                               columns=['target_id', 'ra', 'dec',
                                                        'ux', 'uy', 'uz'])
-    logging.debug('Extracted %d observed targets' % len(targets_stats_array))
+    # logging.debug('Extracted %d observed targets' % len(targets_stats_array))
+    no_completed_targets = len(targets_stats_array)
 
     # Read targets that are assigned, but yet to be observed
     # Targets must fulfil two criteria:
@@ -56,14 +57,15 @@ def execute(cursor):
     targets_stats_array = extract_from_joined(cursor,
                                              ['target', 'science_target',
                                               'target_field', 'tile'],
-                                             conditions=[
-                                                 ('is_science', '=', True),
-                                                 ('done', '=', False),
-                                                 ('is_observed', '=', False),
-                                             ],
-                                             columns=['target_id', 'ra', 'dec',
-                                                      'ux', 'uy', 'uz'])
-    logging.debug('Extracted %d assigned targets' % len(targets_stats_array))
+                                              conditions=[
+                                                  ('is_science', '=', True),
+                                                  ('done', '=', False),
+                                                  ('is_observed', '=', False),
+                                              ],
+                                              columns=['target_id', 'ra', 'dec',
+                                                       'ux', 'uy', 'uz'])
+    # logging.debug('Extracted %d assigned targets' % len(targets_stats_array))
+    no_assigned_targets = len(targets_stats_array)
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -96,12 +98,21 @@ def execute(cursor):
                  'dec',
                  'ux', 'uy', 'uz'])
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
-    target_stats_array = np.concatenate((target_stats_array_a,
-                                         target_stats_array_b, ))
-    logging.debug('Extracted %d assigned targets (%d from no assignments, '
-                  '%d from completed assignments but target incomplete' %
-                  (len(target_stats_array), len(target_stats_array_a),
-                   len(target_stats_array_b), ))
+    # target_stats_array = np.concatenate((target_stats_array_a,
+    #                                      target_stats_array_b, ))
+    # logging.debug('Extracted %d assigned targets (%d from no assignments, '
+    #               '%d from completed assignments but target incomplete' %
+    #               (len(target_stats_array), len(target_stats_array_a),
+    #                len(target_stats_array_b), ))
+    no_remaining_targets = len(target_stats_array_a) + len(
+        target_stats_array_b
+    )
+    logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
+                  (no_completed_targets + no_assigned_targets +
+                   no_remaining_targets,
+                   no_completed_targets,
+                   no_assigned_targets,
+                   no_remaining_targets))
 
     return
 
