@@ -71,10 +71,9 @@ def execute(cursor):
     # - Have entries in target_field, but all the related tiles are set to
     #   'observed' and the target isn't marked as 'done'
     logging.debug('Extracting currently unassigned targets...')
-    target_stats_array_a = extract_from_left_joined(
+    target_stats_array_a = extract_from_joined(
         cursor,
         ['target', 'science_target', 'target_field', 'tile'],
-        'target_id',
         conditions=[
             ('is_science', '=', True),
             ('done', '=', False),
