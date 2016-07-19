@@ -302,6 +302,8 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         column name.
     """
 
+    logging.debug('Passed in columns: %s' % ', '.join(columns))
+
     if cursor is not None:
         # Get the column names from the table itself
         table_string = "SELECT DISTINCT column_name, data_type FROM" \
@@ -325,9 +327,10 @@ def extract_from_left_joined(cursor, tables, join_on_column,
             columns_lower = [x.lower() for x in columns]
             logging.debug('Searching for dtypes for columns: %s' %
                           ', '.join(columns_lower))
-            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for i in range(len(dtypes))
-                      if table_columns[i].lower()
-                      in columns_lower])
+            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
+                                    i in range(len(dtypes))
+                                    if table_columns[i].lower()
+                                    in columns_lower])
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
