@@ -87,14 +87,16 @@ def execute(cursor, fields=None):
         # Expand the list of fields to include any which overlap with those
         # given as inputs
         logging.debug('Requested fields (total %d): %s' %
-                      (len(fields), ', '.join(fields)))
+                      (len(fields), ', '.join(fields), ))
         fields = list(set([f for f in field_tiles if
                            np.any([dist_points(f.ra, f.dec,
                                                field.ra,
                                                field.dec) < 2*TILE_RADIUS for
-                                   field in fields])]))
+                                   field in
+                                   [x for x in field_tiles if
+                                    x.field_id in fields]])]))
         logging.debug('Fields to be looked at (total %d): %s' %
-                      (len(fields), ', '.join(fields)))
+                      (len(fields), ', '.join(fields), ))
 
     # Read completed targets
     logging.debug('Extracting observed targets...')
