@@ -7,6 +7,7 @@ import numpy as np
 from taipan.core import TaipanTarget
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
 from ..readout.readCentroids import execute as rCexec
+from ....scripts.manipulate import update_rows
 
 
 def targets_per_field(fields, targets):
@@ -86,6 +87,8 @@ def execute(cursor):
          row in targets_stats_array]
     )
     logging.debug(tgt_per_field)
+    update_rows(cursor, 'tiling_info', tgt_per_field,
+                columns=['field_id', 'n_sci_obs'])
 
     # Read targets that are assigned, but yet to be observed
     # Targets must fulfil two criteria:
@@ -115,6 +118,8 @@ def execute(cursor):
          row in target_stats_array]
     )
     logging.debug(tgt_per_field)
+    update_rows(cursor, 'tiling_info', tgt_per_field,
+                columns=['field_id', 'n_sci_alloc'])
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -172,6 +177,8 @@ def execute(cursor):
          row in target_stats_array_b]
     )
     logging.debug(tgt_per_field)
+    update_rows(cursor, 'tiling_info', tgt_per_field,
+                columns=['field_id', 'n_sci_rem'])
 
     logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
                   (no_completed_targets + no_assigned_targets +
