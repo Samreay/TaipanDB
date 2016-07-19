@@ -62,7 +62,8 @@ def execute(cursor, fields=None):
     n_sci_obs) of the tiling_info table.
     """
 
-    logging.info('Doing a bulk calculation of per-field target statuses')
+    logging.info('Doing a bulk calculation of per-field target statuses '
+                 'using makeNSciTargets')
 
     # Unfortunately, we can't just use the assigned tile/field to increment
     # the target count for that tile/field - targets can and will appear in
@@ -90,7 +91,6 @@ def execute(cursor, fields=None):
                                    field in fields])]))
         logging.debug('Fields to be looked at (total %d): %s' %
                       (len(fields), ', '.join(fields)))
-
 
     # Read completed targets
     logging.debug('Extracting observed targets...')
@@ -216,4 +216,3 @@ def execute(cursor, fields=None):
                    no_remaining_targets))
 
     return
-
