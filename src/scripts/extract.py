@@ -301,8 +301,8 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         conditions (if given). Individual entry elements may be called by
         column name.
     """
-
-    logging.debug('Passed in columns: %s' % ', '.join(columns))
+    if columns is not None:
+        logging.debug('Passed in columns: %s' % ', '.join(columns))
 
     if cursor is not None:
         # Get the column names from the table itself
