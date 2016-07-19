@@ -4,7 +4,7 @@ from ....scripts.extract import execute_select, extract_from_joined, get_columns
 import numpy as np
 
 
-def execute(cursor, metrics=Non):
+def execute(cursor, metrics=None):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
