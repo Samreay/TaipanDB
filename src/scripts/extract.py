@@ -340,6 +340,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
 
     # Need to prepend the first table name to the join_on_column value to
     # avoid ambiguity errors
+    columns = list(columns)
     for i in range(len(columns)):
         if join_on_column.lower() == columns[i]:
             columns[i] = '%s.%s' % (tables[0], columns[i], )
