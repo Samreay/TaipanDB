@@ -83,7 +83,7 @@ def execute(cursor, fields=None):
         # given as inputs
         fields = [f for f in field_tiles if
                   np.any([dist_points(f.ra, f.dec,
-                                     field.ra, field.dec) < 2*TILE_RADIUS for
+                                      field.ra, field.dec) < 2*TILE_RADIUS for
                           field in fields])]
 
     # Read completed targets
