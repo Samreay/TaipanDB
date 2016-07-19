@@ -4,7 +4,7 @@
 
 import logging
 import numpy as np
-from taipan.core import TaipanTarget
+from taipan.core import TaipanTarget, dist_points, TILE_RADIUS
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
 from ..readout.readCentroids import execute as rCexec
 from ....scripts.manipulate import update_rows
@@ -34,7 +34,7 @@ def targets_per_field(fields, targets):
     return output
 
 
-def execute(cursor):
+def execute(cursor, fields=None):
     """
     Calculate the number of targets in each field of each status type.
 
@@ -42,6 +42,13 @@ def execute(cursor):
     ----------
     cursor:
         psycopg2 cursor for communicating with the database.
+    fields:
+        A list of IDs of the fields that need updating. An error will be thrown
+        if the fields listed here cannot be found in the database. Defaults to
+        None, at which point all fields will be updated.
+        Note that this should be a list of the fields where you know changes
+        have occurred. The function will automatically add adjacent, overlapping
+        fields to the query.
 
     Returns
     -------
@@ -64,6 +71,21 @@ def execute(cursor):
     # Read in the fields information
     field_tiles = rCexec(cursor)
 
+    if fields is None:
+        fields = field_tiles
+    else:
+        # Check to see if all the requested fields are present
+        if len(fields) != len([field for field in fields if
+                               field in [x.field_id for x in field_tiles]]):
+            raise ValueError('One of the requested fields could not be found '
+                             'in the database. Please check your inputs.')
+        # Expand the list of fields to include any which overlap with those
+        # given as inputs
+        fields = [f for f in field_tiles if
+                  np.any([dist_points(f.ra, f.dec,
+                                     field.ra, field.dec) < 2*TILE_RADIUS for
+                          field in fields])]
+
     # Read completed targets
     logging.debug('Extracting observed targets...')
     targets_stats_array = extract_from_joined(cursor,
@@ -81,7 +103,7 @@ def execute(cursor):
     # Compute the number of targets
     logging.debug('Compute the number of completed targets on each field')
     tgt_per_field = targets_per_field(
-        field_tiles,
+        fields,
         [TaipanTarget(row['target_id'], row['ra'], row['dec'],
                       ucposn=(row['ux'], row['uy'], row['uz'])) for
          row in targets_stats_array]
@@ -112,7 +134,7 @@ def execute(cursor):
     # Compute the number of targets
     logging.debug('Compute the number of assigned targets on each field')
     tgt_per_field = targets_per_field(
-        field_tiles,
+        fields,
         [TaipanTarget(row['target_id'], row['ra'], row['dec'],
                       ucposn=(row['ux'], row['uy'], row['uz'])) for
          row in target_stats_array]
@@ -168,7 +190,7 @@ def execute(cursor):
     logging.debug('Compute the number of unassigned targets on each field')
     # Compute the number of targets
     tgt_per_field = targets_per_field(
-        field_tiles,
+        fields,
         [TaipanTarget(row['target_id'], row['ra'], row['dec'],
                       ucposn=(row['ux'], row['uy'], row['uz'])) for
          row in target_stats_array_a] +
