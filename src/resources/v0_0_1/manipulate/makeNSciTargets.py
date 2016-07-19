@@ -78,6 +78,7 @@ def execute(cursor):
     no_completed_targets = len(targets_stats_array)
 
     # Compute the number of targets
+    logging.debug('Compute the number of completed targets on each field')
     tgt_per_field = targets_per_field(
         field_tiles,
         [TaipanTarget(row['target_id'], row['ra'], row['dec'],
@@ -106,6 +107,7 @@ def execute(cursor):
     no_assigned_targets = len(target_stats_array)
 
     # Compute the number of targets
+    logging.debug('Compute the number of assigned targets on each field')
     tgt_per_field = targets_per_field(
         field_tiles,
         [TaipanTarget(row['target_id'], row['ra'], row['dec'],
@@ -158,6 +160,7 @@ def execute(cursor):
         target_stats_array_b
     )
 
+    logging.debug('Compute the number of unassigned targets on each field')
     # Compute the number of targets
     tgt_per_field = targets_per_field(
         field_tiles,
