@@ -76,10 +76,14 @@ def execute(cursor, fields=None):
         fields = field_tiles
     else:
         # Check to see if all the requested fields are present
-        if len(fields) != len([field for field in fields if
-                               field in [x.field_id for x in field_tiles]]):
-            raise ValueError('One of the requested fields could not be found '
-                             'in the database. Please check your inputs.')
+        try:
+            if len(fields) != len([field for field in fields if
+                                   field in [x.field_id for x in field_tiles]]):
+                raise ValueError('One of the requested fields could not be '
+                                 'found in the database. Please check your '
+                                 'inputs.')
+        except TypeError:
+            raise ValueError('fields must be a list (or iterable) of field IDs')
         # Expand the list of fields to include any which overlap with those
         # given as inputs
         logging.debug('Requested fields (total %d): %s' %
