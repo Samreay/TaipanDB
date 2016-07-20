@@ -4,6 +4,7 @@ import logging
 from taipan.core import TaipanTile
 from ....scripts.create import insert_many_rows
 from ....scripts.extract import extract_from, extract_from_joined
+from ..manipulate.makeNSciTargets import execute as mNScTexec
 from ...v0_0_1 import SKY_TARGET_ID
 
 from ..readout import readScience as rSc
@@ -144,6 +145,9 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     logging.debug('Writing tile scores to DB')
     insert_many_rows(cursor, 'tiling_info', tiling_scores,
                      columns=columns_scores)
+
+    logging.debug('Now going to call makeNSciTargets to calculate that')
+    mNScTexec(cursor, fields=fields)
 
     logging.info('Inserting tiles complete!')
     return
