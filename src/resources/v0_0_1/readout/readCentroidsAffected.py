@@ -59,7 +59,8 @@ def execute(cursor, field_list=None, tile_list=None):
     if tile_list is not None:
         req_tileobjs = extract_from_joined(cursor, ['tile','field'],
                                            conditions=[
-                                               ('tile_pk','IN',tile_list),
+                                               ('tile_pk', 'IN',
+                                                tuple(tile_list)),
                                            ],
                                            columns=['tile_pk', 'field_id', 'ra',
                                                     'dec', 'ux', 'uy', 'uz'])
