@@ -7,6 +7,7 @@ from readCentroids import execute as rCexec
 from taipan.core import TaipanTile, targets_in_range, TILE_RADIUS
 
 import numpy as np
+from matplotlib.cbook import flatten
 
 def execute(cursor, field_list=None, tile_list=None):
     """
@@ -77,9 +78,13 @@ def execute(cursor, field_list=None, tile_list=None):
 
     # Compute which of the all-fields list are within range of the requested
     # tiles/fields
-    fields_affected = [f.field_id for f in fields_tileobjs if
-                       np.any([f in targets_in_range(
-                           t.ra, t.dec, fields_tileobjs, TILE_RADIUS
-                       ) for t in req_tileobjs])]
+    # fields_affected = [f.field_id for f in fields_tileobjs if
+    #                    np.any([f in targets_in_range(
+    #                        t.ra, t.dec, fields_tileobjs, TILE_RADIUS
+    #                    ) for t in req_tileobjs])]
+    fields_affected = list(set(list(flatten(
+        [targets_in_range(t.ra, t.dec, fields_tileobjs, TILE_RADIUS) for
+         t in req_tileobjs]
+    ))))
 
     return fields_affected
