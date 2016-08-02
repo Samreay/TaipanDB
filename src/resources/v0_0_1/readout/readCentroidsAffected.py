@@ -49,7 +49,7 @@ def execute(cursor, field_list=None, tile_list=None):
     # Make sure we actually have lists, or something that can be turned into
     # lists
     if tile_list is None:
-        tile_list = list(field_list)
+        field_list = list(field_list)
     else:
         tile_list = list(tile_list)
 
