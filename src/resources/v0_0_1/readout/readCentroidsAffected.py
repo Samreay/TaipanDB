@@ -2,9 +2,9 @@
 # or fields passed as inputs
 
 import logging
-
-from ....scripts.extract import extract_from
+from ....scripts.extract import extract_from, extract_from_joined
 from readCentroids import execute as rCexec
+from taipan.core import TaipanTile
 
 import numpy as np
 
@@ -45,9 +45,27 @@ def execute(cursor, field_list=None, tile_list=None):
         tile_list = None
 
     # By this point, exactly one of field_list/tile_list is None and one isn't
+    # Make sure we actually have lists, or something that can be turned into
+    # lists
     if tile_list is None:
         tile_list = list(field_list)
     else:
         tile_list = list(tile_list)
+
+    # Pull in all of the existing fields
+    fields_tileobjs = rCexec(cursor)
+
+    # Pull in the fields or tiles which have been requested by the user
+    if tile_list is not None:
+        req_tileobjs = extract_from_joined(cursor, ['tile','field'],
+                                           conditions=[
+                                               ('tile_pk','IN',tile_list),
+                                           ],
+                                           columns=['tile_pk', 'field_id', 'ra',
+                                                    'dec', 'ux', 'uy', 'uz'])
+        logging.debug(req_tileobjs)
+    else:
+        req_tileobjs = [f for f in fields_tileobjs if
+                        f.field_id in field_list]
 
     return
