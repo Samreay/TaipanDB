@@ -83,7 +83,8 @@ def execute(cursor, field_list=None, tile_list=None):
     #                        t.ra, t.dec, fields_tileobjs, TILE_RADIUS
     #                    ) for t in req_tileobjs])]
     fields_affected = list(set(list(flatten(
-        [targets_in_range(t.ra, t.dec, fields_tileobjs, TILE_RADIUS) for
+        [(f.field_id for f in
+         targets_in_range(t.ra, t.dec, fields_tileobjs, TILE_RADIUS)) for
          t in req_tileobjs]
     ))))
 
