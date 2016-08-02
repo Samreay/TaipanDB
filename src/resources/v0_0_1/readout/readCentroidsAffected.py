@@ -78,8 +78,8 @@ def execute(cursor, field_list=None, tile_list=None):
     # Compute which of the all-fields list are within range of the requested
     # tiles/fields
     fields_affected = [f.field_id for f in fields_tileobjs if
-                       np.any([(f in targets_in_range(
+                       np.any([f in targets_in_range(
                            t.ra, t.dec, fields_tileobjs, TILE_RADIUS
-                       )) for t in req_tileobjs])]
+                       ) for t in req_tileobjs])]
 
     return fields_affected
