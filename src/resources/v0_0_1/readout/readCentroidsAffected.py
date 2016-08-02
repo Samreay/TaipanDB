@@ -4,7 +4,7 @@
 import logging
 from ....scripts.extract import extract_from, extract_from_joined
 from readCentroids import execute as rCexec
-from taipan.core import TaipanTile
+from taipan.core import TaipanTile, targets_in_range, TILE_RADIUS
 
 import numpy as np
 
@@ -30,7 +30,7 @@ def execute(cursor, field_list=None, tile_list=None):
     Returns
     -------
     field_ids:
-        A numpy structured array of info on fields that may be affected
+        A list of fields that may be affected
         by changes to the fields/tiles in the input lists (i.e. the fields
         that overlap the fields/tiles passed in).
 
@@ -55,18 +55,31 @@ def execute(cursor, field_list=None, tile_list=None):
     # Pull in all of the existing fields
     fields_tileobjs = rCexec(cursor)
 
-    # Pull in the fields or tiles which have been requested by the user
+    # Pull in the fields or tiles which have flagged by the user
     if tile_list is not None:
-        req_tileobjs = extract_from_joined(cursor, ['tile','field'],
+        # Note that we only really want one of each of the fields attached
+        # to the tiles in tile_list
+        req_tileobjs = extract_from_joined(cursor, ['tile', 'field'],
                                            conditions=[
                                                ('tile_pk', 'IN',
                                                 tuple(tile_list)),
                                            ],
-                                           columns=['tile_pk', 'field_id', 'ra',
-                                                    'dec', 'ux', 'uy', 'uz'])
+                                           columns=['field_id', 'ra',
+                                                    'dec', 'ux', 'uy', 'uz'],
+                                           distinct=True)
+        req_tileobjs = [TaipanTile(f['ra'], f['dec'], field_id=f['field_id'],
+                                   ucposn=(f['ux'], f['uy'], f['uz']))
+                        for f in req_tileobjs]
         logging.debug(req_tileobjs)
     else:
         req_tileobjs = [f for f in fields_tileobjs if
                         f.field_id in field_list]
 
-    return
+    # Compute which of the all-fields list are within range of the requested
+    # tiles/fields
+    fields_affected = [f.field_id for f in fields_tileobjs if
+                       np.any([f in targets_in_range(
+                           t['ra'], t['dec'], fields_tileobjs, TILE_RADIUS
+                       ) for t in req_tileobjs])]
+
+    return fields_affected
