@@ -79,7 +79,7 @@ def execute(cursor, field_list=None, tile_list=None):
     # tiles/fields
     fields_affected = [f.field_id for f in fields_tileobjs if
                        np.any([f in targets_in_range(
-                           t['ra'], t['dec'], fields_tileobjs, TILE_RADIUS
+                           t.ra, t.dec, fields_tileobjs, TILE_RADIUS
                        ) for t in req_tileobjs])]
 
     return fields_affected
