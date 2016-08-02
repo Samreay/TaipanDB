@@ -4,7 +4,7 @@
 import logging
 from ....scripts.extract import extract_from, extract_from_joined
 from readCentroids import execute as rCexec
-from taipan.core import TaipanTile, targets_in_range, TILE_RADIUS
+from taipan.core import TaipanTile, targets_in_range, TILE_DIAMETER
 
 import numpy as np
 from matplotlib.cbook import flatten
@@ -80,11 +80,11 @@ def execute(cursor, field_list=None, tile_list=None):
     # tiles/fields
     # fields_affected = [f.field_id for f in fields_tileobjs if
     #                    np.any([f in targets_in_range(
-    #                        t.ra, t.dec, fields_tileobjs, TILE_RADIUS
+    #                        t.ra, t.dec, fields_tileobjs, TILE_DIAMETER
     #                    ) for t in req_tileobjs])]
     fields_affected = list(set(list(flatten(
         [(f.field_id for f in
-         targets_in_range(t.ra, t.dec, fields_tileobjs, TILE_RADIUS)) for
+         targets_in_range(t.ra, t.dec, fields_tileobjs, TILE_DIAMETER)) for
          t in req_tileobjs]
     ))))
 
