@@ -9,6 +9,7 @@ from taipan.core import TaipanTile, targets_in_range, TILE_DIAMETER
 import numpy as np
 from matplotlib.cbook import flatten
 
+
 def execute(cursor, field_list=None, tile_list=None):
     """
     Calculate which fields will be affected by changes to the fields/tiles

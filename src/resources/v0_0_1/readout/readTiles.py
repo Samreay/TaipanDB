@@ -34,7 +34,6 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
     return_targets = False
 
     if cursor is None and (candidate_targets is None or
-                           guide_targets is None or
                            standard_targets is None):
         raise RuntimeError('If using readTiles without a cursor, '
                            'you must provide all three target lists')
