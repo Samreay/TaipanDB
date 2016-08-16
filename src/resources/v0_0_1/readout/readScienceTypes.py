@@ -6,6 +6,25 @@ from taipan.core import TaipanTarget
 
 
 def execute(cursor, target_ids=None):
+    """
+    Retrieve an array of target IDs and associated types.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for communicating with the database
+    target_ids:
+        Optional list of target_ids to return. Defaults to None, at which point
+        all targets in the database are returned.
+
+    Returns
+    -------
+    targets_db:
+        A numpy structured array of data from the science_target table in the
+        database. Each row is of the format [target_id, is_vpec_target,
+        is_HO_target, is_lowz_target].
+
+    """
     logging.info('Reading science targets (types) from database')
 
     if target_ids is None:
