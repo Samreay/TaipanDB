@@ -3,6 +3,7 @@ import sys
 import os
 from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
+from matplotlib.cbook import flatten
 
 
 def execute(cursor, tile_pk):
@@ -36,4 +37,4 @@ def execute(cursor, tile_pk):
                                      columns=['target_id'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
-    return targets_db
+    return list(flatten(targets_db))
