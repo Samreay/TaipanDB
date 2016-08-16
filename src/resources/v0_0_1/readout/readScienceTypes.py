@@ -28,7 +28,6 @@ def execute(cursor, target_ids=None):
     logging.info('Reading science targets (types) from database')
 
     if target_ids is not None:
-        # TODO Implement conditions extract
         conditions = [('target_id', 'IN', tuple(target_ids)), ]
     else:
         conditions = None
