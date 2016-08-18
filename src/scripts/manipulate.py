@@ -190,5 +190,6 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
         ])
         string += 'WHERE ' + conditions_string
 
+    logging.debug(string)
     cursor.execute(string)
     return
