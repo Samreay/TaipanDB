@@ -160,7 +160,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
                        " FROM information_schema.columns"
                        " WHERE table_name='%s'" % (table,))
         columns = cursor.fetchall()
-        columns = list([c[0] for c in columns])
+        # columns = list([c[0] for c in columns])
         logging.debug(columns)
     else:
         # Going to do input checking, need to return now
@@ -172,11 +172,11 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
             (ref_column is not None and ref_values is None):
         raise ValueError('ref_column and ref_values must both be passed or '
                          'both left as None')
-    if column not in columns:
-        raise ValueError('column %s not found in %s' % (column, table, ))
-    if ref_column is not None and ref_column not in columns:
-        raise ValueError('reference column %s not found in %s' %
-                         (column, table, ))
+    # if column not in columns:
+    #     raise ValueError('column %s not found in %s' % (column, table, ))
+    # if ref_column is not None and ref_column not in columns:
+    #     raise ValueError('reference column %s not found in %s' %
+    #                      (column, table, ))
     if ref_values is not None:
         # List-ize the ref_values in case a lone value was passed
         ref_values = list(ref_values)
@@ -188,6 +188,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
         conditions_string = generate_conditions_string([
             (ref_column, 'IN', ref_values),
         ])
+        string += conditions_string
 
     cursor.execute(string)
     return
