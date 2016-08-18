@@ -160,7 +160,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
                        " FROM information_schema.columns"
                        " WHERE table_name='%s'" % (table,))
         columns = cursor.fetchall()
-        columns = list([columns[0] for column in columns])
+        columns = list([c[0] for c in columns])
         logging.debug(columns)
     else:
         # Going to do input checking, need to return now
