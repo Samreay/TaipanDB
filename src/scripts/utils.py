@@ -6,7 +6,7 @@ def str_psql(x):
         if 'VALUES' not in x and x[0] != '(' and x != 'NULL':
             return "'%s'" % (x,)
     if isinstance(x, list) or isinstance(x, tuple):
-        return '(%s)' % ','.join(x)
+        return '(%s)' % ','.join(str(a) for a in x)
     return str(x)
 
 
