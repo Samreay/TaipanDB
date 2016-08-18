@@ -146,7 +146,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     insert_many_rows(cursor, 'tiling_info', tiling_scores,
                      columns=columns_scores)
 
-    logging.debug('Now going to call makeNSciTargets to calculate that')
+    logging.debug('Now going to call makeNSciTargets to calculate the '
+                  'remaining scores')
     mNScTexec(cursor, fields=fields)
 
     logging.info('Inserting tiles complete!')
