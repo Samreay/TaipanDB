@@ -5,13 +5,13 @@ from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
 
 
-def execute(cursor, conditions=None):
+def execute(cursor, unobserved=False):
     """
     Extract science targets from the database
     Parameters
     ----------
     cursor
-    conditions
+    unobserved
 
     Returns
     -------
@@ -19,8 +19,10 @@ def execute(cursor, conditions=None):
     """
     logging.info('Reading science targets from database')
 
-    if conditions is None:
-        conditions = []
+    conditions = []
+
+    if unobserved:
+        conditions += [('is_observed', 'IS', False)]
 
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
                                      conditions=conditions + [
