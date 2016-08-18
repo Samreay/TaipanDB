@@ -188,7 +188,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
         conditions_string = generate_conditions_string([
             (ref_column, 'IN', ref_values),
         ])
-        string += conditions_string
+        string += 'WHERE ' + conditions_string
 
     cursor.execute(string)
     return
