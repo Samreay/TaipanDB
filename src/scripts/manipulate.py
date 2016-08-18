@@ -121,3 +121,71 @@ def update_rows(cursor, table, data, columns=None):
                      % (len(data), ', '.join(columns), table,))
 
     return
+
+
+def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
+                   inc=1):
+    """
+    Increment the values of a particular column for a particular set of rows.
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for communicating with the database
+    table:
+        The database table holding the column needing incrementing
+    column:
+        The column to be incremented.
+    ref_column:
+        Optional; the reference column for checking which rows to increment.
+        Is paired with ref_values, which must be passed if ref_column is.
+        Defaults to None, such that all rows will have 'column' incremented.
+    ref_values:
+        Optional; a single value of list of values for checking which rows
+        to increment. Rows will only be incremented if the row's ref_column
+        value is in ref_values. Must be passed with ref_column. Defaults to
+        None, such that all rows will have 'column' incremented.
+    inc:
+        Optional; integer, specifying the amount to increment. Defaults to 1.
+
+    Returns
+    -------
+    Nil. Database is updated in-situ.
+    """
+
+    logging.info('Incrementing data into table %s' % table)
+    # Get the column names
+    if cursor is not None:
+        # Get the columns from the table itself
+        cursor.execute("SELECT column_name"
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table,))
+        columns = cursor.fetchall()
+    else:
+        # Going to do input checking, need to return now
+        logging.warning('Cursor is None, not performing database actions')
+        return
+
+    # Input checking
+    if (ref_column is None and ref_values is not None) or \
+            (ref_column is not None and ref_values is None):
+        raise ValueError('ref_column and ref_values must both be passed or '
+                         'both left as None')
+    if column not in columns:
+        raise ValueError('column %s not found in %s' % (column, table, ))
+    if ref_column is not None and ref_column not in columns:
+        raise ValueError('reference column %s not found in %s' %
+                         (column, table, ))
+    if ref_values is not None:
+        # List-ize the ref_values in case a lone value was passed
+        ref_values = list(ref_values)
+
+    # Construct the database query string
+    string = 'UPDATE %s ' % (table, )
+    string += 'SET %s = %s + %d ' % (column, column, inc)
+    if ref_column is not None:
+        conditions_string = generate_conditions_string([
+            (ref_column, 'IN', ref_values),
+        ])
+
+    cursor.execute(string)
+    return
