@@ -186,7 +186,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
     string += 'SET %s = %s + %d ' % (column, column, inc)
     if ref_column is not None:
         conditions_string = generate_conditions_string([
-            (ref_column, 'IN', ref_values),
+            (ref_column, 'IN', tuple(ref_values)),
         ])
         string += 'WHERE ' + conditions_string
 
