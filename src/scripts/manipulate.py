@@ -160,6 +160,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
                        " FROM information_schema.columns"
                        " WHERE table_name='%s'" % (table,))
         columns = cursor.fetchall()
+        logging.debug(columns)
     else:
         # Going to do input checking, need to return now
         logging.warning('Cursor is None, not performing database actions')
