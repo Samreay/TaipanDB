@@ -36,11 +36,11 @@ def execute(cursor, target_ids, set_done=True):
     # Set the visits value of the rows back to 0
     update_visits = list([[id, 0] for id in target_ids])
     update_rows(cursor, 'science_target', update_visits,
-                columns['target_id', 'visits'])
+                columns=['target_id', 'visits'])
 
     if set_done:
         update_done = list([[id, True] for id in target_ids])
         update_rows(cursor, 'science_target', update_done,
-                    columns['target_id', 'done'])
+                    columns=['target_id', 'done'])
 
     return
