@@ -22,7 +22,7 @@ def execute(cursor, unobserved=False):
     conditions = []
 
     if unobserved:
-        conditions += [('is_observed', 'IS', False)]
+        conditions += [('done', 'IS', False)]
 
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
                                      conditions=conditions + [
