@@ -5,6 +5,20 @@ from ....scripts.extract import extract_from
 from taipan.core import TaipanTarget
 
 def execute(cursor):
+    """
+    Read standard targets from the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+
+    Returns
+    -------
+    return_objects:
+        List of TaipanTarget objects corresponding to the standards listed in
+        the database.
+    """
     logging.info('Reading standards from database')
 
     standards_db = extract_from(cursor, 'target',

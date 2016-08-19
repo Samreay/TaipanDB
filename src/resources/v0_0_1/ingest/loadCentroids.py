@@ -9,7 +9,21 @@ from taipan.core import polar2cart
 
 
 def execute(cursor, fields_file=None):
-    """Load field pointings from file to database"""
+    """
+    Load field pointings from file to database
+
+    Inputs
+    ------
+    cursor:
+        psycopg2 cursor for interacting with the database
+    fields_file:
+        Path and name of the file holding the field information. Defaults to
+        None, at which point the function will abort.
+
+    Returns
+    -------
+    Nil. Fields are loaded into the database.
+    """
 
     logging.info("Loading Centroids")
 

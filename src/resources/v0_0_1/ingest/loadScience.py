@@ -5,6 +5,21 @@ from taipan.core import polar2cart
 
 
 def execute(cursor, science_file=None):
+    """
+    Load science targets from file into the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    science_file:
+        File to load the science targets from. Defaults to None, at which point
+        the function will abort.
+
+    Returns
+    -------
+    Nil. Science targets are loaded into the database.
+    """
     logging.info("Loading Science")
 
     if not science_file:

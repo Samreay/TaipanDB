@@ -6,6 +6,21 @@ from ...v0_0_1 import SKY_TARGET_ID
 
 
 def execute(cursor, standards_file=None):
+    """
+    Load standard targets from file into the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    standards_file:
+        File to load the standard targets from. Defaults to None, at which point
+        the function will abort.
+
+    Returns
+    -------
+    Nil. Standard targets are loaded into the database.
+    """
     logging.info("Loading Standards")
 
     if not standards_file:

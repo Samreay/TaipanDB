@@ -5,6 +5,21 @@ from astropy.table import Table
 
 
 def execute(cursor, guides_file=None):
+    """
+    Insert guide targets from file into the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    guides_file:
+        The file from which to load guides. Defaults to None, at which point
+        the function will abort.
+
+    Returns
+    -------
+    Nil. Guide targets are inserted into the database.
+    """
     logging.info("Loading Guides")
 
     if not guides_file:

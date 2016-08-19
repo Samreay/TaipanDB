@@ -16,10 +16,16 @@ def execute(cursor, metrics=None, unobserved_only=True):
         A list of metrics to return, corresponding to the columns of
         the tiling_info table to send back.
         Defaults to None, at which point all metrics will be sent back.
+    unobserved_only:
+        Optional; Boolean value denoting whether to only return targets
+        not marked as done (True) or all targets (False). Defaults to
+        True.
 
     Returns
     -------
-
+    tile_scores:
+        A structure numpy array containing the requested tile ID and
+        score metrics.
     """
 
     if cursor is None:

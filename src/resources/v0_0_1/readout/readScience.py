@@ -8,14 +8,19 @@ from taipan.core import TaipanTarget
 def execute(cursor, unobserved=False):
     """
     Extract science targets from the database
+
     Parameters
     ----------
-    cursor
-    unobserved
+    cursor:
+        psycopg2 cursor for interacting with the database
+    unobserved:
+        Optional; Boolean value denoting whether to only return targets
+        not marked as done (True) or all targets (False). Defaults to False.
 
     Returns
     -------
-
+    return_objects:
+        A list of TaipanTargets corresponding to the requested targets.
     """
     logging.info('Reading science targets from database')
 

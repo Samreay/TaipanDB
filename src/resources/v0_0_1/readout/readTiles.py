@@ -30,6 +30,27 @@ def index(a, x):
 
 def execute(cursor, candidate_targets=None, guide_targets=None,
             standard_targets=None):
+    """
+    Return a list of tiles from the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database
+    candidate_targets, guide_targets, standard_targets:
+        Optional; lists of TaipanTargets corresponding to science targets,
+        guide targets and standard targets, which are required to be
+        assigned to the TaipanTiles being returned. Defaults to None, at
+        which point the lists will be read in from the database.
+
+    Returns
+    -------
+    tile_list[, candidate_targets, guide_targets, standard_targets]:
+        A list of TaipanTile objects corresponding to the tiles in the
+        database. If target lists are not passed into the function, the
+        function will return the target lists it generates (so that repeat
+        calls to this function do not need to repeatedly read the lists).
+    """
 
     return_targets = False
 

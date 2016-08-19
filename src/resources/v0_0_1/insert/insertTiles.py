@@ -10,25 +10,45 @@ from ...v0_0_1 import SKY_TARGET_ID
 from ..readout import readScience as rSc
 
 
-def compute_sci_targets_complete(cursor, tile, tgt_list):
-    """
-    Compute the number of science targets remaining in a particular field
-
-    Parameters
-    ----------
-    tile
-    tgt_list
-
-    Returns
-    -------
-
-    """
-
-    # Get the list of targets
-    query_result = rSc.execute(cursor)
+# def compute_sci_targets_complete(cursor, tile, tgt_list):
+#     """
+#     Compute the number of science targets remaining in a particular field
+#
+#     Parameters
+#     ----------
+#     tile
+#     tgt_list
+#
+#     Returns
+#     -------
+#
+#     """
+#
+#     # Get the list of targets
+#     query_result = rSc.execute(cursor)
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False):
+    """
+    Insert the given tiles into the database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database
+    tile_list:
+        A list of TaipanTile objects to write into the database
+    is_queued:
+        Optional; whether the passed tiles should be considered queued or not.
+        Defaults to False.
+    is_observed:
+        Optional; whether the passed tiles should be considered observed.
+        Defaults to False.
+
+    Returns
+    -------
+    Nil. Tiles are pushed into the database.
+    """
     logging.info('Inserting tiles into database...')
 
     if not tile_list:
