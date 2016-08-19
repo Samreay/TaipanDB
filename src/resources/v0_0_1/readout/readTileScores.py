@@ -4,7 +4,7 @@ from ....scripts.extract import execute_select, extract_from_joined, get_columns
 import numpy as np
 
 
-def execute(cursor, metrics=None):
+def execute(cursor, metrics=None, unobserved_only=True):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
@@ -50,10 +50,15 @@ def execute(cursor, metrics=None):
     for i in to_pop[::-1]:
         burn = metrics.pop(i)
 
+    if unobserved_only:
+        conditions = [
+            ('is_observed', '=', False),
+        ]
+    else:
+        conditions = []
+
     # Fetch the metrics from the tiling info table
     return extract_from_joined(cursor, ['field', 'tile', 'tiling_info', ],
-                               conditions=[
-                                   ('is_observed', '=', False),
-                               ],
+                               conditions=conditions,
                                columns=
                                ['tile_pk', 'field_id', 'ra', 'dec'] + metrics)
