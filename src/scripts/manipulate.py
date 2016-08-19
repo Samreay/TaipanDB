@@ -178,6 +178,10 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
     #     raise ValueError('reference column %s not found in %s' %
     #                      (column, table, ))
     if ref_values is not None:
+        # Check if the list has zero-length; if so, we can abort now
+        if len(ref_values) == 0:
+            logging.debug('No rows need incrementing - exiting increment_rows')
+            return
         # List-ize the ref_values in case a lone value was passed
         ref_values = list(ref_values)
 
