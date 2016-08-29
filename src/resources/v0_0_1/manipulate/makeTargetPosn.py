@@ -9,7 +9,7 @@ from ..readout.readCentroids import execute as rCexec
 from ....scripts.create import insert_many_rows
 
 
-def execute(cursor, target_ids=None):
+def execute(cursor, target_ids=None, field_ids=None):
     """
     Compute which field(s) the targets reside in and store this information
     to the target_posn database.
@@ -22,6 +22,10 @@ def execute(cursor, target_ids=None):
         Optional list of target_ids to compute fields for. Defaults to None,
         at which point all targets will be extracted from the database and
         investigated.
+    field_ids:
+        Optional list of field_ids to compute against the target list.
+        Defaults to None, at which point all fields in the database will be
+        involved in the calculation.
 
     Returns
     -------
@@ -31,8 +35,8 @@ def execute(cursor, target_ids=None):
     # Extract all the targets from the database
     targets = rScexec(cursor, unobserved=False, target_ids=target_ids)
 
-    # Extract all the fields
-    fields = rCexec(cursor)
+    # Extract all the requested fields
+    fields = rCexec(cursor, field_ids=field_ids)
 
     target_field_relations = []
     # Compute the relationship between the targets and the fields, and log

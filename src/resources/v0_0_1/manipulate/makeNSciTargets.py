@@ -70,6 +70,7 @@ def execute(cursor, fields=None):
     # multiple fields
 
     # Read in the fields information
+    # We need to read *all* fields so we can find the overlaps
     field_tiles = rCexec(cursor)
 
     if fields is None:
