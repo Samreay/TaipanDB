@@ -42,7 +42,7 @@ def execute(cursor, target_ids=None):
 
         # Append this information to the list of values to write back
         for tgt in avail_targets:
-            target_field_relations.append((tgt.target_id, field.field_id))
+            target_field_relations.append((tgt.idn, field.field_id))
 
     # Write the information back to the DB
     insert_many_rows(cursor, 'target_posn', target_field_relations)
