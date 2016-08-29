@@ -8,6 +8,7 @@ from ..readout.readCentroids import execute as rCexec
 
 from ....scripts.create import insert_many_rows
 
+
 def execute(cursor, target_ids=None):
     """
     Compute which field(s) the targets reside in and store this information
@@ -36,7 +37,9 @@ def execute(cursor, target_ids=None):
     target_field_relations = []
     # Compute the relationship between the targets and the fields, and log
     # them for insertion into the target_posn database
+    logging.info('Computing target positions in each field')
     for field in fields:
+        logging.debug('Computing targets for field %d' % field.field_id)
         # Compute which targets are within the field
         avail_targets = field.available_targets(targets)
 
