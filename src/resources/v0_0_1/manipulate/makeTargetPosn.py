@@ -45,7 +45,7 @@ def execute(cursor, target_ids=None, field_ids=None):
     for field in fields:
         logging.debug('Computing targets for field %d' % field.field_id)
         # Compute which targets are within the field
-        avail_targets = field.available_targets(targets)1
+        avail_targets = field.available_targets(targets)
 
         # Append this information to the list of values to write back
         for tgt in avail_targets:
