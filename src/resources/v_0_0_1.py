@@ -1,6 +1,6 @@
 from ..scripts import create
 from .v0_0_1.ingest import loadGuides, loadScience, loadCentroids, loadStandards
-from .v0_0_1.manipulate import makeScienceDiff
+from .v0_0_1.manipulate import makeScienceDiff, makeTargetPosn
 
 import os
 
@@ -27,3 +27,5 @@ def update(cursor):
     loadScience.execute(cursor, science_file=science_file)
 
     makeScienceDiff.execute(cursor)
+
+    makeTargetPosn.execute(cursor)

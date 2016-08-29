@@ -5,7 +5,7 @@ from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
 
 
-def execute(cursor, unobserved=False):
+def execute(cursor, unobserved=False, target_ids=None):
     """
     Extract science targets from the database
 
@@ -16,6 +16,10 @@ def execute(cursor, unobserved=False):
     unobserved:
         Optional; Boolean value denoting whether to only return targets
         not marked as done (True) or all targets (False). Defaults to False.
+    target_ids:
+        Optional; list of target_ids corresponding to the targets to extract
+        from the database. Defaults to None, at which point all targets present
+        will be extracted.
 
     Returns
     -------
@@ -28,6 +32,8 @@ def execute(cursor, unobserved=False):
 
     if unobserved:
         conditions += [('done', 'IS', False)]
+    if target_ids is not None:
+        conditions += [('target_id', 'IN', target_ids)]
 
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
                                      conditions=conditions + [

@@ -1,0 +1,5 @@
+# target_posn table
+# Used for storing which field(s) a target is within
+name        type        nullable        default_value       foreign_key_table   pk      unit    unique  description
+target_id   bigint      None            None                target              False   None    False   "Target id"
+field_id    integer     None            None                field_id            False   None    False   "Tile id"
