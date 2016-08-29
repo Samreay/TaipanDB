@@ -45,14 +45,15 @@ def execute(cursor, target_ids=None, field_ids=None):
     for field in fields:
         logging.debug('Computing targets for field %d' % field.field_id)
         # Compute which targets are within the field
-        avail_targets = field.available_targets(targets)
+        avail_targets = field.available_targets(targets)1
 
         # Append this information to the list of values to write back
         for tgt in avail_targets:
             target_field_relations.append((tgt.idn, field.field_id))
 
     # Write the information back to the DB
-    insert_many_rows(cursor, 'target_posn', target_field_relations)
+    insert_many_rows(cursor, 'target_posn', target_field_relations,
+                     columns=['target_id', 'field_id'])
 
     return
 
