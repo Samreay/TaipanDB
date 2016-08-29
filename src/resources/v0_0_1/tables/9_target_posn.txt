@@ -1,6 +1,5 @@
 # target_posn table
 # Used for storing which field(s) a target is within
 name        type        nullable        default_value       foreign_key_table   pk      unit    unique  description
-pk          bigserial   False           None                None                True    None    True    "PK (internal use)"
-target_id   bigint      None            None                target              False   None    False   "Target id"
-field_id    integer     None            None                field               False   None    False   "Tile id"
+target_id   bigint      False           None                target              True    None    False   "Target id"
+field_id    integer     False           None                field               True    None    False   "Tile id"
