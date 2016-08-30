@@ -136,9 +136,10 @@ def execute(cursor, fields=None):
     for field in fields:
         tgt_per_field.append([field, len([x for x in targets_complete if
                                           x[1] == field])])
-    logging.debug(tgt_per_field)
-    update_rows(cursor, 'tiling_info', tgt_per_field,
-                columns=['field_id', 'n_sci_obs'])
+    if len(tgt_per_field) > 0:
+        logging.debug(tgt_per_field)
+        update_rows(cursor, 'tiling_info', tgt_per_field,
+                    columns=['field_id', 'n_sci_obs'])
 
 
     # Read targets that are assigned, but yet to be observed
@@ -182,8 +183,9 @@ def execute(cursor, fields=None):
                               len([x for x in targets_assigned if
                                    targets_assigned[1] == field])])
     logging.debug(tgt_per_field)
-    update_rows(cursor, 'tiling_info', tgt_per_field,
-                columns=['field_id', 'n_sci_alloc'])
+    if len(tgt_per_field) > 0:
+        update_rows(cursor, 'tiling_info', tgt_per_field,
+                    columns=['field_id', 'n_sci_alloc'])
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -242,8 +244,9 @@ def execute(cursor, fields=None):
                               len([x for x in target_stats_array if
                                    target_stats_array[1] == field])])
     logging.debug(tgt_per_field)
-    update_rows(cursor, 'tiling_info', tgt_per_field,
-                columns=['field_id', 'n_sci_rem'])
+    if len(tgt_per_field) > 0:
+        update_rows(cursor, 'tiling_info', tgt_per_field,
+                    columns=['field_id', 'n_sci_rem'])
 
     logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
                   (no_completed_targets + no_assigned_targets +
