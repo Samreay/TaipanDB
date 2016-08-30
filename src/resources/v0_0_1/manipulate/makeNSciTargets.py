@@ -132,8 +132,8 @@ def execute(cursor, fields=None):
                                            columns=['target_id', 'field_id'])
     tgt_per_field = []
     for field in list(set(_[1] for _ in targets_complete)):
-        tgt_per_field.append((field, len([x for x in targets_complete if
-                                          x[1] == field])))
+        tgt_per_field.append([field, len([x for x in targets_complete if
+                                          x[1] == field])])
     logging.debug(tgt_per_field)
     update_rows(cursor, 'tiling_info', tgt_per_field,
                 columns=['field_id', 'n_sci_obs'])
@@ -176,9 +176,9 @@ def execute(cursor, fields=None):
                                            columns=['target_id', 'field_id'])
     tgt_per_field = []
     for field in list(set([_[1] for _ in targets_assigned])):
-        tgt_per_field.append((field,
+        tgt_per_field.append([field,
                               len([x for x in targets_assigned if
-                                   targets_assigned[1] == field])))
+                                   targets_assigned[1] == field])])
     logging.debug(tgt_per_field)
     update_rows(cursor, 'tiling_info', tgt_per_field,
                 columns=['field_id', 'n_sci_alloc'])
@@ -236,9 +236,9 @@ def execute(cursor, fields=None):
     target_stats_array = target_stats_array_a + target_stats_array_b
     tgt_per_field = []
     for field in list(set([_[1] for _ in target_stats_array])):
-        tgt_per_field.append((field,
+        tgt_per_field.append([field,
                               len([x for x in target_stats_array if
-                                   target_stats_array[1] == field])))
+                                   target_stats_array[1] == field])])
     logging.debug(tgt_per_field)
     update_rows(cursor, 'tiling_info', tgt_per_field,
                 columns=['field_id', 'n_sci_rem'])
