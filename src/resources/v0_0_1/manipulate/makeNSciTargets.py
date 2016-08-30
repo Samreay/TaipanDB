@@ -128,10 +128,12 @@ def execute(cursor, fields=None):
                                            ['target_posn', 'science_target'],
                                            conditions=[
                                                ('done', '=', True),
+                                               ('field_id', 'IN', fields)
                                            ],
                                            columns=['target_id', 'field_id'])
     tgt_per_field = []
-    for field in list(set(_[1] for _ in targets_complete)):
+    # for field in list(set(_[1] for _ in targets_complete)):
+    for field in fields:
         tgt_per_field.append([field, len([x for x in targets_complete if
                                           x[1] == field])])
     logging.debug(tgt_per_field)
