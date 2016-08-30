@@ -51,7 +51,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     """
     logging.info('Inserting tiles into database...')
 
-    if not tile_list:
+    if not tile_list or len(tile_list) == 0:
         logging.info('No list of tiles passed - aborting insert')
         return
 
