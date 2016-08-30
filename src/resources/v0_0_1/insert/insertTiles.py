@@ -168,7 +168,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     logging.debug('Now going to call makeNSciTargets to calculate the '
                   'remaining scores')
-    mNScTexec(cursor, fields=fields)
+    mNScTexec(cursor, fields=list(set(t.field_id for t in tile_list)))
 
     logging.info('Inserting tiles complete!')
     return
