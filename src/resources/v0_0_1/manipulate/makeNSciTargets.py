@@ -74,7 +74,7 @@ def execute(cursor, fields=None):
     field_tiles = rCexec(cursor)
 
     if fields is None:
-        fields = field_tiles
+        fields = [field.field_id for field in field_tiles]
     else:
         # Check to see if all the requested fields are present
         try:
