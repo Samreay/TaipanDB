@@ -133,11 +133,11 @@ def execute(cursor, fields=None):
                                            columns=['field_id'])
     # tgt_per_field = []
     # for field in list(set(_[1] for _ in targets_complete)):
-    logging.debug('Counting targets per field')
-    tgt_per_field = [[field, len(targets_complete) -
-                      np.count_nonzero(targets_complete - field)]
-                     for field in fields]
-    if len(tgt_per_field) > 0:
+    if len(targets_complete) > 0:
+        logging.debug('Counting targets per field')
+        tgt_per_field = [[field, len(targets_complete) -
+                          np.count_nonzero(targets_complete - field)]
+                         for field in fields]
         logging.debug(tgt_per_field)
         logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
@@ -181,16 +181,15 @@ def execute(cursor, fields=None):
                                            columns=['field_id'])
     # tgt_per_field = []
     # fields_array = np.asarray([_[1] for _ in targets_assigned])
-    logging.debug('Counting targets per field')
-    # for field in list(set([_[1] for _ in targets_assigned])):
-    #     tgt_per_field.append([field,
-    #                           len([x for x in targets_assigned if
-    #                                targets_assigned[1] == field])])
-    tgt_per_field = [[field, len(targets_assigned) -
-                      np.count_nonzero(targets_assigned - field)]
-                     for field in fields]
-    logging.debug(tgt_per_field)
-    if len(tgt_per_field) > 0:
+    if len(targets_assigned) > 0:
+        logging.debug('Counting targets per field')
+        # for field in list(set([_[1] for _ in targets_assigned])):
+        #     tgt_per_field.append([field,
+        #                           len([x for x in targets_assigned if
+        #                                targets_assigned[1] == field])])
+        tgt_per_field = [[field, len(targets_assigned) -
+                          np.count_nonzero(targets_assigned - field)]
+                         for field in fields]
         logging.debug('Writing target counts to database...')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_alloc'])
@@ -248,12 +247,12 @@ def execute(cursor, fields=None):
     target_stats_array = np.concatenate((target_stats_array_a,
                                          target_stats_array_b))
     # tgt_per_field = []
-    logging.debug('Counting targets per field')
-    tgt_per_field = [[field, len(target_stats_array) -
-                      np.count_nonzero(target_stats_array - field)]
-                     for field in fields]
-    logging.debug(tgt_per_field)
-    if len(tgt_per_field) > 0:
+    if len(target_stats_array) > 0:
+        logging.debug('Counting targets per field')
+        tgt_per_field = [[field, len(target_stats_array) -
+                          np.count_nonzero(target_stats_array - field)]
+                         for field in fields]
+        logging.debug(tgt_per_field)
         logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_rem'])
