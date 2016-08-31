@@ -226,6 +226,7 @@ def execute(cursor, fields=None):
                 ('is_science', '=', True),
                 ('done', '=', False),
                 ('tile_pk', 'IS', 'NULL'),
+                ('field_id', 'IS NOT', 'NULL'),
             ],
             columns=['field_id']),
         dtype=int)
