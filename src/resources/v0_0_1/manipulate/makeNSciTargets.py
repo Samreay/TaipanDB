@@ -231,8 +231,8 @@ def execute(cursor, fields=None):
             columns=['field_id']),
         dtype=int)
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
-    logging.debug('Array column names: %s' %
-                  ', '.join(target_stats_array_b.dtype.names))
+    # logging.debug('Array column names: %s' %
+    #               ', '.join(target_stats_array_b.dtype.names))
     # target_stats_array = np.concatenate((target_stats_array_a,
     #                                      target_stats_array_b, ))
     # logging.debug('Extracted %d assigned targets (%d from no assignments, '
