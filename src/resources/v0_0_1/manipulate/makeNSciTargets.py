@@ -248,11 +248,11 @@ def execute(cursor, fields=None):
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_rem'])
 
-    logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
-                  (no_completed_targets + no_assigned_targets +
-                   no_remaining_targets,
-                   no_completed_targets,
-                   no_assigned_targets,
-                   no_remaining_targets))
+    # logging.debug('Found %d targets (%d done, %d assigned, %d remaining)' %
+    #               (no_completed_targets + no_assigned_targets +
+    #                no_remaining_targets,
+    #                no_completed_targets,
+    #                no_assigned_targets,
+    #                no_remaining_targets))
 
     return
