@@ -221,14 +221,14 @@ def execute(cursor, fields=None):
         extract_from_left_joined(
             cursor,
             ['target', 'target_posn', 'science_target', 'target_field'],
-            'target.target_id',
+            'target_id',
             conditions=[
                 ('is_science', '=', True),
                 ('done', '=', False),
                 ('tile_pk', 'IS', 'NULL'),
                 ('field_id', 'IS NOT', 'NULL'),
             ],
-            columns=['field_id']),
+            columns=['target.field_id']),
         dtype=int)
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
     # logging.debug('Array column names: %s' %
