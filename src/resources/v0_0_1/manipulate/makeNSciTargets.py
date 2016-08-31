@@ -180,11 +180,15 @@ def execute(cursor, fields=None):
                                            ],
                                            columns=['target_id', 'field_id'])
     tgt_per_field = []
+    fields_array = np.asarray([_[1] for _ in targets_assigned])
     logging.debug('Counting targets per field')
-    for field in list(set([_[1] for _ in targets_assigned])):
-        tgt_per_field.append([field,
-                              len([x for x in targets_assigned if
-                                   targets_assigned[1] == field])])
+    # for field in list(set([_[1] for _ in targets_assigned])):
+    #     tgt_per_field.append([field,
+    #                           len([x for x in targets_assigned if
+    #                                targets_assigned[1] == field])])
+    tgt_per_field = [[field, len(fields_array) -
+                      np.count_nonzero(fields_array - field)]
+                     for field in fields]
     logging.debug(tgt_per_field)
     if len(tgt_per_field) > 0:
         logging.debug('Writing target counts to database...')
