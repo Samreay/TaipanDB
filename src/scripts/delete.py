@@ -36,14 +36,11 @@ def delete_rows(cursor, table, conditions=None):
                        " WHERE table_name='%s'" % (table, ))
         table_structure = cursor.fetchall()
         logging.debug(table_structure)
-        table_columns, dtypes = zip(*table_structure)
-        if columns is None:
-            columns = table_columns
-        else:
-            columns_lower = [x.lower() for x in columns]
-            dtypes = [dtypes[i] for i in range(len(dtypes))
-                      if table_columns[i].lower()
-                      in columns_lower]
+        columns, dtypes = zip(*table_structure)
+        columns_lower = [x.lower() for x in columns]
+        dtypes = [dtypes[i] for i in range(len(dtypes))
+                  if table_columns[i].lower()
+                  in columns_lower]
 
     string = 'DELETE * FROM %s' % table
 
