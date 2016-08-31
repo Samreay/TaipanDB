@@ -39,7 +39,7 @@ def delete_rows(cursor, table, conditions=None):
         columns, dtypes = zip(*table_structure)
         columns_lower = [x.lower() for x in columns]
         dtypes = [dtypes[i] for i in range(len(dtypes))
-                  if table_columns[i].lower()
+                  if columns[i].lower()
                   in columns_lower]
 
     string = 'DELETE * FROM %s' % table
