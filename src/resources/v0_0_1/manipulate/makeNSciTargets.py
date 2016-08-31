@@ -226,9 +226,9 @@ def execute(cursor, fields=None):
                 ('is_science', '=', True),
                 ('done', '=', False),
                 ('tile_pk', 'IS', 'NULL'),
-                ('field_id', 'IS NOT', 'NULL'),
+                ('target_field.field_id', 'IS', 'NULL'),
             ],
-            columns=['target.field_id']),
+            columns=['field_id']),
         dtype=int)
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
     # logging.debug('Array column names: %s' %
