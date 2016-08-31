@@ -136,7 +136,7 @@ def execute(cursor, fields=None):
                                                ],
                                                columns=['target_id',
                                                         'field_id'])
-        tgt_per_field.append(field, len(targets_complete))
+        tgt_per_field.append([field, len(targets_complete)])
     # for field in list(set(_[1] for _ in targets_complete)):
     # for field in fields:
     #     tgt_per_field.append([field, len([x for x in targets_complete if
@@ -186,7 +186,7 @@ def execute(cursor, fields=None):
                                                ],
                                                columns=['target_id',
                                                         'field_id'])
-        tgt_per_field.append(field, len(targets_assigned))
+        tgt_per_field.append([field, len(targets_assigned)])
     # for field in list(set([_[1] for _ in targets_assigned])):
     #     tgt_per_field.append([field,
     #                           len([x for x in targets_assigned if
