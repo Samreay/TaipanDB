@@ -130,12 +130,12 @@ def execute(cursor, fields=None):
                                                ('done', '=', True),
                                                ('field_id', 'IN', fields)
                                            ],
-                                           columns=['target_id', 'field_id'])
+                                           columns=['field_id'])
     # tgt_per_field = []
     # for field in list(set(_[1] for _ in targets_complete)):
     logging.debug('Counting targets per field')
     tgt_per_field = [[field, len(targets_complete) -
-                      np.count_nonzero(targets_complete[:, 1] - field)]
+                      np.count_nonzero(targets_complete - field)]
                      for field in fields]
     if len(tgt_per_field) > 0:
         logging.debug(tgt_per_field)
