@@ -42,7 +42,7 @@ def delete_rows(cursor, table, conditions=None):
                   if columns[i].lower()
                   in columns_lower]
 
-    string = 'DELETE * FROM %s' % table
+    string = 'DELETE FROM %s' % table
 
     if conditions:
         conditions_string = generate_conditions_string(conditions)
