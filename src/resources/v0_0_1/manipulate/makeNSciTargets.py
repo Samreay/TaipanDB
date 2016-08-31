@@ -221,7 +221,7 @@ def execute(cursor, fields=None):
         extract_from_left_joined(
             cursor,
             ['target', 'target_posn', 'science_target', 'target_field'],
-            'target_id',
+            'target.target_id',
             conditions=[
                 ('is_science', '=', True),
                 ('done', '=', False),
