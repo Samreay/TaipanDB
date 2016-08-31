@@ -124,25 +124,22 @@ def execute(cursor, fields=None):
     # logging.debug(tgt_per_field)
     # update_rows(cursor, 'tiling_info', tgt_per_field,
     #             columns=['field_id', 'n_sci_obs'])
-    logging.info('Computing number of completed targets per field')
+    targets_complete = extract_from_joined(cursor,
+                                           ['target_posn', 'science_target'],
+                                           conditions=[
+                                               ('done', '=', True),
+                                               ('field_id', 'IN', fields)
+                                           ],
+                                           columns=['target_id', 'field_id'])
     tgt_per_field = []
-    for field in fields:
-        targets_complete = extract_from_joined(cursor,
-                                               ['target_posn',
-                                                'science_target'],
-                                               conditions=[
-                                                   ('done', '=', True),
-                                                   ('field_id', '=', field)
-                                               ],
-                                               columns=['target_id',
-                                                        'field_id'])
-        tgt_per_field.append([field, len(targets_complete)])
     # for field in list(set(_[1] for _ in targets_complete)):
-    # for field in fields:
-    #     tgt_per_field.append([field, len([x for x in targets_complete if
-    #                                       x[1] == field])])
+    logging.debug('Counting targets per field')
+    for field in fields:
+        tgt_per_field.append([field, len([x for x in targets_complete if
+                                          x[1] == field])])
     if len(tgt_per_field) > 0:
         logging.debug(tgt_per_field)
+        logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_obs'])
 
@@ -174,25 +171,23 @@ def execute(cursor, fields=None):
     #                   ucposn=(row['ux'], row['uy'], row['uz'])) for
     #      row in target_stats_array]
     # )
+    targets_assigned = extract_from_joined(cursor,
+                                           ['target_posn', 'science_target',
+                                            'target_field', 'tile'],
+                                           conditions=[
+                                               ('done', '=', False),
+                                               ('is_observed', '=', False),
+                                           ],
+                                           columns=['target_id', 'field_id'])
     tgt_per_field = []
-    for field in fields:
-        targets_assigned = extract_from_joined(cursor,
-                                               ['target_posn', 'science_target',
-                                                'target_field', 'tile'],
-                                               conditions=[
-                                                   ('done', '=', False),
-                                                   ('is_observed', '=', False),
-                                                   ('field_id', '=', field)
-                                               ],
-                                               columns=['target_id',
-                                                        'field_id'])
-        tgt_per_field.append([field, len(targets_assigned)])
-    # for field in list(set([_[1] for _ in targets_assigned])):
-    #     tgt_per_field.append([field,
-    #                           len([x for x in targets_assigned if
-    #                                targets_assigned[1] == field])])
+    logging.debug('Counting targets per field')
+    for field in list(set([_[1] for _ in targets_assigned])):
+        tgt_per_field.append([field,
+                              len([x for x in targets_assigned if
+                                   targets_assigned[1] == field])])
     logging.debug(tgt_per_field)
     if len(tgt_per_field) > 0:
+        logging.debug('Writing target counts to database...')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_alloc'])
 
@@ -201,46 +196,39 @@ def execute(cursor, fields=None):
     # - Have no entries in target_field;
     # - Have entries in target_field, but all the related tiles are set to
     #   'observed' and the target isn't marked as 'done'
-    tgt_per_field = []
     logging.debug('Extracting currently unassigned targets...')
-    for field in fields:
-        target_stats_array_a = extract_from_joined(
-            cursor,
-            ['target_posn', 'science_target', 'target_field', 'tile'],
-            conditions=[
-                ('done', '=', False),
-                ('is_observed', '=', True),
-                ('field_id', '=', field),
-            ],
-            columns=['target_id', 'field_id'],
-            distinct=True)
-        logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
-        target_stats_array_b = extract_from_left_joined(
-            cursor,
-            ['target', 'target_posn', 'science_target', 'target_field'],
-            'target_id',
-            conditions=[
-                ('is_science', '=', True),
-                ('done', '=', False),
-                ('tile_pk', 'IS', 'NULL'),
-                ('field_id', '=', field),
-            ],
-            columns=['target_id', 'field_id'])
-        logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
-        logging.debug('Array column names: %s' %
-                      ', '.join(target_stats_array_b.dtype.names))
-        # target_stats_array = np.concatenate((target_stats_array_a,
-        #                                      target_stats_array_b, ))
-        # logging.debug('Extracted %d assigned targets (%d from no assignments, '
-        #               '%d from completed assignments but target incomplete' %
-        #               (len(target_stats_array), len(target_stats_array_a),
-        #                len(target_stats_array_b), ))
-        # no_remaining_targets = len(target_stats_array_a) + len(
-        #     target_stats_array_b
-        # )
-        target_stats_array = target_stats_array_a + target_stats_array_b
-        tgt_per_field.append([field, len(target_stats_array)])
-
+    target_stats_array_a = extract_from_joined(
+        cursor,
+        ['target_posn', 'science_target', 'target_field', 'tile'],
+        conditions=[
+            ('done', '=', False),
+            ('is_observed', '=', True),
+        ],
+        columns=['target_id', 'field_id'],
+        distinct=True)
+    logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
+    target_stats_array_b = extract_from_left_joined(
+        cursor,
+        ['target', 'target_posn', 'science_target', 'target_field'],
+        'target_id',
+        conditions=[
+            ('is_science', '=', True),
+            ('done', '=', False),
+            ('tile_pk', 'IS', 'NULL'),
+        ],
+        columns=['target_id', 'field_id'])
+    logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
+    logging.debug('Array column names: %s' %
+                  ', '.join(target_stats_array_b.dtype.names))
+    # target_stats_array = np.concatenate((target_stats_array_a,
+    #                                      target_stats_array_b, ))
+    # logging.debug('Extracted %d assigned targets (%d from no assignments, '
+    #               '%d from completed assignments but target incomplete' %
+    #               (len(target_stats_array), len(target_stats_array_a),
+    #                len(target_stats_array_b), ))
+    no_remaining_targets = len(target_stats_array_a) + len(
+        target_stats_array_b
+    )
 
     # logging.debug('Compute the number of unassigned targets on each field')
     # # Compute the number of targets
@@ -253,13 +241,16 @@ def execute(cursor, fields=None):
     #                   ucposn=(row['ux'], row['uy'], row['uz'])) for
     #      row in target_stats_array_b]
     # )
-    # target_stats_array = target_stats_array_a + target_stats_array_b
-    # for field in list(set([_[1] for _ in target_stats_array])):
-    #     tgt_per_field.append([field,
-    #                           len([x for x in target_stats_array if
-    #                                target_stats_array[1] == field])])
+    target_stats_array = target_stats_array_a + target_stats_array_b
+    tgt_per_field = []
+    logging.debug('Counting targets per field')
+    for field in list(set([_[1] for _ in target_stats_array])):
+        tgt_per_field.append([field,
+                              len([x for x in target_stats_array if
+                                   target_stats_array[1] == field])])
     logging.debug(tgt_per_field)
     if len(tgt_per_field) > 0:
+        logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_rem'])
 
