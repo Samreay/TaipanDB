@@ -135,7 +135,8 @@ def create_tables(cursor, tables_dir):
             if column["unique"].upper() == "TRUE":
                 string += "UNIQUE "
             if col_ref != "none":
-                string += "REFERENCES %s (%s) " % (col_ref, col_name)
+                string += "REFERENCES %s (%s) ON DELETE CASCADE" % \
+                          (col_ref, col_name)
             string += ", "
         string += "PRIMARY KEY (%s)" % ",".join(pks)
         string += " );"
