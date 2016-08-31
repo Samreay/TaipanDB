@@ -220,7 +220,7 @@ def execute(cursor, fields=None):
     target_stats_array_b = np.asarray(
         extract_from_left_joined(
             cursor,
-            ['science_target', 'target_posn', 'target_field'],
+            ['target_posn', 'science_target', 'target_field'],
             'target_id',
             conditions=[
                 # ('is_science', '=', True),
