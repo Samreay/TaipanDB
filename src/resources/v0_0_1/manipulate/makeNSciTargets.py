@@ -171,14 +171,14 @@ def execute(cursor, fields=None):
     #                   ucposn=(row['ux'], row['uy'], row['uz'])) for
     #      row in target_stats_array]
     # )
-    targets_assigned = extract_from_joined(cursor,
+    targets_assigned = np.asarray(extract_from_joined(cursor,
                                            ['target_posn', 'science_target',
                                             'target_field', 'tile'],
                                            conditions=[
                                                ('done', '=', False),
                                                ('is_observed', '=', False),
                                            ],
-                                           columns=['field_id'])
+                                           columns=['field_id']))
     # tgt_per_field = []
     # fields_array = np.asarray([_[1] for _ in targets_assigned])
     if len(targets_assigned) > 0:
