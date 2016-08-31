@@ -172,13 +172,16 @@ def execute(cursor, fields=None):
     #      row in target_stats_array]
     # )
     targets_assigned = np.asarray(extract_from_joined(cursor,
-                                           ['target_posn', 'science_target',
-                                            'target_field', 'tile'],
-                                           conditions=[
-                                               ('done', '=', False),
-                                               ('is_observed', '=', False),
-                                           ],
-                                           columns=['field_id']))
+                                                      ['target_posn',
+                                                       'science_target',
+                                                       'target_field', 'tile'],
+                                                      conditions=[
+                                                          ('done', '=', False),
+                                                          ('is_observed', '=',
+                                                           False),
+                                                      ],
+                                                      columns=['field_id']),
+                                  dtype=int)
     # tgt_per_field = []
     # fields_array = np.asarray([_[1] for _ in targets_assigned])
     if len(targets_assigned) > 0:
