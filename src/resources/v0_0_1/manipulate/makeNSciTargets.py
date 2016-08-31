@@ -124,13 +124,15 @@ def execute(cursor, fields=None):
     # logging.debug(tgt_per_field)
     # update_rows(cursor, 'tiling_info', tgt_per_field,
     #             columns=['field_id', 'n_sci_obs'])
-    targets_complete = extract_from_joined(cursor,
-                                           ['target_posn', 'science_target'],
-                                           conditions=[
-                                               ('done', '=', True),
-                                               ('field_id', 'IN', fields)
-                                           ],
-                                           columns=['field_id'])
+    targets_complete = np.asarray(
+        extract_from_joined(cursor,
+                            ['target_posn', 'science_target'],
+                            conditions=[
+                                ('done', '=', True),
+                                ('field_id', 'IN', fields)
+                            ],
+                            columns=['field_id']),
+        dtype=int)
     # tgt_per_field = []
     # for field in list(set(_[1] for _ in targets_complete)):
     if len(targets_complete) > 0:
@@ -203,26 +205,30 @@ def execute(cursor, fields=None):
     # - Have entries in target_field, but all the related tiles are set to
     #   'observed' and the target isn't marked as 'done'
     logging.debug('Extracting currently unassigned targets...')
-    target_stats_array_a = extract_from_joined(
-        cursor,
-        ['target_posn', 'science_target', 'target_field', 'tile'],
-        conditions=[
-            ('done', '=', False),
-            ('is_observed', '=', True),
-        ],
-        columns=['field_id'],
-        distinct=True)
+    target_stats_array_a = np.asarray(
+        extract_from_joined(
+            cursor,
+            ['target_posn', 'science_target', 'target_field', 'tile'],
+            conditions=[
+                ('done', '=', False),
+                ('is_observed', '=', True),
+            ],
+            columns=['field_id'],
+            distinct=True),
+        dtype=int)
     logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
-    target_stats_array_b = extract_from_left_joined(
-        cursor,
-        ['target', 'target_posn', 'science_target', 'target_field'],
-        'target_id',
-        conditions=[
-            ('is_science', '=', True),
-            ('done', '=', False),
-            ('tile_pk', 'IS', 'NULL'),
-        ],
-        columns=['field_id'])
+    target_stats_array_b = np.asarray(
+        extract_from_left_joined(
+            cursor,
+            ['target', 'target_posn', 'science_target', 'target_field'],
+            'target_id',
+            conditions=[
+                ('is_science', '=', True),
+                ('done', '=', False),
+                ('tile_pk', 'IS', 'NULL'),
+            ],
+            columns=['field_id']),
+        dtype=int)
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
     logging.debug('Array column names: %s' %
                   ', '.join(target_stats_array_b.dtype.names))
