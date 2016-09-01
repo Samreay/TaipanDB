@@ -31,6 +31,8 @@ def str_dts(x):
     """
     dd = re.compile(r'^.*(datetime\.date\(.*\)).*$')
     dt = re.compile(r'^.*(datetime\.datetime\(.*\)).*$')
+    return
+
 
 def generate_conditions_string(conditions):
     """
