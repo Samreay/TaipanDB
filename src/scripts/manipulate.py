@@ -100,12 +100,12 @@ def update_rows(cursor, table, data, columns=None):
     # Reformat the data array into something that can be sent to psycopg
     # Note that the first item isn't written to the database (it's the
     # matching reference)
-    values_string = ", ".join([tuple(
+    values_string = ", ".join([str(tuple(
         # [str_special(_) for _ in row]
         row
-    ) for row in data])
+    )) for row in data])
     values_string = "( values %s )" % values_string
-    # values_string = str_dts(values_string)
+    values_string = str_dts(values_string)
 
     string = "UPDATE %s AS t SET %s " % (table,
                                          ','.join(["%s=c.%s" % (x, x)
