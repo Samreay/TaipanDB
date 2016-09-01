@@ -30,7 +30,7 @@ def str_dts(x):
     datetime.datetime to their string representation *without* leaving in the
     Python string quotes
     """
-    dd = re.compile(r'[\'"]([0-9]{4}\-[01][0-9]\-[0-3][0-9].*?)[\'"]')
+    dd = re.compile(r'[\'"]([0-9]{4}\-[01][0-9]\-[0-3][0-9][^\'"]*?)[\'"]')
     return re.sub(dd, '\g<1>', x)
 
 
