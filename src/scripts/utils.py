@@ -17,10 +17,10 @@ def str_special(x):
     Convert specific data types to strings for PSQL insertion - leave all others
     untouched
     """
-    if isinstance(x, datetime.date):
-        return x.strftime('%Y-%m-%d')
     if isinstance(x, datetime.datetime):
         return x.strftime('%Y-%m-%d %H:%M:%S')
+    if isinstance(x, datetime.date):
+        return x.strftime('%Y-%m-%d')
     return x
 
 
