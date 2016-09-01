@@ -1,4 +1,5 @@
 # Helper function for getting string inputs to PSQL to work correctly
+import datetime
 
 
 def str_psql(x):
@@ -8,6 +9,18 @@ def str_psql(x):
     if isinstance(x, list) or isinstance(x, tuple):
         return '(%s)' % ','.join(str(a) for a in x)
     return str(x)
+
+
+def str_special(x):
+    """
+    Convert specific data types to strings for PSQL insertion - leave all others
+    untouched
+    """
+    if isinstance(x, datetime.date):
+        return x.strftime('%Y-%m-%d')
+    if isinstance(x, datetime.datetime):
+        return x.strftime('%Y-%m-%d %H:%M:%S')
+    return x
 
 
 def generate_conditions_string(conditions):

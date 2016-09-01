@@ -1,6 +1,6 @@
 # Insert data into existing DB rows
 import logging
-from utils import str_psql, generate_conditions_string
+from utils import str_psql, str_special, generate_conditions_string
 
 
 def update_rows_all(cursor, table, data, columns=None, conditions=None):
@@ -100,7 +100,9 @@ def update_rows(cursor, table, data, columns=None):
     # Reformat the data array into something that can be sent to psycopg
     # Note that the first item isn't written to the database (it's the
     # matching reference)
-    values_string = ", ".join([str(tuple(row)) for row in data])
+    values_string = ", ".join([str(tuple(
+        [str_special(_) for _ in row]
+    )) for row in data])
     values_string = "( values %s )" % values_string
 
     string = "UPDATE %s AS t SET %s " % (table,
