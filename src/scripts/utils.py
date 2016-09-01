@@ -1,6 +1,6 @@
 # Helper function for getting string inputs to PSQL to work correctly
 import datetime
-
+import re
 
 def str_psql(x):
     if isinstance(x, str):
@@ -22,6 +22,15 @@ def str_special(x):
         return x.strftime('%Y-%m-%d %H:%M:%S')
     return x
 
+
+def str_dts(x):
+    """
+    In a potential SQL string, convert any instances of datetime.date or
+    datetime.datetime to their string representation *without* leaving in the
+    Python string quotes
+    """
+    dd = re.compile(r'^.*(datetime\.date\(.*\)).*$')
+    dt = re.compile(r'^.*(datetime\.datetime\(.*\)).*$')
 
 def generate_conditions_string(conditions):
     """

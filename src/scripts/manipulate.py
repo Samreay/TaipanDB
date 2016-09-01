@@ -101,9 +101,11 @@ def update_rows(cursor, table, data, columns=None):
     # Note that the first item isn't written to the database (it's the
     # matching reference)
     values_string = ", ".join([str(tuple(
-        [str_special(_) for _ in row]
+        # [str_special(_) for _ in row]
+        row
     )) for row in data])
-    values_string = "( values %s )" % values_string
+    # values_string = "( values %s )" % values_string
+    values_string = "( values %s )" % data
 
     string = "UPDATE %s AS t SET %s " % (table,
                                          ','.join(["%s=c.%s" % (x, x)
