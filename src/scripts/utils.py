@@ -2,6 +2,7 @@
 import datetime
 import re
 
+
 def str_psql(x):
     if isinstance(x, str):
         if 'VALUES' not in x and x[0] != '(' and x != 'NULL':
@@ -29,9 +30,8 @@ def str_dts(x):
     datetime.datetime to their string representation *without* leaving in the
     Python string quotes
     """
-    dd = re.compile(r'^.*(datetime\.date\(.*\)).*$')
-    dt = re.compile(r'^.*(datetime\.datetime\(.*\)).*$')
-    return
+    dd = re.compile(r'[\'"](datetime\.date.*?)[\'"]')
+    return re.sub(dd, '\g<1>', x)
 
 
 def generate_conditions_string(conditions):
