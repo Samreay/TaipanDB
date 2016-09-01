@@ -106,6 +106,7 @@ def update_rows(cursor, table, data, columns=None):
     )) for row in data])
     values_string = "( values %s )" % values_string
     values_string = str_dts(values_string)
+    logging.debug(values_string)
 
     string = "UPDATE %s AS t SET %s " % (table,
                                          ','.join(["%s=c.%s" % (x, x)
