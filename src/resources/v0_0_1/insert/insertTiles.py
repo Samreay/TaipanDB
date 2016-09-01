@@ -7,6 +7,8 @@ from ....scripts.extract import extract_from, extract_from_joined
 from ..manipulate.makeNSciTargets import execute as mNScTexec
 from ...v0_0_1 import SKY_TARGET_ID
 
+import datetime
+
 from ..readout import readScience as rSc
 
 
@@ -28,7 +30,8 @@ from ..readout import readScience as rSc
 #     query_result = rSc.execute(cursor)
 
 
-def execute(cursor, tile_list, is_queued=False, is_observed=False):
+def execute(cursor, tile_list, is_queued=False, is_observed=False,
+            config_time=datetime.datetime.now()):
     """
     Insert the given tiles into the database.
 
@@ -44,6 +47,9 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     is_observed:
         Optional; whether the passed tiles should be considered observed.
         Defaults to False.
+    config_time:
+        Optional; the datetime (timestamp) when the tile was configured.
+        Defaults to datetime.datetime.now().
 
     Returns
     -------
@@ -63,8 +69,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
     tile_ids = extract_from(cursor, 'tile',
                             columns=['field_id', 'tile_id'])
     fields = list(set([t['field_id'] for t in tile_ids]))
-    tile_id_max = {field : max([t['tile_id'] for t in tile_ids if
-                                t['field_id'] == field]) | 0 for
+    tile_id_max = {field: max([t['tile_id'] for t in tile_ids if
+                               t['field_id'] == field]) | 0 for
                    field in fields}
     # Now, include fields into the mix that don't have DB entries yet
     for field in [t.field_id for t in tile_list]:
@@ -168,7 +174,13 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False):
 
     logging.debug('Now going to call makeNSciTargets to calculate the '
                   'remaining scores')
-    # mNScTexec(cursor, fields=list(set(t.field_id for t in tile_list)))
+    mNScTexec(cursor, fields=list(set(t.field_id for t in tile_list)))
+
+    # Finally, let's insert the config date into the tiling_config table
+    logging.debug('Insert configuration time into database')
+    insert_many_rows(cursor, 'tiling_config',
+                     [[tile.pk, config_time] for tile in tile_list],
+                     columns=['tile_pk', 'date_config'])
 
     logging.info('Inserting tiles complete!')
     return
