@@ -50,6 +50,7 @@ def execute(cursor, tile_pks, time_obs=datetime.datetime.now()):
 
     # Put in the observation times
     data_obs = zip(tile_pks, time_obs)
+    logging.debug(data_obs)
     update_rows(cursor, 'tiling_config', data_obs,
                 columns=['tile_pk', 'date_obs'])
 
