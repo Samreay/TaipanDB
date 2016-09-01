@@ -31,7 +31,7 @@ def str_dts(x):
     Python string quotes
     """
     dd = re.compile(r'[\'"]([0-9]{4}\-[01][0-9]\-[0-3][0-9][^\'"]*?)[\'"]')
-    return re.sub(dd, '\g<1>', x)
+    return re.sub(dd, 'TIMESTAMP \g<0>', x)
 
 
 def generate_conditions_string(conditions):
