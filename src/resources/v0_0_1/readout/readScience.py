@@ -38,12 +38,10 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
     if unassigned:
-        conditions_assigned = [('is_observed', '=', False),
-                               ('target_id', 'IN',
-                                tuple(targets_db['target_id']))]
+        conditions_assigned = [('is_observed', '=', False)]
         assigned_targets = extract_from_joined(cursor,
                                                ['target_field', 'tile'],
-                                               conditions=conditions_unass,
+                                               conditions=conditions_assigned,
                                                columns=['target_id'],
                                                distinct=True
                                                )
