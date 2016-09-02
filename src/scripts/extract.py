@@ -337,6 +337,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
             # This occurs when one of the tables in empty
             logging.info('At least one of the requested tables has no columns')
             return []
+
         if columns is None:
             columns = table_columns
         else:
@@ -350,9 +351,10 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
-        table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2})'.format(
-            tables[i-1], tables[i], join_on_column[i-1]
-        ) for i in range(1, len(tables))])
+
+    table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2})'.format(
+        tables[i-1], tables[i], join_on_column[i-1]
+    ) for i in range(1, len(tables))])
 
     # Need to prepend the first table name to the join_on_column value to
     # avoid ambiguity errors
