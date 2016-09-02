@@ -330,12 +330,12 @@ def extract_from_left_joined(cursor, tables, join_on_column,
 
     try:
         _ = join_on_column[0]
-        if len(join_on_column) != len(tables) - 1:
-            raise ValueError('join_on_column must have one less element '
-                             'than tables')
     except TypeError:
         # Singular value was passed - expand into array of options
         join_on_column = [join_on_column] * (len(tables) - 1)
+    if len(join_on_column) != len(tables) - 1:
+        raise ValueError('join_on_column must have one less element '
+                         'than tables')
 
     if cursor is not None:
         # Get the column names from the table itself
