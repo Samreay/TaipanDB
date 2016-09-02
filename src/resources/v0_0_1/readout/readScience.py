@@ -62,7 +62,7 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
                                        ],
                                        columns=['target_id'],
                                        distinct=True)['target_id']
-
+        logging.debug('Reducing target list to unassigned targets')
         targets_assigned = np.asarray([_['target_id'] in assigned for _ in
                                        targets_db])
         targets_db = targets_db[~targets_assigned]
@@ -86,6 +86,7 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
         #                                           'priority',
         #                                           'difficulty'])
 
+    logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
         difficulty=g['difficulty'],
