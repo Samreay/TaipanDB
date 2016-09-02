@@ -50,7 +50,7 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     if unassigned:
         conditions_unass = [('bug_id', 'IS', 'NULL'),
                             ('is_observed', '=', False),
-                            ('target_id', 'IN', targets_db['target_id'])]
+                            ('target_id', 'IN', tuple(targets_db['target_id']))]
         reduced_targets = extract_from_left_joined(cursor,
                                                    ['target_field', 'tile'],
                                                    'tile_pk',
@@ -62,7 +62,8 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
                                                   'science_target'],
                                          conditions=conditions + [
                                              ('target_id', 'IN',
-                                              reduced_targets['target_id'])
+                                              tuple(
+                                                  reduced_targets['target_id']))
                                          ],
                                          columns=['target_id', 'ra', 'dec',
                                                   'ux', 'uy', 'uz',
