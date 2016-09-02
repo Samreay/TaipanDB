@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import numpy as np
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
 from taipan.core import TaipanTarget
 
