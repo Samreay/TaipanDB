@@ -388,9 +388,10 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         return result
 
     # Now need to strip the table name off the join_on_column:
-    for i in range(len(columns)):
-        if '.%s' % join_on_column.lower() in columns[i]:
-            columns[i] = join_on_column.lower()
+    for j in range(len(join_on_column)):
+        for i in range(len(columns)):
+            if '.%s' % join_on_column[j].lower() in columns[i]:
+                columns[i] = join_on_column[j].lower()
 
     # Re-format the result as a structured numpy table
     result = np.asarray(result, dtype={
