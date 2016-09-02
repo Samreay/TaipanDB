@@ -39,34 +39,51 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
         conditions += [('done', 'IS', False)]
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
+    if unassigned:
+        conditions += [('(', 'is_observed', '=', True, ''),
+                       ('', 'is_observed', 'IS', 'NULL', ')')]
+
 
     # Old query (no ability to do unassigned)
-    targets_db = extract_from_joined(cursor, ['target', 'science_target'],
-                                     conditions=conditions + [
-                                         ('is_science', "=", True, )
-                                     ],
-                                     columns=['target_id', 'ra', 'dec',
-                                              'ux', 'uy', 'uz', 'priority',
-                                              'difficulty'])
+    # targets_db = extract_from_joined(cursor, ['target', 'science_target'],
+    #                                  conditions=conditions + [
+    #                                      ('is_science', "=", True, )
+    #                                  ],
+    #                                  columns=['target_id', 'ra', 'dec',
+    #                                           'ux', 'uy', 'uz', 'priority',
+    #                                           'difficulty'])
 
-    if unassigned:
-        # conditions_unass = [('bug_id', 'IS', 'NULL'),
-        #                     ('is_observed', '=', False),
-                            # ('target_id', 'IN',
-                            # tuple(targets_db['target_id']))
-                            # ]
-        assigned = extract_from_joined(cursor,
-                                       ['science_target', 'target_field',
-                                        'tile'],
-                                       conditions=[
-                                           ('is_observed', '=', False),
-                                       ],
-                                       columns=['target_id'],
-                                       distinct=True)['target_id']
-        logging.debug('Reducing target list to unassigned targets')
-        targets_assigned = np.asarray([_['target_id'] in assigned for _ in
-                                       targets_db])
-        targets_db = targets_db[~targets_assigned]
+    targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
+                                                   'target_field', 'tile'],
+                                          ['target_id', 'target_id', 'tile_pk'],
+                                          conditions=conditions + [
+                                              ('is_science', "=", True,)
+                                          ],
+                                          columns=['target_id', 'ra', 'dec',
+                                                   'ux', 'uy', 'uz', 'priority',
+                                                   'difficulty'],
+                                          distinct=True)
+
+    # if unassigned:
+    #     # conditions_unass = [('bug_id', 'IS', 'NULL'),
+    #     #                     ('is_observed', '=', False),
+    #                         # ('target_id', 'IN',
+    #                         # tuple(targets_db['target_id']))
+    #                         # ]
+    #     targets_db = extract_from_joined(cursor,
+    #                                    ['science_target', 'target_field',
+    #                                     'tile'],
+    #                                    conditions=[
+    #                                        ('(is_observed', '=', False),
+    #                                        ('is_observed', 'IS', 'NULL'),
+    #                                        ()
+    #                                    ],
+    #                                    columns=['target_id'],
+    #                                    distinct=True)['target_id']
+    #     logging.debug('Reducing target list to unassigned targets')
+    #     targets_assigned = np.asarray([_['target_id'] in assigned for _ in
+    #                                    targets_db])
+    #     targets_db = targets_db[~targets_assigned]
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(

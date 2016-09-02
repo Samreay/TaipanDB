@@ -1,6 +1,7 @@
 # Helper function for getting string inputs to PSQL to work correctly
 import datetime
 import re
+import numpy as np
 
 
 def str_psql(x):
@@ -48,7 +49,8 @@ def generate_conditions_string(conditions, combine='AND'):
         the correct Python form relevant to the table column.
     combine:
         The method for combining the conditions. Must be a valid SQL comparison.
-        Defaults to 'AND'.
+        Defaults to 'AND'. Can also pass a list of valid SQL comparisons, which
+        must have a length of one less than the list of conditions.
 
     Returns
     -------
@@ -59,15 +61,32 @@ def generate_conditions_string(conditions, combine='AND'):
         function) to be combined more easily.
     """
     allowed_combine = ['AND', 'OR']
-    if combine not in allowed_combine:
-        raise ValueError('combine must be one of: %s' %
+    if not isinstance(combine, list):
+        combine = [combine] * (len(conditions) - 1)
+
+    if len(combine) != (len(conditions) - 1):
+        raise ValueError('combine must have length of conditions minus 1')
+
+    if np.any([_.upper() not in allowed_combine for _ in combine]):
+        raise ValueError('combine values must be any one of: %s' %
                          ', '.join(allowed_combine))
-    combine = ' %s ' % combine
+    # combine = ' %s ' % combine
 
     for i in range(len(conditions)):
         x = conditions[i]
-        conditions[i] = (str(x[0]), str(x[1]), str_psql(x[2]))
+        if len(x) != 3 and len(x) != 5:
+            raise ValueError('Each conditions entry must either be a 3-tuple '
+                             '(column, condition, value) or a 5-tuple, where '
+                             'the above is wrapped with two strings holding '
+                             'either a single bracket, or an empty string for '
+                             'no bracket at that position')
+        if len(x) == 3:
+            x = ('', x[0], x[1], x[2], '')
+        conditions[i] = (x[0], str(x[1]), str(x[2]), str_psql(x[3]), x[4])
 
-    conditions_string = combine.join([' '.join(x)
-                                      for x in conditions])
+    conditions_string = ' '.join(conditions[0])
+    for i in range(1, len(conditions)):
+        conditions_string += ' %s %s' % (combine[i-1], ' '.join(conditions[i]))
+    # conditions_string = combine.join([' '.join(x)
+    #                                   for x in conditions])
     return conditions_string
