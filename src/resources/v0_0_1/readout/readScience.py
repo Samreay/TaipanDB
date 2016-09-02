@@ -37,6 +37,19 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
         conditions += [('done', 'IS', False)]
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
+    if unassigned:
+        conditions_assigned = [('is_observed', '=', False),
+                               ('target_id', 'IN',
+                                tuple(targets_db['target_id']))]
+        assigned_targets = extract_from_joined(cursor,
+                                               ['target_field', 'tile'],
+                                               conditions=conditions_unass,
+                                               columns=['target_id'],
+                                               distinct=True
+                                               )
+        if len(assigned_targets) > 0:
+            conditions += [('target_id', 'NOT IN',
+                            tuple(assigned_targets['target_id']))]
 
     # Old query (no ability to do unassigned)
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
@@ -46,29 +59,6 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
                                      columns=['target_id', 'ra', 'dec',
                                               'ux', 'uy', 'uz', 'priority',
                                               'difficulty'])
-
-    if unassigned:
-        conditions_unass = [('bug_id', 'IS', 'NULL'),
-                            ('is_observed', '=', False),
-                            ('target_id', 'IN', tuple(targets_db['target_id']))]
-        reduced_targets = extract_from_left_joined(cursor,
-                                                   ['target_field', 'tile'],
-                                                   'tile_pk',
-                                                   conditions=conditions_unass,
-                                                   columns=['target_id'],
-                                                   distinct=True
-                                                   )
-        targets_db = extract_from_joined(cursor, ['target',
-                                                  'science_target'],
-                                         conditions=conditions + [
-                                             ('target_id', 'IN',
-                                              tuple(
-                                                  reduced_targets['target_id']))
-                                         ],
-                                         columns=['target_id', 'ra', 'dec',
-                                                  'ux', 'uy', 'uz',
-                                                  'priority',
-                                                  'difficulty'])
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
