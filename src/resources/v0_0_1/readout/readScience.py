@@ -34,14 +34,20 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     logging.info('Reading science targets from database')
 
     conditions = []
+    combine = []
 
     if unobserved:
         conditions += [('done', 'IS', False)]
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
+        if len(conditions) > 1:
+            combine += ['AND']
     if unassigned:
         conditions += [('(', 'is_observed', '=', True, ''),
                        ('', 'is_observed', 'IS', 'NULL', ')')]
+        if len(conditions) > 2:
+            combine += ['AND']
+        combine += ['OR']
 
 
     # Old query (no ability to do unassigned)
@@ -59,6 +65,7 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
                                           conditions=conditions + [
                                               ('is_science', "=", True,)
                                           ],
+                                          conditions_combine=combine + ['AND'],
                                           columns=['target_id', 'ra', 'dec',
                                                    'ux', 'uy', 'uz', 'priority',
                                                    'difficulty'],
