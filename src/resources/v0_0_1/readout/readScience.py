@@ -64,7 +64,7 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
                                        distinct=True)
 
         targets_assigned = np.asarray([_['target_id'] not in assigned for _ in
-                                       assigned['target_id']])
+                                       targets_db])
         targets_db = targets_db[targets_assigned]
         # reduced_targets = extract_from_left_joined(cursor,
         #                                            ['target_field', 'tile'],
