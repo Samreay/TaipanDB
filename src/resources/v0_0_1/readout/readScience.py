@@ -35,30 +35,39 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
 
     if unobserved:
         conditions += [('done', 'IS', False)]
-    if unassigned:
-        conditions += [('bug_id', 'IS', 'NULL'),
-                       ('is_observed', '=', False)]
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
 
     # Old query (no ability to do unassigned)
-    # targets_db = extract_from_joined(cursor, ['target', 'science_target'],
-    #                                  conditions=conditions + [
-    #                                      ('is_science', "=", True, )
-    #                                  ],
-    #                                  columns=['target_id', 'ra', 'dec',
-    #                                           'ux', 'uy', 'uz', 'priority',
-    #                                           'difficulty'])
+    targets_db = extract_from_joined(cursor, ['target', 'science_target'],
+                                     conditions=conditions + [
+                                         ('is_science', "=", True, )
+                                     ],
+                                     columns=['target_id', 'ra', 'dec',
+                                              'ux', 'uy', 'uz', 'priority',
+                                              'difficulty'])
 
-    targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
-                                                   'target_field', 'tile'],
-                                          conditions=conditions + [
-                                              ('is_science', "=", True,)
-                                          ],
-                                          columns=['target_id', 'ra', 'dec',
-                                                   'ux', 'uy', 'uz', 'priority',
-                                                   'difficulty'],
-                                          distinct=True)
+    if unassigned:
+        conditions_unass = [('bug_id', 'IS', 'NULL'),
+                            ('is_observed', '=', False),
+                            ('target_id', 'IN', targets_db['target_id'])]
+        reduced_targets = extract_from_left_joined(cursor,
+                                                   ['target_field', 'tile'],
+                                                   'tile_pk',
+                                                   conditions=conditions_unass,
+                                                   columns=['target_id'],
+                                                   distinct=True
+                                                   )
+        targets_db = extract_from_joined(cursor, ['target',
+                                                  'science_target'],
+                                         conditions=conditions + [
+                                             ('target_id', 'IN',
+                                              reduced_targets['target_id'])
+                                         ],
+                                         columns=['target_id', 'ra', 'dec',
+                                                  'ux', 'uy', 'uz',
+                                                  'priority',
+                                                  'difficulty'])
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
