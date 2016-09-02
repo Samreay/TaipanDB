@@ -23,7 +23,8 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     target_ids:
         Optional; list of target_ids corresponding to the targets to extract
         from the database. Defaults to None, at which point all targets present
-        will be extracted.
+        will be extracted. WARNING: Providing a large list of target_ids will
+        make the database query very slow!
 
     Returns
     -------
@@ -66,25 +67,6 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
         targets_assigned = np.asarray([_['target_id'] in assigned for _ in
                                        targets_db])
         targets_db = targets_db[~targets_assigned]
-        # targets_db = [row for row in targets_db if row['target_id'] not in
-        #               assigned]
-        # reduced_targets = extract_from_left_joined(cursor,
-        #                                            ['target_field', 'tile'],
-        #                                            'tile_pk',
-        #                                            conditions=conditions_unass,
-        #                                            columns=['target_id'],
-        #                                            distinct=True
-        #                                            )
-        # targets_db = extract_from_joined(cursor, ['target',
-        #                                           'science_target'],
-        #                                  conditions=conditions + [
-        #                                      ('target_id', 'IN',
-        #                                       reduced_targets['target_id'])
-        #                                  ],
-        #                                  columns=['target_id', 'ra', 'dec',
-        #                                           'ux', 'uy', 'uz',
-        #                                           'priority',
-        #                                           'difficulty'])
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(

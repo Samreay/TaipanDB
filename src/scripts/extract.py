@@ -275,9 +275,15 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         in each table. If this is not possible, some other solution will need
         to be implemented.
     join_on_column:
-        The name of the table column to perform the left join on. Note that
-        this column must exist in all tables, otherwise a ProgrammingError
-        will be thrown.
+        The table column(s) to join the tables on. This can either be a single
+        column name, or a list of column names, each column corresponding
+        to the column to join those two tables (so, the first element of
+        join_on_column will be used to join the first and second tables in
+        tables, the second element will be used to join the second and third
+        tables, and so on). The length of the list must be one less than the
+        length of the tables list.
+        Note that if a join_on_column is incorrectly placed or does not exist,
+        psycopg2 will raise a ProgrammingError.
     conditions:
         conditions:
         A list of three-tuples defining conditions, e.g.:
@@ -304,6 +310,15 @@ def extract_from_left_joined(cursor, tables, join_on_column,
     """
     if columns is not None:
         logging.debug('Passed in columns: %s' % ', '.join(columns))
+
+    try:
+        _ = join_on_column[0]
+        if len(join_on_column) != len(tables) - 1:
+            raise ValueError('join_on_column must have one less element '
+                             'than tables')
+    except TypeError:
+        # Singular value was passed - expand into array of options
+        join_on_column = [join_on_column] * (len(tables) - 1)
 
     if cursor is not None:
         # Get the column names from the table itself
@@ -336,15 +351,16 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         logging.debug(columns)
         logging.debug(dtypes)
         table_string = ' '.join(['LEFT JOIN {1} ON ({0}.{2} = {1}.{2})'.format(
-            tables[0], tables[i], join_on_column
+            tables[i-1], tables[i], join_on_column[i-1]
         ) for i in range(1, len(tables))])
 
     # Need to prepend the first table name to the join_on_column value to
     # avoid ambiguity errors
     columns = list(columns)
-    for i in range(len(columns)):
-        if join_on_column.lower() == columns[i]:
-            columns[i] = '%s.%s' % (tables[0], columns[i], )
+    for j in range(len(join_on_column)):
+        for i in range(len(columns)):
+            if join_on_column[j].lower() == columns[i]:
+                columns[i] = '%s.%s' % (tables[j], columns[i], )
 
     distinct_str = ''
     if distinct:
