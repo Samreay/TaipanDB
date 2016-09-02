@@ -328,9 +328,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
     if columns is not None:
         logging.debug('Passed in columns: %s' % ', '.join(columns))
 
-    try:
-        _ = join_on_column[0]
-    except TypeError:
+    if not isinstance(join_on_column, list):
         # Singular value was passed - expand into array of options
         join_on_column = [join_on_column] * (len(tables) - 1)
     if len(join_on_column) != len(tables) - 1:
