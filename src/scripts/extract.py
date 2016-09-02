@@ -85,7 +85,8 @@ def get_columns(cursor, table):
         return table_columns, dtypes
 
 
-def extract_from(cursor, table, conditions=None, columns=None):
+def extract_from(cursor, table, conditions=None, columns=None,
+                 conditions_combine='AND'):
     """
     Extract rows from a database table.
 
@@ -105,6 +106,9 @@ def extract_from(cursor, table, conditions=None, columns=None):
     columns:
         List of column names to retrieve from the database. Defaults to None,
         which returns all available columns.
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
 
     Returns
     -------
@@ -135,7 +139,9 @@ def extract_from(cursor, table, conditions=None, columns=None):
         )
 
     if conditions:
-        conditions_string = generate_conditions_string(conditions)
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
         string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
@@ -162,7 +168,8 @@ def extract_from(cursor, table, conditions=None, columns=None):
 
 
 def extract_from_joined(cursor, tables, conditions=None, columns=None,
-                        distinct=False):
+                        distinct=False,
+                        conditions_combine='AND'):
     """
     Extract rows from a database table join.
 
@@ -190,6 +197,9 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
         Boolean value, denoting whether or not to eliminate duplicate rows from
         the query. Defaults to False (i.e. duplicate rows will NOT be
         eliminated).
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
 
     Returns
     -------
@@ -218,7 +228,8 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
             columns = table_columns
         else:
             columns_lower = [x.lower() for x in columns]
-            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for i in range(len(dtypes))
+            columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
+                                    i in range(len(dtypes))
                       if table_columns[i].lower()
                       in columns_lower])
         logging.debug('Found these columns with these data types:')
@@ -235,7 +246,9 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
         )
 
     if conditions:
-        conditions_string = generate_conditions_string(conditions)
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
         string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
@@ -259,6 +272,7 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
 
 def extract_from_left_joined(cursor, tables, join_on_column,
                              conditions=None, columns=None,
+                             conditions_combine='AND',
                              distinct=False):
     """
     Extract rows from a database table join made using the LEFT JOIN construct.
@@ -300,6 +314,9 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         Boolean value, denoting whether or not to eliminate duplicate rows from
         the query. Defaults to False (i.e. duplicate rows will NOT be
         eliminated).
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
 
     Returns
     -------
@@ -374,7 +391,9 @@ def extract_from_left_joined(cursor, tables, join_on_column,
         )
 
     if conditions:
-        conditions_string = generate_conditions_string(conditions)
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
         string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
