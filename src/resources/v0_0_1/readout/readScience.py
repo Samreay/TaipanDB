@@ -62,13 +62,18 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     #                                           'ux', 'uy', 'uz', 'priority',
     #                                           'difficulty'])
 
+    if len(conditions) > 0:
+        added_conds = ['AND']
+    else:
+        added_conds = []
     targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
                                                    'target_field', 'tile'],
                                           ['target_id', 'target_id', 'tile_pk'],
                                           conditions=conditions + [
                                               ('is_science', "=", True,)
                                           ],
-                                          conditions_combine=combine + ['AND'],
+                                          conditions_combine=
+                                          combine + added_conds,
                                           columns=['target_id', 'ra', 'dec',
                                                    'ux', 'uy', 'uz', 'priority',
                                                    'difficulty'],
