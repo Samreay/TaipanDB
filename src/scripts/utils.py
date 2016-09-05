@@ -64,7 +64,7 @@ def generate_conditions_string(conditions, combine='AND'):
     if not isinstance(combine, list):
         combine = [combine] * (len(conditions) - 1)
 
-    if len(combine) != (len(conditions) - 1):
+    if len(conditions) > 0 and (len(combine) != (len(conditions) - 1)):
         raise ValueError('combine must have length of conditions minus 1')
 
     if np.any([_.upper() not in allowed_combine for _ in combine]):
