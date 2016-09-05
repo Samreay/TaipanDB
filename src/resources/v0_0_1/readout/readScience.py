@@ -45,9 +45,12 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     if unassigned:
         conditions += [('(', 'is_observed', '=', True, ''),
                        ('', 'is_observed', 'IS', 'NULL', ')')]
-        if len(conditions) > 2:
+        if len(conditions) > 1:
             combine += ['AND']
         combine += ['OR']
+
+    logging.debug(conditions)
+    logging.debug(combine)
 
 
     # Old query (no ability to do unassigned)
