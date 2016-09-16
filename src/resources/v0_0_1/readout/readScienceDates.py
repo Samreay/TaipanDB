@@ -64,7 +64,10 @@ def execute(cursor, tgt_list=None, repeats=1):
     repeats = int(repeats)
     if repeats < 1:
         raise ValueError('repeats must be >= 1 (default 1)')
-    tgt_list = list(tgt_list)
+    if tgt_list is not None:
+        tgt_list = list(tgt_list)
+        if len(tgt_list) == 0:
+            return []
 
     logging.info('Reading/computing target started/completed times')
 

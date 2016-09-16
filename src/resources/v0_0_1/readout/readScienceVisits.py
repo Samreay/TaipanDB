@@ -28,6 +28,8 @@ def execute(cursor, target_ids=None):
 
     if target_ids is not None:
         conditions = [('target_id', 'IN', tuple(target_ids)), ]
+        if len(target_ids) == 0:
+            return []
     else:
         conditions = None
 
