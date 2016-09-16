@@ -4,7 +4,7 @@ from ....scripts.extract import execute_select, extract_from_joined, get_columns
 import numpy as np
 
 
-def execute(cursor, metrics=None, unobserved_only=True):
+def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
@@ -20,6 +20,9 @@ def execute(cursor, metrics=None, unobserved_only=True):
         Optional; Boolean value denoting whether to only return targets
         not marked as done (True) or all targets (False). Defaults to
         True.
+    ignore_zeros:
+        Optional; Boolean value denoting whether to ignore any tiles in which
+        any of the requested metrics are equal to zero. Defaults to False.
 
     Returns
     -------
@@ -56,12 +59,14 @@ def execute(cursor, metrics=None, unobserved_only=True):
     for i in to_pop[::-1]:
         burn = metrics.pop(i)
 
+    # Form conditions
+    conditions = []
     if unobserved_only:
-        conditions = [
+        conditions += [
             ('is_observed', '=', False),
         ]
-    else:
-        conditions = []
+    if len(metrics) > 0 and ignore_zeros:
+        conditions += [(metric, '>', 0.) for metric in metrics]
 
     # Fetch the metrics from the tiling info table
     return extract_from_joined(cursor, ['field', 'tile', 'tiling_info', ],
