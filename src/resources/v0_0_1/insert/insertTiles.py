@@ -31,7 +31,7 @@ from ..readout import readScience as rSc
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False,
-            config_time=datetime.datetime.now()):
+            config_time=datetime.datetime.now(), disqualify_below_min=True):
     """
     Insert the given tiles into the database.
 
@@ -50,6 +50,11 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
     config_time:
         Optional; the datetime (timestamp) when the tile was configured.
         Defaults to datetime.datetime.now().
+    disqualify_below_min:
+        Optional Boolean, passed on through to
+        TaipanTile.calculate_tile_score(). Sets tile scores to 0 if tiles do
+        not meet minimum numbers of guides and/or standards assigned. Defaults
+        to True.
 
     Returns
     -------
@@ -154,13 +159,27 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
                       ]
     tiling_scores = [[t.pk,
                       t.field_id,
-                      t.calculate_tile_score(method='completeness'),
-                      t.calculate_tile_score(method='difficulty-sum'),
-                      # t.calculate_tile_score(method='difficulty-prod'),
-                      t.calculate_tile_score(method='priority-sum'),
-                      # t.calculate_tile_score(method='priority-prod'),
-                      t.calculate_tile_score(method='combined-weighted-sum'),
-                      # t.calculate_tile_score(method='combined-weighted-prod'),
+                      t.calculate_tile_score(method='completeness',
+                                             disqualify_below_min=
+                                             disqualify_below_min),
+                      t.calculate_tile_score(method='difficulty-sum',
+                                             disqualify_below_min=
+                                             disqualify_below_min),
+                      # t.calculate_tile_score(method='difficulty-prod',
+                      #                        disqualify_below_min=
+                      #                        disqualify_below_min),
+                      t.calculate_tile_score(method='priority-sum',
+                                             disqualify_below_min=
+                                             disqualify_below_min),
+                      # t.calculate_tile_score(method='priority-prod',,
+                      #                        disqualify_below_min=
+                      #                        disqualify_below_min),
+                      t.calculate_tile_score(method='combined-weighted-sum',
+                                             disqualify_below_min=
+                                             disqualify_below_min),
+                      # t.calculate_tile_score(method='combined-weighted-prod',
+                      #                        disqualify_below_min=
+                      #                        disqualify_below_min),
                       ]
                      for t in tile_list]
     logging.debug(tiling_scores)
