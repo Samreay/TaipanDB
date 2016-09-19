@@ -224,3 +224,63 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
     logging.debug(string)
     cursor.execute(string)
     return
+
+
+def upsert_many_rows(cursor, table, values, columns=None):
+    """
+    'Upsert' many rows into the database. An 'upsert' is where a row is
+    attempted to be inserted, but if the row already exists (i.e. the
+    primary key value(s) already exist), the existing row is updated instead.
+
+    Due to the restrictions on the new ON CONFLICT functionality of the
+    INSERT command (PostGres 9.5), it is only possible to match rows on their
+    *full* primary key (that is, the monolithic primary key, or the combination
+    of values that forms the primary key).
+
+    For ease of forming the database query, we *require* that the primary key
+    column(s) are the first columns in values/columns. This is checked, and an
+    error will be thrown if you don't do this.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    table:
+        Database table to insert values to.
+    values:
+        The values to be added to the table, as a list. Values
+        should be in the order of the database columns, unless the columns
+        argument is also passed; in that case, values should be in order
+        corresponding to the columns parameter.
+    columns:
+        List of column names that correspond to the ordering of values. Can also
+        be used to restrict the number of columns to write to (i.e. allow
+        default table values for columns if not required). Defaults to None,
+        which assumes that you wish to write information to all columns, and
+        that the columns are ordered in the way defined in the database.
+
+    Returns
+    -------
+    Nil. Data are inserted/updated in the database.
+    """
+    # Get the primary key columns for this table
+    pkey_query = "SELECT a.attname, format_type(a.atttypid, a.atttypmod) " \
+                 "AS data_type FROM   pg_index i " \
+                 "JOIN   pg_attribute a ON a.attrelid = i.indrelid " \
+                 "AND a.attnum = ANY(i.indkey) " \
+                 "WHERE  i.indrelid = '%s'::regclass " \
+                 "AND    i.indisprimary;" % (table, )
+    cursor.execute(pkey_query)
+    pk_names = cursor.fetchall()
+
+    # Get the column names if they weren't passed
+    if columns is None and cursor is not None:
+        # Get the columns from the table itself
+        cursor.execute("SELECT column_name"
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table,))
+        columns = cursor.fetchall()
+
+    # Check that the primary key columns are the
+
+    pass

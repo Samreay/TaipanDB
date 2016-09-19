@@ -250,37 +250,3 @@ if __name__ == "__main__":
     conn = None
     create_tables(conn)
 
-
-def upsert_many_rows(cursor, table, values, columns=None):
-    """
-    'Upsert' many rows into the database. An 'upsert' is where a row is
-    attempted to be inserted, but if the row already exists (i.e. the
-    primary key value(s) already exist), the existing row is updated instead.
-
-    Due to the restrictions on the new ON CONFLICT functionality of the
-    INSERT command (PostGres 9.5), it is only possible to match rows on their
-    *full* primary key (that is, the monolithic primary key, or the combination
-    of values that forms the primary key).
-
-    Parameters
-    ----------
-    cursor:
-        psycopg2 cursor for interacting with the database.
-    table:
-        Database table to insert values to.
-    values:
-        The values to be added to the table, as a list. Values
-        should be in the order of the database columns, unless the columns
-        argument is also passed; in that case, values should be in order
-        corresponding to the columns parameter.
-    columns:
-        List of column names that correspond to the ordering of values. Can also
-        be used to restrict the number of columns to write to (i.e. allow
-        default table values for columns if not required). Defaults to None,
-        which assumes that you wish to write information to all columns.
-
-    Returns
-    -------
-    Nil. Data are inserted/updated in the database.
-    """
-    pass
