@@ -1,6 +1,7 @@
 # Insert data into existing DB rows
 import logging
 from utils import str_psql, str_special, str_dts, generate_conditions_string
+import numpy as np
 
 
 def update_rows_all(cursor, table, data, columns=None, conditions=None):
@@ -226,7 +227,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
     return
 
 
-def upsert_many_rows(cursor, table, values, columns=None):
+def upsert_many_rows(cursor, table, data, columns=None):
     """
     'Upsert' many rows into the database. An 'upsert' is where a row is
     attempted to be inserted, but if the row already exists (i.e. the
@@ -247,7 +248,7 @@ def upsert_many_rows(cursor, table, values, columns=None):
         psycopg2 cursor for interacting with the database.
     table:
         Database table to insert values to.
-    values:
+    data:
         The values to be added to the table, as a list. Values
         should be in the order of the database columns, unless the columns
         argument is also passed; in that case, values should be in order
@@ -271,7 +272,7 @@ def upsert_many_rows(cursor, table, values, columns=None):
                  "WHERE  i.indrelid = '%s'::regclass " \
                  "AND    i.indisprimary;" % (table, )
     cursor.execute(pkey_query)
-    pk_names = cursor.fetchall()
+    pk_names = [_[0] for _ in cursor.fetchall()]
 
     # Get the column names if they weren't passed
     if columns is None and cursor is not None:
@@ -279,8 +280,38 @@ def upsert_many_rows(cursor, table, values, columns=None):
         cursor.execute("SELECT column_name"
                        " FROM information_schema.columns"
                        " WHERE table_name='%s'" % (table,))
-        columns = cursor.fetchall()
+        columns = [_[0] for _ in cursor.fetchall()]
 
-    # Check that the primary key columns are the
+    # Check that the primary key columns are the first columns listed - if
+    # not, raise an error
+    pk_is = [columns.index(p) for p in pk_names]
+    if np.max(pk_is) > len(pk_is):
+        raise ValueError("The primary key columns must be the first columns "
+                         "you specify in the columns option. If you didn't "
+                         "pass a columns option, something is wrong with the "
+                         "database construction.")
 
-    pass
+    # Reformat the data array into something that can be sent to psycopg
+    # Note that the first item isn't written to the database (it's the
+    # matching reference)
+    values_string = ", ".join([str(tuple(
+        [str_special(_) for _ in row]
+        # row
+    )) for row in data])
+    values_string = "( values %s )" % values_string
+    values_string = str_dts(values_string)
+    logging.debug(values_string)
+
+    # Generate the string to insert the values
+    query_string = "INSERT INTO %s %s VALUES %s" % (
+        table,
+        "" if columns is None else "(" + ", ".join(columns) + ")",
+        values_string,
+    )
+    query_string += "ON CONFLICT (%s) DO UPDATE SET " % (','.join(pk_names), )
+    query_string += " AND ".join(["%s = EXCLUDED.%s" % (c, c) for
+                                  c in columns[len(pk_names):]])
+
+    cursor.execute(query_string)
+
+    return
