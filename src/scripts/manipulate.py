@@ -61,7 +61,8 @@ def update_rows_all(cursor, table, data, columns=None, conditions=None):
     return
 
 
-def update_rows(cursor, table, data, columns=None):
+def update_rows(cursor, table, data, columns=None,
+                columns_to_match=1):
     """
     Update values in already-existing table rows by matching against a
     reference column.
@@ -75,13 +76,19 @@ def update_rows(cursor, table, data, columns=None):
     data:
         List of lists (or similar) of data to be enteted. Each sub-list
         corresponds to one row to be inserted into the database. The first
-        data column *must* be the column to match rows against.
+        data column(s) *must* be the column(s) to match rows against.
     columns:
         Optional list of column names to be written. Must be a list of column
         names which matches the order of the data points in each sub-list of
         data. Defaults to None, which means all columns will be written to in
         their database-defined order (and presumes that the column to be matched
         on is the first column in the table).
+    columns_to_match:
+        Optional; integer denoting the number of columns to match against. This
+        defaults to one, such that only the first column is matched against.
+        Increasing this value will cause a multiple-column match to be used.
+        The columns variable *must* be defined if you wish to use
+        columns_to_match.
 
     Returns
     -------
@@ -89,6 +96,18 @@ def update_rows(cursor, table, data, columns=None):
     """
 
     logging.info('Inserting data into table %s' % table)
+    # Make sure that columns_to_match is valid, and matches with the number
+    # of columns requested
+    columns_to_match = int(columns_to_match)
+    if columns_to_match <= 0:
+        raise ValueError('columns_to_match must be >= 1')
+    if columns_to_match > 1:
+        if columns is None:
+            raise ValueError('columns must be defined if using a '
+                             'columns_to_match > 1')
+        if len(columns) <= columns_to_match:
+            raise ValueError('columns_to_match must be < the length of the '
+                             'list of columns')
     # Get the column names if they weren't passed
     if columns is None and cursor is not None:
         # Get the columns from the table itself
@@ -110,10 +129,13 @@ def update_rows(cursor, table, data, columns=None):
 
     string = "UPDATE %s AS t SET %s " % (table,
                                          ','.join(["%s=c.%s" % (x, x)
-                                                   for x in columns[1:]]))
+                                                   for x in columns[
+                                                            columns_to_match:
+                                                            ]]))
     string += "FROM %s " % values_string
     string += "AS c(%s) " % ','.join(columns)
-    string += "WHERE c.%s = t.%s" % (columns[0], columns[0])
+    string += " AND ".join(["WHERE c.%s = t.%s" % (columns[i], columns[i])
+                            for i in range(columns_to_match)])
     # logging.debug(string)
 
     if cursor is not None:
