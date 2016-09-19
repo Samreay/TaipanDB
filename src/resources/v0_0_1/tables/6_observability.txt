@@ -4,4 +4,5 @@ name        type        nullable        default_value       foreign_key_table   
 field_id    integer     None            None                field               True    None    None      "Field id"
 date        timestamp   None            None                None                True    date    None      "Date of observation"
 airmass     double      None            None                None                False   None    None      "Airmass"
+sun_alt     double      None            None                None                False   None    None      "Sun altitude (radians)"
 dark        boolean     None            None                None                False   None    None      "Whether it is dark (or twilight)"
