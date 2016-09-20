@@ -322,6 +322,72 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
     return result
 
 
+def count_from_joined(cursor, tables, conditions=None,
+                      distinct=False,
+                      conditions_combine='AND'):
+    """
+    Extract rows from a database table join.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    tables:
+        List of table names to be joined. Tables are joined using NATURAL JOIN,
+        which requires that the join-ing column have the same name in each
+        table. If this is not possible, some other solution will need to be
+        implemented.
+    conditions:
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        so all rows will be returned.
+    distinct:
+        Boolean value, denoting whether or not to eliminate duplicate rows from
+        the query. Defaults to False (i.e. duplicate rows will NOT be
+        eliminated).
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
+
+    Returns
+    -------
+    result:
+        A numpy structured array of all joined table rows which satisfy
+        conditions (if given). Individual entry elements may be called by
+        column name.
+    """
+
+    distinct_str = ''
+    if distinct:
+        distinct_str = 'DISTINCT'
+    string = 'SELECT COUNT(%s *) FROM %s' % (
+        distinct_str,
+        ' NATURAL JOIN '.join(tables),
+        )
+
+    if conditions:
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
+        string += ' WHERE %s' % conditions_string
+
+    logging.debug(string)
+
+    if cursor is not None:
+        cursor.execute(string)
+        result = cursor.fetchall()
+        logging.debug("Extract successful")
+    else:
+        result = None
+        return result
+
+    return int(result[0][0])
+
+
 def extract_from_left_joined(cursor, tables, join_on_column,
                              conditions=None, columns=None,
                              conditions_combine='AND',
