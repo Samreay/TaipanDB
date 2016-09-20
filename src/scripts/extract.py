@@ -167,6 +167,71 @@ def extract_from(cursor, table, conditions=None, columns=None,
     return result
 
 
+def count_from(cursor, table, conditions=None,
+               conditions_combine='AND'):
+    """
+    Count the number of rows in a database table.
+
+    Parameters
+    ----------
+    cursor:
+        The psycopg2 cursor that interacts with the relevant database.
+    table:
+        The name of the table to be read.
+    conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        so all rows will be returned.
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
+
+    Returns
+    -------
+    result:
+        The number of rows in the database table, satisfying any conditions
+        which may have been passed.
+    """
+
+    if cursor is not None:
+        # Get the column names from the table itself
+        cursor.execute("SELECT column_name, data_type"
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table, ))
+        table_structure = cursor.fetchall()
+        logging.debug(table_structure)
+        table_columns, dtypes = zip(*table_structure)
+        columns_lower = [x.lower() for x in columns]
+        dtypes = [dtypes[i] for i in range(len(dtypes))
+                  if table_columns[i].lower()
+                  in columns_lower]
+
+    string = "SELECT COUNT(*) FROM %s" % (
+        table,
+        )
+
+    if conditions:
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
+        string += ' WHERE %s' % conditions_string
+
+    logging.debug(string)
+
+    if cursor is not None:
+        cursor.execute(string)
+        result = cursor.fetchall()
+        logging.debug("Extract successful")
+    else:
+        result = None
+        return result
+
+    return result
+
+
 def extract_from_joined(cursor, tables, conditions=None, columns=None,
                         distinct=False,
                         conditions_combine='AND'):
