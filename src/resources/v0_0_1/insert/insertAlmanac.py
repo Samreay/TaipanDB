@@ -79,6 +79,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     # Format the almanac data into something that can inserted into the database
     data_out = [(field_id, dt, almanac.airmass[dt], dark_almanac.sun_alt[dt],
                  dark_almanac.dark_time[dt]) for dt in almanac.airmass.keys()]
+    logging.debug(data_out)
 
     # Write the data to the db
     if update:
