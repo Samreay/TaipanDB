@@ -216,7 +216,7 @@ def count_from(cursor, table, conditions=None,
         result = None
         return result
 
-    return result
+    return int(result[0][0])
 
 
 def extract_from_joined(cursor, tables, conditions=None, columns=None,
