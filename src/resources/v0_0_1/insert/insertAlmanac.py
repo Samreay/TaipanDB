@@ -2,7 +2,7 @@
 
 import logging
 from taipan.core import TaipanTile
-from taipan.scheduling import DarkAlmanac
+from taipan.scheduling import DarkAlmanac, ephem_to_dt, localize_utc_dt
 from ....scripts.create import insert_many_rows
 from ....scripts.manipulate import upsert_many_rows
 from ....scripts.extract import extract_from, extract_from_joined
@@ -77,7 +77,8 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                                    resolution=almanac.end_date)
 
     # Format the almanac data into something that can inserted into the database
-    data_out = [(field_id, dt, almanac.airmass[dt], dark_almanac.sun_alt[dt],
+    data_out = [(field_id, localize_utc_dt(ephem_to_dt(dt)),
+                 almanac.airmass[dt], dark_almanac.sun_alt[dt],
                  dark_almanac.dark_time[dt]) for dt in almanac.airmass.keys()]
     logging.debug(data_out)
 
