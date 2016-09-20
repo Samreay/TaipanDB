@@ -153,7 +153,8 @@ def create_tables(cursor, tables_dir):
         logging.info("Created all tables")
 
 
-def insert_many_rows(cursor, table, values, columns=None, batch=100):
+def insert_many_rows(cursor, table, values, columns=None, batch=100,
+                     skip_on_conflict=False):
     """
     Insert multiple rows into a database table.
 
@@ -176,6 +177,11 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
         which assumes that you wish to write information to all columns.
     batch:
         Integer, denoting how many rows to write in each pass. Defaults to 100.
+    skip_on_conflict:
+        Optional; boolean, describing whether or not to skip a row if it already
+        exists in the DB as determined by the table primary keys (True) or not.
+        Defaults to False (i.e. attempting to insert a duplicate PK will result
+        in a ProgrammingError).
 
     Returns
     -------
@@ -189,6 +195,8 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
         "" if columns is None else "(" + ", ".join(columns) + ")",
         "%s"
     )
+    if skip_on_conflict:
+        string += " ON CONFLICT DO NOTHING"
     logging.debug("MANY ROW INSERT: " + string 
                   + "... total of %d elements" % len(values))
 
@@ -203,7 +211,8 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100):
             cursor.execute(current_string, rows)
 
 
-def insert_row(cursor, table, values, columns=None):
+def insert_row(cursor, table, values, columns=None,
+               skip_on_conflict=False):
     """
     Insert a row into a database table.
 
@@ -223,6 +232,11 @@ def insert_row(cursor, table, values, columns=None):
         be used to restrict the number of columns to write to (i.e. allow
         default table values for columns if not required). Defaults to None,
         which assumes that you wish to write information to all columns.
+    skip_on_conflict:
+        Optional; boolean, describing whether or not to skip a row if it already
+        exists in the DB as determined by the table primary keys (True) or not.
+        Defaults to False (i.e. attempting to insert a duplicate PK will result
+        in a ProgrammingError).
 
     Returns
     -------
@@ -239,6 +253,8 @@ def insert_row(cursor, table, values, columns=None):
         "" if columns is None else "(" + ", ".join(columns) + ")",
         ",".join(["%s"] * len(values))
         )
+    if skip_on_conflict:
+        string += " ON CONFLICT DO NOTHING"
     logging.debug(string + " with values " + str(values))
     if cursor is not None:
         cursor.execute(string, values)
