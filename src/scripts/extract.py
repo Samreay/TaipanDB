@@ -196,19 +196,6 @@ def count_from(cursor, table, conditions=None,
         which may have been passed.
     """
 
-    if cursor is not None:
-        # Get the column names from the table itself
-        cursor.execute("SELECT column_name, data_type"
-                       " FROM information_schema.columns"
-                       " WHERE table_name='%s'" % (table, ))
-        table_structure = cursor.fetchall()
-        logging.debug(table_structure)
-        table_columns, dtypes = zip(*table_structure)
-        columns_lower = [x.lower() for x in columns]
-        dtypes = [dtypes[i] for i in range(len(dtypes))
-                  if table_columns[i].lower()
-                  in columns_lower]
-
     string = "SELECT COUNT(*) FROM %s" % (
         table,
         )
