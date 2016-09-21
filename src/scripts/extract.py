@@ -334,7 +334,7 @@ def count_from_joined(cursor, tables, conditions=None,
         The psycopg2 cursor that interacts with the relevant database.
     tables:
         List of table names to be joined. Tables are joined using NATURAL JOIN,
-        which requires that the join-ing column have the same name in each
+        which requires that the join-ing column have the same name in ea
         table. If this is not possible, some other solution will need to be
         implemented.
     conditions:
