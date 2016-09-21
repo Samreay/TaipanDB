@@ -6,6 +6,7 @@ from taipan.scheduling import DarkAlmanac, ephem_to_dt, localize_utc_dt
 from ....scripts.create import insert_many_rows
 from ....scripts.manipulate import upsert_many_rows
 from ....scripts.extract import extract_from, extract_from_joined
+import numpy as np
 
 import datetime
 
@@ -81,6 +82,11 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                  almanac.airmass[dt], dark_almanac.sun_alt[dt],
                  bool(dark_almanac.dark_time[dt])) for
                 dt in almanac.airmass.keys()]
+    data_out = np.asarray([[field_id] * almanac.data['date'].shape(-1),
+                           almanac.data['date'],
+                           almanac.data['airmass'],
+                           dark_almanac.data['sun_alt'],
+                           dark_almanac.data['dark_time']])
     logging.debug(data_out)
 
     # Write the data to the db
