@@ -6,7 +6,8 @@ from ....scripts.extract import extract_from_joined, extract_from_left_joined
 from taipan.core import TaipanTarget
 
 
-def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
+def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
+            target_ids=None):
     """
     Extract science targets from the database
 
@@ -20,6 +21,10 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
     unassigned:
         Optional; Boolean value denoting whether to only return targets
         not marked as assigned (True) or all targets (False). Defaults to False.
+    unqueued:
+        Optional; Boolean value denoting whether to only return targets
+        not marked as queued up (True) or all targets (False). Defaults to
+        False.
     target_ids:
         Optional; list of target_ids corresponding to the targets to extract
         from the database. Defaults to None, at which point all targets present
@@ -44,16 +49,23 @@ def execute(cursor, unobserved=False, unassigned=False, target_ids=None):
             combine += ['AND']
     if unassigned:
         conditions += [('(', 'is_observed', '=', True, ''),
-                       ('', 'is_observed', 'IS', 'NULL', ')')]
-        if len(conditions) > 1:
+                       ('', 'is_observed', 'IS', 'NULL', ')')
+                       ]
+        if len(conditions) > 2:
+            combine += ['AND']
+        combine += ['OR']
+    if unqueued:
+        conditions += [('(', 'is_queued', '=', False, ''),
+                       ('', 'is_queued', 'IS', 'NULL', ')')
+                       ]
+        if len(conditions) > 2:
             combine += ['AND']
         combine += ['OR']
 
     logging.debug(conditions)
     logging.debug(combine)
 
-
-    # Old query (no ability to do unassigned)
+    # Old query (no ability to do unassigned, unqueued)
     # targets_db = extract_from_joined(cursor, ['target', 'science_target'],
     #                                  conditions=conditions + [
     #                                      ('is_science', "=", True, )

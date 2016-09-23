@@ -7,21 +7,19 @@ from ....scripts.manipulate import update_rows
 
 def execute(cursor, tile_pks, time_obs=None):
     """
-    Set tiles as having been observed.
+    Set tiles as having been queued.
 
     Parameters
     ----------
     cursor:
         psycopg2 cursor for communicating with the database.
     tile_pks:
-        The list of tile primary keys to set as observed. Note that these tiles
-        will all have is_queued set to 'False' as a result (a tile cannot be
-        queued if it has already been observed).
+        The list of tile primary keys to set as observed.
     time_obs:
         Optional; time of observation of the tile(s). Can either be a single
         datetime.datetime instance which will be applied to all tiles, or a list
         of datetime.datetime instances corresponding one-to-one with each tile
-        in tile_pks. Defaults to None (so no time is recorded).
+        in tile_pks. Defaults to None.
 
     Returns
     -------
@@ -39,17 +37,16 @@ def execute(cursor, tile_pks, time_obs=None):
             time_obs = list(time_obs)
             if len(time_obs) != len(tile_pks):
                 raise ValueError('If passing a list of time_obs to '
-                                 'makeTilesObserved, you *must* pass *one* '
+                                 'makeTileQueued, you *must* pass *one* '
                                  'datetime per tile')
         except TypeError:
             # Only a single datetime was passed
             time_obs = [time_obs, ] * len(tile_pks)
 
     # Form the data list
-    data_list = list([[tile_pk, True, False] for tile_pk in tile_pks])
+    data_list = list([[tile_pk, True] for tile_pk in tile_pks])
     # Update the rows
-    update_rows(cursor, 'tile', data_list, columns=['tile_pk', 'is_observed',
-                                                    'is_queued'])
+    update_rows(cursor, 'tile', data_list, columns=['tile_pk', 'is_queued'])
 
     # Put in the observation times
     if time_obs is not None:

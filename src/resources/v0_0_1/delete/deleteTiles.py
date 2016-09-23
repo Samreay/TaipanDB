@@ -6,7 +6,7 @@ from src.scripts.delete import delete_rows
 
 
 def execute(cursor, tile_list=None, field_list=None,
-            obs_status=None):
+            obs_status=None, queue_status=None):
     """
     Drop a specified set of tiles from the tile database table.
 
@@ -25,6 +25,11 @@ def execute(cursor, tile_list=None, field_list=None,
         to is_observed=False, True correlates to is_observed=True. Defaults to
         None, at which point tiles will be removed irrespective of observing
         status.
+    queue_status:
+        Optional; queue status of tiles to be removed. False correlates
+        to is_queued=False, True correlates to is_queued=True. Defaults to
+        None, at which point tiles will be removed irrespective of queue
+        status.
 
     Returns
     -------
@@ -42,6 +47,8 @@ def execute(cursor, tile_list=None, field_list=None,
         conditions.append(('field_id', 'IN', field_list))
     if obs_status is not None:
         conditions.append(('is_observed', '=', obs_status))
+    if queue_status is not None:
+        conditions.append(('is_queued', '=', obs_status))
 
     # Do the deletion
     delete_rows(cursor, 'tile', conditions=conditions)

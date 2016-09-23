@@ -15,8 +15,9 @@ def execute(cursor, tile_pk):
     cursor:
         psycopg2 cursor for communicating with the database
     tile_pk:
-        The primary key of the tile to be investigated. If this tile does not
-        exist, the function will return an empty list of target_ids.
+        The primary key of the tile to be investigated, OR a list of tile_pks.
+        If this tile(s) does/do not exist, the function will return an empty
+        list of target_ids.
 
     Returns
     -------
@@ -24,13 +25,16 @@ def execute(cursor, tile_pk):
         A list of target_ids which sit on this tile. Note that only *science*
         targets will be returned (this is guaranteed by joining the tile_pk
         table against the science_target table).
-
     """
     logging.info('Reading science targets (types) from database')
 
-    tile_pk = int(tile_pk)
+    # Input checking
+    try:
+        _ = tile_pk[0]
+    except IndexError:
+        tile_pk = [int(tile_pk), ]
 
-    conditions = [('tile_pk', '=', tile_pk), ]
+    conditions = [('tile_pk', 'IN', tile_pk), ]
 
     targets_db = extract_from_joined(cursor, ['target_field', 'science_target'],
                                      conditions=conditions,
