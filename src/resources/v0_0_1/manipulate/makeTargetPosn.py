@@ -4,12 +4,16 @@
 import logging
 
 from ..readout.readScience import execute as rScexec
+from ..readout.readStandards import execute as rSexec
+from ..readout.readGuides import execute as rGexec
+
 from ..readout.readCentroids import execute as rCexec
 
 from ....scripts.create import insert_many_rows
 
 
-def execute(cursor, target_ids=None, field_ids=None):
+def execute(cursor, target_ids=None, field_ids=None,
+            do_guides=True, do_standards=True, do_obs_targets=True):
     """
     Compute which field(s) the targets reside in and store this information
     to the target_posn database.
@@ -26,14 +30,30 @@ def execute(cursor, target_ids=None, field_ids=None):
         Optional list of field_ids to compute against the target list.
         Defaults to None, at which point all fields in the database will be
         involved in the calculation.
+    do_guides, do_standards, do_obs_targets:
+        Optional Booleans, denoting whether position information for guides,
+        standards and observed (i.e. is_done=True) targets should be calculated.
+        All three default to True. These will only need to be switched to False
+        in special applications; for the initial DB setup, they can just be
+        left alone.
 
     Returns
     -------
     Nil. target_posn table is updated in place.
     """
 
+    if do_obs_targets:
+        unobserved = False
+    else:
+        unobserved = True
+
     # Extract all the targets from the database
-    targets = rScexec(cursor, unobserved=False, target_ids=target_ids)
+    targets = rScexec(cursor, unobserved=unobserved, target_ids=target_ids)
+
+    if do_guides:
+        targets += rGexec(cursor)
+    if do_standards:
+        targets += rSexec(cursor)
 
     # Extract all the requested fields
     fields = rCexec(cursor, field_ids=field_ids)
