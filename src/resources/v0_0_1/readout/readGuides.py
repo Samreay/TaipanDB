@@ -1,10 +1,11 @@
 import logging
 import sys
 import os
-from ....scripts.extract import extract_from
+from ....scripts.extract import extract_from_left_joined
 from taipan.core import TaipanTarget
 
-def execute(cursor):
+
+def execute(cursor, field_list=None):
     """
     Read guide targets from the database.
 
@@ -12,6 +13,10 @@ def execute(cursor):
     ----------
     cursor:
         psycopg2 cursor for interacting with the database.
+    field_list:
+        Optional, list of field IDs to compare guides against. Guide targets
+        will only be returned if they appear in one of the fields specified.
+        Defaults to None, at which point all guides will be returned.
 
     Returns
     -------
@@ -21,10 +26,19 @@ def execute(cursor):
     """
     logging.info('Reading guides from database')
 
-    guides_db = extract_from(cursor, 'target',
-                             conditions=[('is_guide', "=", True)],
-                             columns=['target_id', 'ra', 'dec',
-                                      'ux', 'uy', 'uz'])
+    if len(field_list) == 0:
+        field_list = None
+
+    conditions = [('is_guide', "=", True)]
+    if field_list:
+        conditions += [('field_id', 'IN', field_list)]
+
+    guides_db = extract_from_left_joined(cursor, ['target', 'target_posn'],
+                                         'target_id',
+                                         conditions=conditions,
+                                         columns=['target_id', 'ra', 'dec',
+                                                  'ux', 'uy', 'uz'],
+                                         distinct=True)
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], guide=True,
