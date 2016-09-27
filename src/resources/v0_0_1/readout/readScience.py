@@ -7,7 +7,7 @@ from taipan.core import TaipanTarget
 
 
 def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
-            target_ids=None):
+            target_ids=None, field_list=None):
     """
     Extract science targets from the database
 
@@ -30,6 +30,11 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         from the database. Defaults to None, at which point all targets present
         will be extracted. WARNING: Providing a large list of target_ids will
         make the database query very slow!
+    field_list:
+        Optional; list of field IDs for which targets should be returned.
+        Membership of fields is determined by joining against the target_posn
+        database table. Note that, if used in conjunction with target_ids, only
+        targets satisfying *both* criteria will be returned.
 
     Returns
     -------
@@ -45,6 +50,10 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         conditions += [('done', 'IS', False)]
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
+        if len(conditions) > 1:
+            combine += ['AND']
+    if field_list is not None:
+        conditions += [('target_posn.field_id', 'IN', field_list)]
         if len(conditions) > 1:
             combine += ['AND']
     if unassigned:
@@ -79,8 +88,11 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     else:
         added_conds = []
     targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
+                                                   'target_posn',
                                                    'target_field', 'tile'],
-                                          ['target_id', 'target_id', 'tile_pk'],
+                                          ['target_id', 'target_id',
+                                           'target_id',
+                                           'tile_pk'],
                                           conditions=conditions + [
                                               ('is_science', "=", True,)
                                           ],

@@ -76,6 +76,7 @@ def execute(cursor, field_list=None, tile_list=None):
     else:
         req_tileobjs = [f for f in fields_tileobjs if
                         f.field_id in field_list]
+        logging.debug(req_tileobjs)
 
     # Compute which of the all-fields list are within range of the requested
     # tiles/fields
