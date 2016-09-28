@@ -19,8 +19,9 @@ def update(cursor):
                              "reduced.guides_nodups.fits"
     loadGuides.execute(cursor, guides_file=guides_file)
 
-    standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-                                'reduced.standards_nodups.fits'
+    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    #                             'reduced.standards_nodups.fits'
+    standards_file = data_dir + 'random_mock_standards_160928.fits'
     loadStandards.execute(cursor, standards_file=standards_file)
 
     science_file = data_dir + 'priority_science.v0.101_20160331.fits'
