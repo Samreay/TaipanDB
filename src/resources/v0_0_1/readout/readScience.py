@@ -53,9 +53,10 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         if len(conditions) > 1:
             combine += ['AND']
     if field_list is not None:
-        conditions += [('target_posn.field_id', 'IN', field_list)]
-        if len(conditions) > 1:
-            combine += ['AND']
+        if len(field_list) > 0:
+            conditions += [('target_posn.field_id', 'IN', field_list)]
+            if len(conditions) > 1:
+                combine += ['AND']
     if unassigned:
         conditions += [('(', 'is_observed', '=', True, ''),
                        ('', 'is_observed', 'IS', 'NULL', ')')

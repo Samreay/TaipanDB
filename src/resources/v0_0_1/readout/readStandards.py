@@ -26,8 +26,9 @@ def execute(cursor, field_list=None):
     """
     logging.info('Reading standards from database')
 
-    if len(field_list) == 0:
-        field_list = None
+    if field_list is not None:
+        if len(field_list) == 0:
+            field_list = None
 
     conditions = [('is_standard', "=", True)]
     if field_list:

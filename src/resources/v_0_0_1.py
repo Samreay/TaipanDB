@@ -26,6 +26,12 @@ def update(cursor):
     science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     loadScience.execute(cursor, science_file=science_file)
 
+    # Commit here in case something further along fails
+    cursor.connection.commit()
+
     makeScienceDiff.execute(cursor)
 
     makeTargetPosn.execute(cursor)
+
+    # Commit again
+    cursor.connection.commit()
