@@ -17,6 +17,7 @@ def update(cursor):
 
     guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
                              "reduced.guides_nodups.fits"
+    guides_file = data_dir + 'guides_UCAC4_btrim.fits'
     loadGuides.execute(cursor, guides_file=guides_file)
 
     # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \

@@ -29,7 +29,7 @@ def execute(cursor, guides_file=None):
     # Get guides
     guides_table = Table.read(guides_file)
 
-    values_table = [[row['objID'],
+    values_table = [[int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
                      float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
                      False, False, True]
