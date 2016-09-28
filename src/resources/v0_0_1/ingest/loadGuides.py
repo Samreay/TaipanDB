@@ -30,8 +30,8 @@ def execute(cursor, guides_file=None):
     guides_table = Table.read(guides_file)
 
     values_table = [[int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
-                     float(row['ra_SCOS']),
-                     float(row['dec_SCOS']),
+                     float(row['raj2000']),
+                     float(row['dej2000']),
                      False, False, True]
                     + list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in guides_table]
