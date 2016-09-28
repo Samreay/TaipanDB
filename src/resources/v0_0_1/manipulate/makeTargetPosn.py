@@ -51,9 +51,9 @@ def execute(cursor, target_ids=None, field_ids=None,
     targets = rScexec(cursor, unobserved=unobserved, target_ids=target_ids)
 
     if do_guides:
-        targets += rGexec(cursor)
+        guides = rGexec(cursor)
     if do_standards:
-        targets += rSexec(cursor)
+        standards = rSexec(cursor)
 
     # Extract all the requested fields
     fields = rCexec(cursor, field_ids=field_ids)
@@ -73,6 +73,15 @@ def execute(cursor, target_ids=None, field_ids=None,
 
         target_field_relations += [(tgt.idn, field.field_id) for tgt in
                                    field.available_targets(targets)]
+
+        if do_guides:
+            logging.debug('Adding in guides')
+            target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                       field.available_targets(guides)]
+        if do_standards:
+            logging.debug('Adding in standards')
+            target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                       field.available_targets(standards)]
 
     # Write the information back to the DB
     insert_many_rows(cursor, 'target_posn', target_field_relations,
