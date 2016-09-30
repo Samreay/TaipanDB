@@ -29,7 +29,9 @@ def execute(cursor, guides_file=None):
     # Get guides
     guides_table = Table.read(guides_file)
 
-    values_table = [[int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
+    values_table = [[
+                     # int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
+                     int(row['ucacid']),
                      float(row['raj2000']),
                      float(row['dej2000']),
                      False, False, True]
