@@ -56,7 +56,11 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     obs_start = select_min_from_joined(cursor, ['observability'], 'date',
                                        conditions=conditions)
 
-    if obs_start = None:
+    if obs_start is None:
+        # No time left, return double None
+        return None, None
+
+    obs_end
 
     # Extract the observability data
     data = extract_from(cursor, 'observability',
