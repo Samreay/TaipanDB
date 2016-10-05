@@ -88,7 +88,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                            almanac.data['date'],
                            almanac.data['airmass'],
                            dark_almanac.data['sun_alt'],
-                           dark_almanac.data['dark_time']])
+                           dark_almanac.data['dark_time']]).T
     logging.debug(data_out)
     logging.debug(data_out.shape)
 
