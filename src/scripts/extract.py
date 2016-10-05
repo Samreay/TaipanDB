@@ -537,6 +537,142 @@ def extract_from_left_joined(cursor, tables, join_on_column,
     return result
 
 
+def select_agg_from_joined(cursor, tables, aggregate, agg_column,
+                           conditions=None,
+                           conditions_combine=None):
+    """
+    Select the aggregate value of a particular column, subject to certain
+    conditions. Table joins allow for expanded criteria to be used.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    tables:
+        Tables that should be joined together (using NATURAL JOIN) to
+        find the minimum from.
+    aggregate:
+        The PostGres aggregate function to be passed. A ProgrammingError will
+        be raised if the function is not valid. Pass the function name ONLY -
+        no special characters or brackets are necessary
+    agg_column:
+        The name of the table column to find the minimum value for.
+    conditions:
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. The exception is
+        looking for columns with value NULL, which should be denoted using the
+        string 'NULL'. Defaults to None, so all rows will be returned.
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
+
+    Returns
+    -------
+    The minimum value of agg_column found, cast as the appropriate Python data
+    type.
+    """
+    logging.debug('Getting aggregate from database')
+
+    try:
+        _ = len(tables)
+    except TypeError:
+        tables = [tables, ]
+
+    # Aggregate function
+    query_string = 'SELECT %s(%s) FROM ' % (aggregate, agg_column,)
+
+    # Table join
+    query_string += ' NATURAL JOIN '.join(tables)
+
+    # Conditions
+    if conditions:
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
+        query_string += ' WHERE %s' % conditions_string
+
+    logging.debug(query_string)
+
+    if cursor is not None:
+        cursor.execute(query_string)
+        result = cursor.fetchall()
+        return result[0][0]
+
+    return None
+
+
+def select_min_from_joined(cursor, tables, min_column,
+                           conditions=None,
+                           conditions_combine=None):
+    """
+    Select the minimum value of a particular column, subject to certain
+    conditions. Table joins allow for expanded criteria to be used. This is a
+    special implementation that avoids PostGres necessarily scanning the entire
+    database.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    tables:
+        Tables that should be joined together (using NATURAL JOIN) to
+        find the minimum from.
+    min_column:
+        The name of the table column to find the minimum value for.
+    conditions:
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. The exception is
+        looking for columns with value NULL, which should be denoted using the
+        string 'NULL'. Defaults to None, so all rows will be returned.
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
+
+    Returns
+    -------
+    The minimum value of min_column found, cast as the appropriate Python data
+    type.
+    """
+    logging.debug('Getting min from database')
+
+    try:
+        _ = len(tables)
+    except TypeError:
+        tables = [tables, ]
+
+    # Aggregate function
+    query_string = 'SELECT %s FROM ' % (min_column, )
+
+    # Table join
+    query_string += ' NATURAL JOIN '.join(tables)
+
+    # Conditions
+    if conditions:
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
+        query_string += ' WHERE %s' % conditions_string
+
+    query_string += ' ORDER BY %s ASC LIMIT 1' % (min_column, )
+
+    logging.debug(query_string)
+
+    if cursor is not None:
+        cursor.execute(query_string)
+        result = cursor.fetchall()
+        return result[0][0]
+
+    return None
+
+
 def execute_select(connection, statement):
     """ Execute an arbitrary SELECT statement.
 
