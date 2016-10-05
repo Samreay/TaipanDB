@@ -85,7 +85,8 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     #              bool(dark_almanac.dark_time[dt])) for
     #             dt in almanac.airmass.keys()]
     data_out = np.asarray([[field_id] * almanac.data['date'].shape[-1],
-                           almanac.data['date'],
+                           map(lambda x: localize_utc_dt(ephem_to_dt(x)),
+                               almanac.data['date']),
                            almanac.data['airmass'],
                            dark_almanac.data['sun_alt'],
                            dark_almanac.data['dark_time']]).T
