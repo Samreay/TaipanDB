@@ -106,7 +106,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     if obs_end is None:
         obs_end = select_max_from_joined(cursor, ['observability'], 'date',
-                                         conditions=conditions
+                                         conditions=conditions)
 
     return obs_start, obs_end
 
