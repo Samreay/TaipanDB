@@ -2,13 +2,37 @@
 # inserted into the database
 # This should be faster than using in-memory Almanacs
 
-from src.scripts.extract import extract_from, select_min_from_joined
+from src.scripts.extract import extract_from, select_min_from_joined, \
+    select_max_from_joined, execute_select
 import taipan.scheduling as ts
 import numpy as np
+import copy
+
+
+def get_airmass(cursor, field_id, datetime):
+    """
+    Get the airmass corresponding to a particular field and datetime.
+
+    Parameters
+    ----------
+    cursor
+    field_id
+    datetime
+
+    Returns
+    -------
+    The airmass at that field and datetime.
+    """
+    result = extract_from(cursor, 'observability',
+                          columns=['airmass'],
+                          conditions=[
+                              ('date', '=', datetime),
+                          ])['airmass'][0]
+    return result
 
 
 def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
-                           minimum_airmass=2.0):
+                           minimum_airmass=2.0, dark=False, grey=False):
     """
     Determine the next period when this field is observable, based on
     airmass only (i.e. doesn't consider daylight/night, dark/grey time,
@@ -27,6 +51,11 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         available data points are used for the calculation.
     minimum_airmass:
         Minimum airmass which will allow observing. Defaults to 2.0.
+    dark, grey:
+        Boolean values denoting whether to return the next observable period
+        of grey time, dark time, or all night time (which corresponds to both
+        dark and grey being False). Trying to pass dark=True and grey=True will
+        raise a ValueError.
 
     Returns
     -------
@@ -38,6 +67,9 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     # Input checking
     if datetime_to < datetime_from:
         raise ValueError('datetime_from must occur before datetime_to')
+    if dark and grey:
+        raise ValueError('Only one of dark or grey may be True (or both may '
+                         'be False to get all night time back')
 
     # Read in the obs_start and obs_end times. It does this as follows:
     # - obs_start is the first time in the database after datetime_from and
@@ -51,47 +83,38 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     ]
     if datetime_to:
         conditions += [('date', '<=', datetime_to)]
+    if dark:
+        conditions += [('dark', '=', True)]
+    if grey:
+        conditions += [('dark', '=', False)]
 
     # Try to get obs_start
     obs_start = select_min_from_joined(cursor, ['observability'], 'date',
-                                       conditions=conditions)
+                                       conditions=conditions + [
+                                           ('airmass', '<=', minimum_airmass),
+                                       ])
 
     if obs_start is None:
         # No time left, return double None
         return None, None
 
-    obs_end
+    obs_end = select_min_from_joined(cursor, ['observability'], 'date',
+                                     conditions=conditions + [
+                                         ('date', '>', obs_start),
+                                         ('airmass', '>', minimum_airmass),
+                                     ])
 
-    # Extract the observability data
-    data = extract_from(cursor, 'observability',
-                        columns=['date', 'airmass'],
-                        conditions=conditions).sort(
-        axis=0, order='date',
-    )
-
-    # Compute obs_start
-    try:
-        obs_start = np.min(data[data['airmass'] <= minimum_airmass]['date'])
-    except ValueError:
-        # No obs_start, return None and None
-        return None, None
-
-    # Compute obs_end
-    try:
-        obs_end = np.min(data[np.logical_and(data['airmass'] > minimum_airmass,
-                                             data['date'] > obs_start)]['date'])
-    except ValueError:
-        obs_end = np.max(data['date'])
+    if obs_end is None:
+        obs_end = select_max_from_joined(cursor, ['observability'], 'date',
+                                         conditions=conditions
 
     return obs_start, obs_end
 
-    pass
 
-
-def hours_observable(field, datetime_from, datetime_to,
+def hours_observable(cursor, field_id, datetime_from, datetime_to,
                      exclude_grey_time=True,
                      exclude_dark_time=False,
-                     timezone=ts.UKST_TIMEZONE,
+                     minimum_airmass=2.0,
                      hours_better=True):
     """
     Calculate how many hours this field is observable for between two
@@ -118,13 +141,6 @@ def hours_observable(field, datetime_from, datetime_to,
         True, False (dark time only)
         Attempting to set both value to True will raise a ValueError, as
         this would result in no available observing time.
-    dark_almanac:
-        An instance of DarkAlmanac used to compute whether time is grey or
-        dark. Defaults to None, at which point a DarkAlmanac will be
-        constructed (if required).
-    tz:
-        The timezone that the (naive) datetime objects are being passed as.
-        Defaults to taipan.scheduling.UKST_TIMEZONE.
     hours_better:
         Optional Boolean, denoting whether to return only
         hours_observable which have airmasses superior to the airmass
@@ -137,4 +153,50 @@ def hours_observable(field, datetime_from, datetime_to,
         and datetime_to.
 
     """
-    pass
+    # Input checking
+    # Input checking
+    if datetime_to < datetime_from:
+        raise ValueError('datetime_from must occur before datetime_to')
+    if exclude_grey_time and exclude_dark_time:
+        raise ValueError('Cannot set both exclude_grey_time and '
+                         'exclude_dark_time to True - this results in no '
+                         'observing time!')
+
+    conditions = [
+        ('field_id', '=', field_id),
+        ('date', '>=', datetime_from),
+    ]
+    dark = False
+    grey = False
+    if datetime_to:
+        conditions += [('date', '<=', datetime_to)]
+    if exclude_grey_time:
+        dark = True
+    if exclude_dark_time:
+        grey = True
+
+    if hours_better:
+        # Get the benchmark airmass
+        minimum_airmass = get_airmass(cursor, field_id, datetime_from)
+
+    hours_obs = 0.
+    dt_up_to = copy.copy(datetime_from)
+
+    while dt_up_to < datetime_to:
+        # Do stuff
+        next_per_start, next_per_end = next_observable_period(cursor,
+                                                              field_id,
+                                                              datetime_from=
+                                                              dt_up_to,
+                                                              datetime_to=
+                                                              datetime_to,
+                                                              minimum_airmass=
+                                                              minimum_airmass,
+                                                              dark=dark,
+                                                              grey=grey)
+        if next_per_start is None:
+            dt_up_to = copy.copy(datetime_to)
+        else:
+            hours_obs += (next_per_end - next_per_start).days() * 24.
+
+    return hours_obs
