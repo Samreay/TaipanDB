@@ -1,11 +1,11 @@
 # Insert calculated almanacs into the database
 
 import logging
-from taipan.core import TaipanTile
+# from taipan.core import TaipanTile
 from taipan.scheduling import DarkAlmanac, ephem_to_dt, localize_utc_dt
 from ....scripts.create import insert_many_rows
 from ....scripts.manipulate import upsert_many_rows
-from ....scripts.extract import extract_from, extract_from_joined
+# from ....scripts.extract import extract_from, extract_from_joined
 import numpy as np
 
 import datetime
@@ -54,8 +54,10 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     update:
         Optional; Boolean value denoting whether to update any almanac data
         points already existing in the database (True) or simply not write
-        new values talmo those points (False). Defaults to False. Using True should
-        only be necessary if, e.g. fields have changed.
+        new values talmo those points (False), or try to blindly insert the
+        values into the DB. Defaults to False. Using True
+        should only be necessary if, e.g. fields have changed. Using None will
+        throw a ProgrammingError if an identical table row already exists.
 
     Returns
     -------
@@ -90,17 +92,23 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     logging.debug(data_out)
 
     # Write the data to the db
-    if update:
-        upsert_many_rows(cursor, 'observability',
+    if update is None:
+        insert_many_rows(cursor, 'observability',
                          data_out,
                          columns=['field_id', 'date', 'airmass',
-                                  'sun_alt', 'dark'])
-    else:
+                                  'sun_alt', 'dark'],
+                         skip_on_conflict=False)
+    elif not update:
         insert_many_rows(cursor, 'observability',
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'],
                          skip_on_conflict=True)
+    else:
+        upsert_many_rows(cursor, 'observability',
+                         data_out,
+                         columns=['field_id', 'date', 'airmass',
+                                  'sun_alt', 'dark'])
 
     logging.info('Insertion of almanac completed')
 
