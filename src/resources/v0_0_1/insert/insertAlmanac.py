@@ -54,7 +54,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     update:
         Optional; Boolean value denoting whether to update any almanac data
         points already existing in the database (True) or simply not write
-        new values to those points (False). Defaults to False. Using True should
+        new values talmo those points (False). Defaults to False. Using True should
         only be necessary if, e.g. fields have changed.
 
     Returns
@@ -75,13 +75,13 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     if gen_dark_alm:
         dark_almanac = DarkAlmanac(almanac.start_date,
                                    end_date=almanac.end_date,
-                                   resolution=almanac.end_date)
+                                   resolution=almanac.resolution)
 
     # Format the almanac data into something that can inserted into the database
-    data_out = [(field_id, localize_utc_dt(ephem_to_dt(dt)),
-                 almanac.airmass[dt], dark_almanac.sun_alt[dt],
-                 bool(dark_almanac.dark_time[dt])) for
-                dt in almanac.airmass.keys()]
+    # data_out = [(field_id, localize_utc_dt(ephem_to_dt(dt)),
+    #              almanac.airmass[dt], dark_almanac.sun_alt[dt],
+    #              bool(dark_almanac.dark_time[dt])) for
+    #             dt in almanac.airmass.keys()]
     data_out = np.asarray([[field_id] * almanac.data['date'].shape(-1),
                            almanac.data['date'],
                            almanac.data['airmass'],
