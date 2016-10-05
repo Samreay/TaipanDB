@@ -577,9 +577,7 @@ def select_agg_from_joined(cursor, tables, aggregate, agg_column,
     """
     logging.debug('Getting aggregate from database')
 
-    try:
-        _ = len(tables)
-    except TypeError:
+    if not isinstance(tables, list):
         tables = [tables, ]
 
     # Aggregate function
@@ -643,9 +641,7 @@ def select_min_from_joined(cursor, tables, min_column,
     """
     logging.debug('Getting min from database')
 
-    try:
-        _ = len(tables)
-    except TypeError:
+    if not isinstance(tables, list):
         tables = [tables, ]
 
     # Aggregate function
