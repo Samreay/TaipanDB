@@ -90,6 +90,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                            dark_almanac.data['sun_alt'],
                            dark_almanac.data['dark_time']])
     logging.debug(data_out)
+    logging.debug(data_out.shape)
 
     # Write the data to the db
     if update is None:
