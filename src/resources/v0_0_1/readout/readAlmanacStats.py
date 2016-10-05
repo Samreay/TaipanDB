@@ -2,7 +2,7 @@
 # inserted into the database
 # This should be faster than using in-memory Almanacs
 
-from src.scripts.extract import extract_from
+from src.scripts.extract import extract_from, select_min_from_joined
 import taipan.scheduling as ts
 import numpy as np
 
@@ -51,6 +51,12 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     ]
     if datetime_to:
         conditions += [('date', '<=', datetime_to)]
+
+    # Try to get obs_start
+    obs_start = select_min_from_joined(cursor, ['observability'], 'date',
+                                       conditions=conditions)
+
+    if obs_start = None:
 
     # Extract the observability data
     data = extract_from(cursor, 'observability',

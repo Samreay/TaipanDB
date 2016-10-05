@@ -598,7 +598,11 @@ def select_agg_from_joined(cursor, tables, aggregate, agg_column,
     if cursor is not None:
         cursor.execute(query_string)
         result = cursor.fetchall()
-        return result[0][0]
+        try:
+            minval = result[0][0]
+        except KeyError:
+            # Must not be a valid value, return None
+            return None
 
     return None
 
@@ -664,7 +668,11 @@ def select_min_from_joined(cursor, tables, min_column,
     if cursor is not None:
         cursor.execute(query_string)
         result = cursor.fetchall()
-        return result[0][0]
+        try:
+            minval = result[0][0]
+        except KeyError:
+            # Must not be a valid value, return None
+            return None
 
     return None
 
