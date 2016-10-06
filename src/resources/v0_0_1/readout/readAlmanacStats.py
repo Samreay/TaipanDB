@@ -314,7 +314,7 @@ def next_night_period(cursor, dt, dark=True, grey=False):
         conditions = [('(', 'dark', '=', True, '')]
         conditions_combine = ['OR']
     else:
-        conditions = [('(', 'dark', 'IS NOT', 'NULL', '')]
+        conditions = [('(', 'dark', 'IS', 'NULL', '')]
         conditions_combine = ['AND']
 
     dark_end = select_min_from_joined(cursor, ['observability'], 'date',
