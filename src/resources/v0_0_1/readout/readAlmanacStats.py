@@ -62,7 +62,10 @@ def get_airmass(cursor, field_id, datetime):
     result = extract_from(cursor, 'observability',
                           columns=['airmass'],
                           conditions=[
-                              ('date', '=', datetime),
+                              ('date', '>=',
+                               datetime - datetime.timedelta(seconds=30)),
+                              ('date', '<=',
+                               datetime + datetime.timedelta(seconds=30)),
                               ('field_id', '=', field_id),
                           ])['airmass'][0]
     return result
