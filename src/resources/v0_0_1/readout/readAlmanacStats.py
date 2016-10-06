@@ -69,7 +69,7 @@ def get_airmass(cursor, field_id, datetime):
 
 
 def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
-                           minimum_airmass=2.0, dark=False, grey=False):
+                           minimum_airmass=2.0, dark=True, grey=False):
     """
     Determine the next period when this field is observable, based on
     airmass only (i.e. doesn't consider daylight/night, dark/grey time,
@@ -144,7 +144,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     elif grey:
         conditions += [('(', 'dark', '=', True, '')]
     else:
-        conditions += [('(', 'dark', 'IS NOT', 'NULL', '')]
+        conditions += [('(', 'dark', 'IS', 'NULL', '')]
 
     obs_end = select_min_from_joined(cursor, ['observability'], 'date',
                                      conditions=conditions + [
