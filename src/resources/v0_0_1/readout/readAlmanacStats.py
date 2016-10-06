@@ -3,7 +3,7 @@
 # This should be faster than using in-memory Almanacs
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
-    select_max_from_joined, execute_select
+    select_max_from_joined, count_from
 import taipan.scheduling as ts
 import numpy as np
 import copy
@@ -175,7 +175,8 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                      exclude_grey_time=True,
                      exclude_dark_time=False,
                      minimum_airmass=2.0,
-                     hours_better=True):
+                     hours_better=True,
+                     resolution=15.):
     """
     Calculate how many hours this field is observable for between two
     datetimes.
@@ -226,44 +227,68 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         ('field_id', '=', field_id),
         ('date', '>=', datetime_from),
     ]
-    dark = False
-    grey = False
     if datetime_to:
-        conditions += [('date', '<=', datetime_to)]
+        conditions += [('date', '<', datetime_to)]
     if exclude_grey_time:
-        dark = True
+        conditions += [('dark', '=', True)]
     if exclude_dark_time:
-        grey = True
-
+        conditions += [('dark', '=', False)]
     if hours_better:
         # Get the benchmark airmass
         minimum_airmass = min(get_airmass(cursor, field_id, datetime_from),
                               minimum_airmass)
         logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
+    conditions += [('airmass', '<=', minimum_airmass)]
 
-    hours_obs = 0.
-    dt_up_to = copy.copy(datetime_from)
-
-    while dt_up_to < datetime_to:
-        # Do stuff
-        next_per_start, next_per_end = next_observable_period(cursor,
-                                                              field_id,
-                                                              datetime_from=
-                                                              dt_up_to,
-                                                              datetime_to=
-                                                              datetime_to,
-                                                              minimum_airmass=
-                                                              minimum_airmass,
-                                                              dark=dark,
-                                                              grey=grey)
-        if next_per_start is None:
-            dt_up_to = copy.copy(datetime_to)
-        else:
-            hours_obs += ((next_per_end - next_per_start).total_seconds() /
-                          datetime.timedelta(1.).total_seconds()) * 24.
-            dt_up_to = next_per_end
-
+    hours_obs = resolution * count_from(cursor, 'observability',
+                                        conditions=conditions) / 60.
     return hours_obs
+
+    # Old implementation - this code won't be reached, but is saved for the
+    # moment
+
+    # conditions = [
+    #     ('field_id', '=', field_id),
+    #     ('date', '>=', datetime_from),
+    # ]
+    # dark = False
+    # grey = False
+    # if datetime_to:
+    #     conditions += [('date', '<=', datetime_to)]
+    # if exclude_grey_time:
+    #     dark = True
+    # if exclude_dark_time:
+    #     grey = True
+    #
+    # if hours_better:
+    #     # Get the benchmark airmass
+    #     minimum_airmass = min(get_airmass(cursor, field_id, datetime_from),
+    #                           minimum_airmass)
+    #     logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
+    #
+    # hours_obs = 0.
+    # dt_up_to = copy.copy(datetime_from)
+    #
+    # while dt_up_to < datetime_to:
+    #     # Do stuff
+    #     next_per_start, next_per_end = next_observable_period(cursor,
+    #                                                           field_id,
+    #                                                           datetime_from=
+    #                                                           dt_up_to,
+    #                                                           datetime_to=
+    #                                                           datetime_to,
+    #                                                           minimum_airmass=
+    #                                                           minimum_airmass,
+    #                                                           dark=dark,
+    #                                                           grey=grey)
+    #     if next_per_start is None:
+    #         dt_up_to = copy.copy(datetime_to)
+    #     else:
+    #         hours_obs += ((next_per_end - next_per_start).total_seconds() /
+    #                       datetime.timedelta(1.).total_seconds()) * 24.
+    #         dt_up_to = next_per_end
+    #
+    # return hours_obs
 
 
 def next_night_period(cursor, dt, limiting_dt=None,
