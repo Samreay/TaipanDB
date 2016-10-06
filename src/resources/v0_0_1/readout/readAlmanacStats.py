@@ -45,7 +45,7 @@ def get_fields_available(cursor, datetime,
     return result
 
 
-def get_airmass(cursor, field_id, datetime):
+def get_airmass(cursor, field_id, dt):
     """
     Get the airmass corresponding to a particular field and datetime.
 
@@ -53,7 +53,7 @@ def get_airmass(cursor, field_id, datetime):
     ----------
     cursor
     field_id
-    datetime
+    dt
 
     Returns
     -------
@@ -63,9 +63,9 @@ def get_airmass(cursor, field_id, datetime):
                           columns=['airmass'],
                           conditions=[
                               ('date', '>=',
-                               datetime - datetime.timedelta(seconds=30)),
+                               dt - datetime.timedelta(seconds=30)),
                               ('date', '<=',
-                               datetime + datetime.timedelta(seconds=30)),
+                               dt + datetime.timedelta(seconds=30)),
                               ('field_id', '=', field_id),
                           ])['airmass'][0]
     return result
