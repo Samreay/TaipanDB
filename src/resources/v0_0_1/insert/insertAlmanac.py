@@ -99,7 +99,8 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'],
-                         skip_on_conflict=False)
+                         skip_on_conflict=False,
+                         batch=data_out.shape[0])
     elif not update:
         insert_many_rows(cursor, 'observability',
                          data_out,
