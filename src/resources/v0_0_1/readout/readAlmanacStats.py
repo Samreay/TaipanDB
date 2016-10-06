@@ -107,6 +107,11 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     if dark and grey:
         raise ValueError('Only one of dark or grey may be True (or both may '
                          'be False to get all night time back)')
+    if datetime_to is None:
+        datetime_to = select_max_from_joined(cursor, ['observability'],
+                                             'date', conditions=[
+                ('field_id', '=', field_id),
+            ])
 
     # Read in the obs_start and obs_end times. It does this as follows:
     # - obs_start is the first time in the database after datetime_from and
@@ -139,6 +144,9 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         ('field_id', '=', field_id),
     ]
     conditions_combine = ['AND']
+    if datetime_to:
+        conditions += [('date', '<=', datetime_to)]
+        conditions_combine += ['AND']
     if dark:
         conditions += [('(', 'dark', '=', False, '')]
     elif grey:
@@ -156,8 +164,9 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
                                      ])
 
     if obs_end is None:
-        obs_end = select_max_from_joined(cursor, ['observability'], 'date',
-                                         conditions=conditions)
+        # obs_end = select_max_from_joined(cursor, ['observability'], 'date',
+        #                                  conditions=conditions)
+        obs_end = datetime_to
 
     return obs_start, obs_end
 
