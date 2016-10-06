@@ -38,9 +38,9 @@ def get_fields_available(cursor, datetime,
                           conditions=[
                               ('airmass', '<=', minimum_airmass),
                               ('date', '<=', datetime + datetime.timedelta(
-                                  minutes=resolution)),
+                                  minutes=resolution/2.0)),
                               ('date', '>=', datetime - datetime.timedelta(
-                                  minutes=resolution)),
+                                  minutes=resolution/2.0)),
                           ])['field_id']
     return result
 
@@ -72,7 +72,8 @@ def get_airmass(cursor, field_id, dt):
 
 
 def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
-                           minimum_airmass=2.0, dark=True, grey=False):
+                           minimum_airmass=2.0, dark=True, grey=False,
+                           resolution=15.):
     """
     Determine the next period when this field is observable, based on
     airmass only (i.e. doesn't consider daylight/night, dark/grey time,
@@ -124,7 +125,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     conditions = [
         ('field_id', '=', field_id),
-        ('date', '>=', datetime_from),
+        ('date', '>=', datetime_from - datetime.timedelta(minutes=resolution)),
     ]
     if datetime_to:
         conditions += [('date', '<=', datetime_to)]
