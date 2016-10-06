@@ -279,17 +279,19 @@ def next_night_period(cursor, dt, dark=True, grey=False):
 
     conditions = []
     if dark:
-        conditions = [('dark', '=', False)]
+        conditions = [('(', 'dark', '=', False, '')]
         conditions_combine = ['OR']
     elif grey:
-        conditions = [('dark', '=', True)]
+        conditions = [('(', 'dark', '=', True, '')]
         conditions_combine = ['OR']
     else:
-        conditions_combine = []
+        conditions = [('(', 'dark', 'IS NOT', 'NULL', '')]
+        conditions_combine = ['AND']
 
     dark_end = select_min_from_joined(cursor, ['observability'], 'date',
                                       conditions=conditions + [
-                                          ('sun_alt', '>', ts.SOLAR_HORIZON),
+                                          ('', 'sun_alt', '>',
+                                           ts.SOLAR_HORIZON, ')'),
                                           ('date', '>', dark_start),
                                       ],
                                       conditions_combine=conditions_combine + [
