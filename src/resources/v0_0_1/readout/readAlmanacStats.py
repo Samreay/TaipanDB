@@ -7,6 +7,41 @@ from src.scripts.extract import extract_from, select_min_from_joined, \
 import taipan.scheduling as ts
 import numpy as np
 import copy
+import datetime
+
+
+def get_fields_available(cursor, datetime,
+                         minimum_airmass=2.0,
+                         resolution=15.):
+    """
+    Get the field_ids available for observation at a specified datetime.
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    datetime:
+        datetime.datetime denoting the UTC time that we wish to investigate.
+    minimum_airmass:
+        The airmass above which fields are unobservable. Defaults to 2.0.
+    resolution:
+        The resolution to assume the almanac data points are stored in the DB
+        with. Defaults to 15 (minutes).
+
+    Returns
+    -------
+    field_ids:
+        A simple list of field_ids that are available at this time.
+    """
+    result = extract_from(cursor, 'observability',
+                          columns='field_id',
+                          conditions=[
+                              ('airmass', '<=', minimum_airmass),
+                              ('date', '<=', datetime + datetime.timedelta(
+                                  minutes=resolution)),
+                              ('date', '>=', datetime - datetime.timedelta(
+                                  minutes=resolution)),
+                          ])['field_id']
+    return result
 
 
 def get_airmass(cursor, field_id, datetime):
@@ -69,7 +104,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         raise ValueError('datetime_from must occur before datetime_to')
     if dark and grey:
         raise ValueError('Only one of dark or grey may be True (or both may '
-                         'be False to get all night time back')
+                         'be False to get all night time back)')
 
     # Read in the obs_start and obs_end times. It does this as follows:
     # - obs_start is the first time in the database after datetime_from and
@@ -200,3 +235,48 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
             hours_obs += (next_per_end - next_per_start).days() * 24.
 
     return hours_obs
+
+
+def next_night_period(cursor, dark=True, grey=False):
+    """
+    Returns next period of 'night' (modulo observing conditions).
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    dark, grey:
+        Booleans denoting whether to consider only dark or grey time. Setting
+        both to False will simply return 'night' time. Setting both to True
+        will raise a ValueError.
+
+    Returns
+    -------
+    night_start, night_end:
+        The start and end of the next 'night' period as naive datetime.datetime
+        objects. These will be in UTC.
+    """
+    if dark and grey:
+        raise ValueError('Cannot set dark and grey to both be true - only '
+                         'pick one!')
+
+    conditions = [('sun_alt', '<=', ts.SOLAR_HORIZON)]
+    if dark:
+        conditions += [('dark', '=', True)]
+    elif grey:
+        conditions += [('dark', '=', False)]
+
+    # Try to get dark_start
+    dark_start = select_min_from_joined(cursor, ['observability'], 'date',
+                                        conditions=conditions)
+    if dark_start is None:
+        return None, None
+
+    dark_end = select_min_from_joined(cursor, ['observability'], 'date',
+                                      conditions=conditions + [
+                                          ('date', '>', dark_start),
+                                      ])
+    if dark_end is None:
+        dark_end = select_max_from_joined(cursor, ['observability'], 'date')
+
+    return dark_start, dark_end
