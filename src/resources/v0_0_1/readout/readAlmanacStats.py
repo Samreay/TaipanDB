@@ -233,6 +233,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
             dt_up_to = copy.copy(datetime_to)
         else:
             hours_obs += (next_per_end - next_per_start).days() * 24.
+            dt_up_to = next_per_end
 
     return hours_obs
 
