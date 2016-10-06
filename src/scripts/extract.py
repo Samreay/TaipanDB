@@ -676,10 +676,12 @@ def select_group_agg_from_joined(cursor, tables, aggregate, agg_column,
             logging.info('At least one of the requested tables has no columns')
             return []
         columns_lower = [x.lower() for x in [group_by, agg_column, ]]
-        columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
-                                i in range(len(dtypes))
-                  if table_columns[i].lower()
-                  in columns_lower])
+        # columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
+        #                         i in range(len(dtypes)) if
+        #                         table_columns[i].lower() in
+        #                         columns_lower])
+        columns = columns_lower
+        dtypes = {columns[i]: dtypes[i] for i in range(len(columns))}
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
@@ -713,9 +715,11 @@ def select_group_agg_from_joined(cursor, tables, aggregate, agg_column,
         # Re-format the return as a numpy structured array
         # Note that, because we know exactly what is coming back, we can
         # code this directly rather than detecting columns
+
         result = np.asarray(result, dtype={
             "names": [group_by, agg_column, ],
-            "formats": [psql_to_numpy_dtype(dtype) for dtype in dtypes],
+            "formats": [psql_to_numpy_dtype(dtype) for dtype in
+                        [dtypes[group_by], dtypes[agg_column], ]],
         })
         return result
 
