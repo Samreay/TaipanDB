@@ -676,11 +676,11 @@ def select_group_agg_from_joined(cursor, tables, aggregate, agg_column,
             logging.info('At least one of the requested tables has no columns')
             return []
         columns_lower = [x.lower() for x in [group_by, agg_column, ]]
-        # columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
-        #                         i in range(len(dtypes)) if
-        #                         table_columns[i].lower() in
-        #                         columns_lower])
-        columns = columns_lower
+        columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
+                                i in range(len(dtypes)) if
+                                table_columns[i].lower() in
+                                columns_lower])
+        # columns = columns_lower
         dtypes = {columns[i]: dtypes[i] for i in range(len(columns))}
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
