@@ -539,7 +539,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
 
 def select_agg_from_joined(cursor, tables, aggregate, agg_column,
                            conditions=None,
-                           conditions_combine=None):
+                           conditions_combine='AND'):
     """
     Select the aggregate value of a particular column, subject to certain
     conditions. Table joins allow for expanded criteria to be used.
@@ -610,7 +610,7 @@ def select_agg_from_joined(cursor, tables, aggregate, agg_column,
 
 def select_min_from_joined(cursor, tables, min_column,
                            conditions=None,
-                           conditions_combine=None):
+                           conditions_combine='AND'):
     """
     Select the minimum value of a particular column, subject to certain
     conditions. Table joins allow for expanded criteria to be used. This is a
@@ -681,7 +681,7 @@ def select_min_from_joined(cursor, tables, min_column,
 
 def select_max_from_joined(cursor, tables, max_column,
                            conditions=None,
-                           conditions_combine=None):
+                           conditions_combine='AND'):
     """
     Select the minimum value of a particular column, subject to certain
     conditions. Table joins allow for expanded criteria to be used. This is a
