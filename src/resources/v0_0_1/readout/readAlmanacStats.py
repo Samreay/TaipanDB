@@ -135,10 +135,24 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         # No time left, return double None
         return None, None
 
+    conditions = [
+        ('field_id', '=', field_id),
+    ]
+    conditions_combine = ['AND']
+    if dark:
+        conditions += [('(', 'dark', '=', False, '')]
+    elif grey:
+        conditions += [('(', 'dark', '=', True, '')]
+    else:
+        conditions += [('(', 'dark', 'IS NOT', 'NULL', '')]
+
     obs_end = select_min_from_joined(cursor, ['observability'], 'date',
                                      conditions=conditions + [
-                                         ('date', '>', obs_start),
-                                         ('airmass', '>', minimum_airmass),
+                                         ('', 'airmass', '>',
+                                          minimum_airmass, ')'),
+                                         ('date', '>', obs_start)],
+                                     conditions_combine=conditions_combine + [
+                                         'OR', 'AND'
                                      ])
 
     if obs_end is None:
