@@ -266,7 +266,8 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     return hours_obs
 
 
-def next_night_period(cursor, dt, dark=True, grey=False):
+def next_night_period(cursor, dt, limiting_dt=None,
+                      dark=True, grey=False):
     """
     Returns next period of 'night' (modulo observing conditions).
 
@@ -296,6 +297,8 @@ def next_night_period(cursor, dt, dark=True, grey=False):
         conditions += [('dark', '=', True)]
     elif grey:
         conditions += [('dark', '=', False)]
+    if limiting_dt is not None:
+        conditions += [('date', '<', limiting_dt)]
 
     # Try to get dark_start
     dark_start = select_min_from_joined(cursor, ['observability'], 'date',
@@ -307,6 +310,8 @@ def next_night_period(cursor, dt, dark=True, grey=False):
         return None, None
 
     conditions = []
+    if limiting_dt is not None:
+        conditions += [('date', '<', limiting_dt)]
     if dark:
         conditions = [('(', 'dark', '=', False, '')]
         conditions_combine = ['OR']
@@ -327,6 +332,7 @@ def next_night_period(cursor, dt, dark=True, grey=False):
                                           'AND'
                                       ])
     if dark_end is None:
-        dark_end = select_max_from_joined(cursor, ['observability'], 'date')
+        # dark_end = select_max_from_joined(cursor, ['observability'], 'date')
+        dark_end = limiting_dt
 
     return dark_start, dark_end
