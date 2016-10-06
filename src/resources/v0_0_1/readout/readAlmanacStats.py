@@ -299,7 +299,8 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
 
 
 def next_night_period(cursor, dt, limiting_dt=None,
-                      dark=True, grey=False):
+                      dark=True, grey=False,
+                      field_id=None):
     """
     Returns next period of 'night' (modulo observing conditions).
 
@@ -324,7 +325,12 @@ def next_night_period(cursor, dt, limiting_dt=None,
         raise ValueError('Cannot set dark and grey to both be true - only '
                          'pick one!')
 
-    conditions = []
+    # Pick a field from the observability table - doesn't matter which one
+    if field_id is None:
+        fields = extract_from(cursor, 'observability', columns=['field_id'])
+        field_id = fields['field_id'][0]
+
+    conditions = [('field_id', '=', field_id)]
     if dark:
         conditions += [('dark', '=', True)]
     elif grey:
