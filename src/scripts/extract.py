@@ -19,8 +19,8 @@ PSQL_TO_NUMPY_DTYPE = {
     "bigserial": "int64",
     "boolean": "bool",
     "text": "str",
-    "timestamp": "datetime64",
-    "timestamp without time zone": "datetime64",
+    "timestamp": "",
+    "timestamp without time zone": "",
 }
 
 
