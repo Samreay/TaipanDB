@@ -86,7 +86,7 @@ def get_columns(cursor, table):
 
 
 def extract_from(cursor, table, conditions=None, columns=None,
-                 conditions_combine='AND'):
+                 conditions_combine='AND', distinct=False):
     """
     Extract rows from a database table.
 
@@ -133,7 +133,8 @@ def extract_from(cursor, table, conditions=None, columns=None,
                       if table_columns[i].lower()
                       in columns_lower]
 
-    string = "SELECT %s FROM %s" % (
+    string = "SELECT %s %s FROM %s" % (
+        "DISTINCT" if distince else "",
         "*" if columns is None else ", ".join(columns),
         table,
         )
