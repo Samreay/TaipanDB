@@ -226,6 +226,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     conditions = [
         ('field_id', '=', field_id),
         ('date', '>=', datetime_from),
+        ('sun_alt', '<=', ts.SOLAR_HORIZON)
     ]
     if datetime_to:
         conditions += [('date', '<', datetime_to)]
