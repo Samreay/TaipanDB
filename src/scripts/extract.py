@@ -601,7 +601,7 @@ def select_agg_from_joined(cursor, tables, aggregate, agg_column,
         try:
             minval = result[0][0]
             return minval
-        except KeyError:
+        except IndexError:
             # Must not be a valid value, return None
             return None
 
@@ -672,7 +672,7 @@ def select_min_from_joined(cursor, tables, min_column,
         try:
             minval = result[0][0]
             return minval
-        except KeyError:
+        except IndexError:
             # Must not be a valid value, return None
             return None
 
@@ -743,7 +743,7 @@ def select_max_from_joined(cursor, tables, max_column,
         try:
             maxval = result[0][0]
             return maxval
-        except KeyError:
+        except IndexError:
             # Must not be a valid value, return None
             return None
 
