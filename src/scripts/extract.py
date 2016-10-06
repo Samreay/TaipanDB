@@ -134,7 +134,7 @@ def extract_from(cursor, table, conditions=None, columns=None,
                       in columns_lower]
 
     string = "SELECT %s %s FROM %s" % (
-        "DISTINCT" if distince else "",
+        "DISTINCT" if distinct else "",
         "*" if columns is None else ", ".join(columns),
         table,
         )
