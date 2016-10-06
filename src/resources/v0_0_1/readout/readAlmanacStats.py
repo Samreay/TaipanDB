@@ -3,7 +3,7 @@
 # This should be faster than using in-memory Almanacs
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
-    select_max_from_joined, count_from
+    select_max_from_joined, count_from, select_agg_from_joined
 import taipan.scheduling as ts
 import numpy as np
 import copy
@@ -339,7 +339,8 @@ def next_night_period(cursor, dt, limiting_dt=None,
         conditions += [('date', '<', limiting_dt)]
 
     # Try to get dark_start
-    dark_start = select_min_from_joined(cursor, ['observability'], 'date',
+    dark_start = select_agg_from_joined(cursor, ['observability'], 'min',
+                                        'date',
                                         conditions=conditions + [
                                             ('date', '>=', dt),
                                             ('sun_alt', '<=', ts.SOLAR_HORIZON),
@@ -365,7 +366,7 @@ def next_night_period(cursor, dt, limiting_dt=None,
     # logging.debug(conditions)
     # logging.debug(conditions_combine)
 
-    dark_end = select_min_from_joined(cursor, ['observability'], 'date',
+    dark_end = select_agg_from_joined(cursor, ['observability'], 'min', 'date',
                                       conditions=conditions + [
                                           ('', 'sun_alt', '>',
                                            ts.SOLAR_HORIZON, ')'),
