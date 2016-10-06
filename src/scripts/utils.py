@@ -74,6 +74,7 @@ def generate_conditions_string(conditions, combine='AND'):
                          ', '.join(allowed_combine))
     # combine = ' %s ' % combine
 
+    altered_conditions = []
     for i in range(len(conditions)):
         x = conditions[i]
         if len(x) != 3 and len(x) != 5:
@@ -84,11 +85,14 @@ def generate_conditions_string(conditions, combine='AND'):
                              'no bracket at that position')
         if len(x) == 3:
             x = ('', x[0], x[1], x[2], '')
-        conditions[i] = (x[0], str(x[1]), str(x[2]), str_psql(x[3]), x[4])
+        altered_conditions.append((x[0],
+                                   str(x[1]), str(x[2]), str_psql(x[3]),
+                                   x[4]))
 
-    conditions_string = ' '.join(conditions[0])
-    for i in range(1, len(conditions)):
-        conditions_string += ' %s %s' % (combine[i-1], ' '.join(conditions[i]))
+    conditions_string = ' '.join(altered_conditions[0])
+    for i in range(1, len(altered_conditions)):
+        conditions_string += ' %s %s' % (combine[i-1],
+                                         ' '.join(altered_conditions[i]))
     # conditions_string = combine.join([' '.join(x)
     #                                   for x in conditions])
     return conditions_string
