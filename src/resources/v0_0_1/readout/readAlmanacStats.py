@@ -324,6 +324,9 @@ def next_night_period(cursor, dt, limiting_dt=None,
         conditions = [('(', 'dark', 'IS', 'NULL', '')]
         conditions_combine += ['OR']
 
+    logging.debug(conditions)
+    logging.debug(conditions_combine)
+
     dark_end = select_min_from_joined(cursor, ['observability'], 'date',
                                       conditions=conditions + [
                                           ('', 'sun_alt', '>',
