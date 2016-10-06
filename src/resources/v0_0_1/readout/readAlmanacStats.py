@@ -262,7 +262,7 @@ def next_night_period(cursor, dt, dark=True, grey=False):
         raise ValueError('Cannot set dark and grey to both be true - only '
                          'pick one!')
 
-    conditions = [('date', '>=', dt)]
+    conditions = []
     if dark:
         conditions += [('dark', '=', True)]
     elif grey:
@@ -271,6 +271,7 @@ def next_night_period(cursor, dt, dark=True, grey=False):
     # Try to get dark_start
     dark_start = select_min_from_joined(cursor, ['observability'], 'date',
                                         conditions=conditions + [
+                                            ('date', '>=', dt),
                                             ('sun_alt', '<=', ts.SOLAR_HORIZON),
                                         ])
     if dark_start is None:
