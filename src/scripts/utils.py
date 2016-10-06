@@ -11,7 +11,7 @@ def str_psql(x):
     if isinstance(x, list) or isinstance(x, tuple):
         return '(%s)' % ','.join(str(a) for a in x)
     if isinstance(x, datetime.datetime):
-        return "TIMESTAMP '%s'" % str(x)
+        return "TIMESTAMP %s" % str(x)
     return str(x)
 
 
