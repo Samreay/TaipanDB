@@ -3,6 +3,7 @@ import numpy as np
 import re
 import psycopg2
 from .utils import generate_conditions_string
+import datetime
 
 
 # psql-numpy data type relationship
@@ -19,8 +20,8 @@ PSQL_TO_NUMPY_DTYPE = {
     "bigserial": "int64",
     "boolean": "bool",
     "text": "str",
-    "timestamp": "datetime",
-    "timestamp without time zone": "datetime",
+    "timestamp": datetime.datetime,
+    "timestamp without time zone": datetime.datetime,
 }
 
 
