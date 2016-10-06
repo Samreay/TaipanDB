@@ -63,9 +63,9 @@ def get_airmass(cursor, field_id, dt):
                           columns=['airmass'],
                           conditions=[
                               ('date', '>=',
-                               dt - datetime.timedelta(seconds=30)),
+                               dt),
                               ('date', '<=',
-                               dt + datetime.timedelta(seconds=30)),
+                               dt + datetime.timedelta(seconds=15.*60.)),
                               ('field_id', '=', field_id),
                           ])['airmass'][0]
     return result
