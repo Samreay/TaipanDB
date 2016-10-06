@@ -63,6 +63,7 @@ def get_airmass(cursor, field_id, datetime):
                           columns=['airmass'],
                           conditions=[
                               ('date', '=', datetime),
+                              ('field_id', '=', field_id),
                           ])['airmass'][0]
     return result
 
