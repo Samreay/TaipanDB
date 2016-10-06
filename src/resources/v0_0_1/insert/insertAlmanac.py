@@ -85,7 +85,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     #              bool(dark_almanac.dark_time[dt])) for
     #             dt in almanac.airmass.keys()]
     data_out = np.asarray([[field_id] * almanac.data['date'].shape[-1],
-                           map(lambda x: localize_utc_dt(ephem_to_dt(x)),
+                           map(lambda x: ephem_to_dt(x),
                                almanac.data['date']),
                            almanac.data['airmass'],
                            dark_almanac.data['sun_alt'],
@@ -101,8 +101,7 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'],
-                         skip_on_conflict=False,
-                         batch=data_out.shape[0])
+                         skip_on_conflict=False)
     elif not update:
         insert_many_rows(cursor, 'observability',
                          data_out,
