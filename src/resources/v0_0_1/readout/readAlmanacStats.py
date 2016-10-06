@@ -237,7 +237,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     return hours_obs
 
 
-def next_night_period(cursor, dark=True, grey=False):
+def next_night_period(cursor, datetime, dark=True, grey=False):
     """
     Returns next period of 'night' (modulo observing conditions).
 
@@ -245,6 +245,8 @@ def next_night_period(cursor, dark=True, grey=False):
     ----------
     cursor:
         psycopg2 cursor for interacting with the database.
+    datetime:
+        Datetime to consider. Should be in UTC (but naive).
     dark, grey:
         Booleans denoting whether to consider only dark or grey time. Setting
         both to False will simply return 'night' time. Setting both to True
@@ -260,7 +262,8 @@ def next_night_period(cursor, dark=True, grey=False):
         raise ValueError('Cannot set dark and grey to both be true - only '
                          'pick one!')
 
-    conditions = [('sun_alt', '<=', ts.SOLAR_HORIZON)]
+    conditions = [('sun_alt', '<=', ts.SOLAR_HORIZON),
+                  ('date', '>=', datetime)]
     if dark:
         conditions += [('dark', '=', True)]
     elif grey:
