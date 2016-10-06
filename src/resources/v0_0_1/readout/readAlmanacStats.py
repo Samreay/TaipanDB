@@ -8,6 +8,7 @@ import taipan.scheduling as ts
 import numpy as np
 import copy
 import datetime
+import logging
 
 
 def get_fields_available(cursor, datetime,
@@ -213,6 +214,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     if hours_better:
         # Get the benchmark airmass
         minimum_airmass = get_airmass(cursor, field_id, datetime_from)
+        logging.debug('Comparison airmass: $1.3f' % minimum_airmass)
 
     hours_obs = 0.
     dt_up_to = copy.copy(datetime_from)
