@@ -92,6 +92,8 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
                            dark_almanac.data['dark_time']]).T
     logging.debug(data_out)
     logging.debug(data_out.shape)
+    logging.debug(data_out[:, 1].shape)
+    logging.debug(len(set(data_out[:, 1])))
 
     # Write the data to the db
     if update is None:
