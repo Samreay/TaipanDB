@@ -327,7 +327,7 @@ def next_night_period(cursor, dt, limiting_dt=None,
 
     # Pick a field from the observability table - doesn't matter which one
     if field_id is None:
-        fields = extract_from(cursor, 'observability', columns=['field_id'],
+        fields = extract_from(cursor, 'field', columns=['field_id'],
                               distinct=True)
         field_id = fields['field_id'][0]
 
