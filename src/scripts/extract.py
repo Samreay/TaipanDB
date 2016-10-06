@@ -20,6 +20,7 @@ PSQL_TO_NUMPY_DTYPE = {
     "boolean": "bool",
     "text": "str",
     "timestamp": "datetime.datetime",
+    "timestamp without time zone": "datetime.datetime",
 }
 
 
