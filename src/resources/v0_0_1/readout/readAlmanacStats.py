@@ -74,7 +74,7 @@ def get_airmass(cursor, field_ids, dt, resolution=15.):
                                dt + datetime.timedelta(
                                    minutes=resolution / 2.)),
                               ('field_id', 'IN', field_ids),
-                          ])['airmass'][0]
+                          ])['airmass']
     return result
 
 
