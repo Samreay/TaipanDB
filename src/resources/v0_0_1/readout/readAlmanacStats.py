@@ -350,7 +350,11 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
     hours_obs = count_grouped_from_joined(cursor, ['observability'],
                                           'field_id',
                                           conditions=conditions,
-                                          case_conditions=case_conditions)
+                                          case_conditions=
+                                          case_conditions).astype(
+        dtype={"names": ["field_id", "count"],
+               "formats": ['int64', 'float64']}
+    )
     hours_obs['count'] = resolution * hours_obs['count'] / 60.
 
     return hours_obs
