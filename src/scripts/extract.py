@@ -391,7 +391,7 @@ def count_from_joined(cursor, tables, conditions=None,
     return int(result[0][0])
 
 
-def select_count_from_joined(cursor, tables,
+def count_grouped_from_joined(cursor, tables,
                              group_by,
                              conditions=None,
                              conditions_combine='AND'):
