@@ -3,7 +3,8 @@
 # This should be faster than using in-memory Almanacs
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
-    select_max_from_joined, count_from, select_agg_from_joined
+    select_max_from_joined, count_from, select_agg_from_joined, \
+    count_grouped_from_joined
 import taipan.scheduling as ts
 import numpy as np
 import copy
@@ -342,9 +343,9 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
     else:
         conditions += [('airmass', '<=', minimum_airmass)]
 
-    hours_obs = count_from(cursor, 'observability',
-                           conditions=conditions,
-                           case_conditions=case_conditions)
+    hours_obs = count_grouped_from_joined(cursor, 'observability',
+                                          conditions=conditions,
+                                          case_conditions=case_conditions)
     hours_obs['count'] /= 60.
 
     return hours_obs

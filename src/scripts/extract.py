@@ -215,14 +215,6 @@ def count_from(cursor, table, conditions=None,
                                                        conditions_combine)
         string += conditions_string
 
-    if case_conditions:
-        case_conds_string = generate_case_conditions_string(case_conditions,
-                                                            combine=
-                                                            case_conds_combine)
-        conditions_string += ' AND %s' % case_conds_string
-
-    logging.debug(string)
-
     if cursor is not None:
         cursor.execute(string)
         result = cursor.fetchall()
@@ -230,6 +222,7 @@ def count_from(cursor, table, conditions=None,
     else:
         result = None
         return result
+
 
     return int(result[0][0])
 
@@ -494,12 +487,23 @@ def count_grouped_from_joined(cursor, tables,
     # Table join
     query_string += ' NATURAL JOIN '.join(tables)
 
+    if conditions or case_conditions:
+        query_string += ' WHERE'
+
     # Conditions
     if conditions:
         conditions_string = generate_conditions_string(conditions,
                                                        combine=
                                                        conditions_combine)
-        query_string += ' WHERE %s' % conditions_string
+        query_string += conditions_string
+
+    if case_conditions:
+        case_conds_string = generate_case_conditions_string(case_conditions,
+                                                            combine=
+                                                            case_conds_combine)
+        query_string += ' AND %s' % case_conds_string
+
+    logging.debug(query_string)
 
     query_string += ' GROUP BY %s' % group_by
 
