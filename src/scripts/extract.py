@@ -488,7 +488,7 @@ def count_grouped_from_joined(cursor, tables,
         result = np.asarray(result, dtype={
             "names": [group_by, 'count', ],
             "formats": [psql_to_numpy_dtype(dtype) for dtype in
-                        dtypes + ['bigint']],
+                        dtypes + ('bigint', )],
         })
         return result
 
