@@ -351,7 +351,7 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
                                           'field_id',
                                           conditions=conditions,
                                           case_conditions=case_conditions)
-    hours_obs['count'] /= 60.
+    hours_obs['count'] = resolution * hours_obs['count'] / 60.
 
     return hours_obs
 
