@@ -2,7 +2,8 @@ import logging
 import numpy as np
 import re
 import psycopg2
-from .utils import generate_conditions_string
+from .utils import generate_conditions_string, \
+    generate_case_conditions_string
 import datetime
 
 
@@ -171,7 +172,9 @@ def extract_from(cursor, table, conditions=None, columns=None,
 
 
 def count_from(cursor, table, conditions=None,
-               conditions_combine='AND'):
+               conditions_combine='AND',
+               case_conditions=None,
+               case_conds_combine='AND'):
     """
     Count the number of rows in a database table.
 
@@ -203,11 +206,20 @@ def count_from(cursor, table, conditions=None,
         table,
         )
 
+    if conditions or case_conditions:
+        string += ' WHERE '
+
     if conditions:
         conditions_string = generate_conditions_string(conditions,
                                                        combine=
                                                        conditions_combine)
-        string += ' WHERE %s' % conditions_string
+        string += conditions_string
+
+    if case_conditions:
+        case_conds_string = generate_case_conditions_string(case_conditions,
+                                                            combine=
+                                                            case_conds_combine)
+        conditions_string += ' AND %s' % case_conds_string
 
     logging.debug(string)
 
@@ -392,9 +404,10 @@ def count_from_joined(cursor, tables, conditions=None,
 
 
 def count_grouped_from_joined(cursor, tables,
-                             group_by,
-                             conditions=None,
-                             conditions_combine='AND'):
+                              group_by,
+                              conditions=None,
+                              conditions_combine='AND',
+                              case_conditions=None):
     """
     Count the number of rows matching the conditions, grouped by the group_by
     column.
@@ -420,6 +433,21 @@ def count_grouped_from_joined(cursor, tables,
     conditions_combine:
         Optional; string determining how the conditions should be combined.
         Defaults to 'AND'.
+    case_conditions:
+        Special case-wise conditions. Should be a list of case-wise
+        conditions, each taking the following form:
+        - A four-tuple containing:
+            - The column that the case-wise condition applies to;
+            - The comparison operator to be used;
+            - A list of 4-tuples, each containing:
+                - The column to be checked for this case;
+                - The comparison operator to be used for this case;
+                - The comparison value to be used for this case;
+                - The value to return in this case;
+            - The ELSE value to be used.
+        The four-tuple may also be a six-tuple, with the first and last
+        elements being other formatting characters (e.g. brackets).
+
 
     Returns
     -------

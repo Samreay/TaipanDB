@@ -2,6 +2,8 @@
 import datetime
 import re
 import numpy as np
+import logging
+
 
 
 def str_psql(x):
@@ -96,3 +98,91 @@ def generate_conditions_string(conditions, combine='AND'):
     # conditions_string = combine.join([' '.join(x)
     #                                   for x in conditions])
     return conditions_string
+
+
+def generate_case_string(case):
+    """
+    UTILITY FUNCTION - generate a single CASE PSQL string
+    """
+    case_string = 'WHERE %s %s %s THEN %s' % case
+    return case_string
+
+
+def generate_case_conditions_string(conditions, combine='AND'):
+    """
+    Generate the PSQL string for applying a CASE condition to a query.
+
+    Parameters
+    ----------
+    conditions:
+        Special case-wise conditions. Should be a list of case-wise
+        conditions, each taking the following form:
+        - A four-tuple containing:
+            - The column that the case-wise condition applies to;
+            - The comparison operator to be used;
+            - A list of 4-tuples, each containing:
+                - The column to be checked for this case;
+                - The comparison operator to be used for this case;
+                - The comparison value to be used for this case;
+                - The value to return in this case;
+            - The ELSE value to be used.
+
+    Returns
+    -------
+    conditions_string:
+        The string to be inserted into the PSQL statement to enact the
+        case-wise condtition.
+    """
+    # Input checking
+    allowed_combine = ['AND', 'OR']
+    if len(conditions) == 0:
+        return ''
+    if not isinstance(combine, list):
+        combine = [combine] * (len(conditions) - 1)
+    if len(conditions) > 0 and (len(combine) != (len(conditions) - 1)):
+        raise ValueError('combine must have length of conditions minus 1')
+    if np.any([_.upper() not in allowed_combine for _ in combine]):
+        raise ValueError('combine values must be any one of: %s' %
+                         ', '.join(allowed_combine))
+
+    altered_conditions = []
+    for i in range(len(conditions)):
+        x = conditions[i]
+        if len(x) != 4 and len(x) != 6:
+            raise ValueError('Each conditions entry must either be a 3-tuple '
+                             '(column, condition, value) or a 5-tuple, where '
+                             'the above is wrapped with two strings holding '
+                             'either a single bracket, or an empty string for '
+                             'no bracket at that position')
+        if len(x) == 4:
+            x = ('', x[0], x[1], x[2], x[3], '')
+        logging.debug(x)
+        if np.any(np.asarray(map(len, x[3])) != 4):
+            raise ValueError('Each case tuple must be a 4-tuple')
+        altered_conditions.append((x[0],
+                                   str(x[1]), str(x[2]), x[3],
+                                   str_psql(x[4]), x[5]))
+        for i in range(len(altered_conditions[-1][3])):
+            altered_conditions[-1][3][i] = (str(altered_conditions[-1][3][i][0]),
+                                            str(altered_conditions[-1][3][i][1]),
+                                            str_psql(altered_conditions[-1][3][i][2]),
+                                            str_psql(altered_conditions[-1][3][i][3]),
+                                            )
+
+    conditions_string = ''
+    for i in range(len(altered_conditions)):
+        if i > 0:
+            conditions_string += ' %s' % combine[i-1]
+        conditions_string += ' %s %s %s (CASE %s ELSE %s) %s' % (
+            altered_conditions[i][0],
+            altered_conditions[i][1],
+            altered_conditions[i][2],
+            ' '.join([generate_case_string(case) for case in
+                      altered_conditions[i][3]]),
+            altered_conditions[i][4],
+            altered_conditions[i][5]
+        )
+
+    return conditions_string
+
+

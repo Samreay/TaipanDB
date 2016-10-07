@@ -45,7 +45,7 @@ def get_fields_available(cursor, datetime,
     return result
 
 
-def get_airmass(cursor, field_id, dt, resolution=15.):
+def get_airmass(cursor, field_ids, dt, resolution=15.):
     """
     Get the airmass corresponding to a particular field and datetime.
 
@@ -59,8 +59,13 @@ def get_airmass(cursor, field_id, dt, resolution=15.):
     -------
     The airmass at that field and datetime.
     """
+    if not isinstance(field_ids, list):
+        field_ids = [field_ids, ]
+    if len(field_ids) == 0:
+        return []
+
     result = extract_from(cursor, 'observability',
-                          columns=['airmass'],
+                          columns=['field_id','airmass'],
                           conditions=[
                               ('date', '>=',
                                dt - datetime.timedelta(
@@ -68,7 +73,7 @@ def get_airmass(cursor, field_id, dt, resolution=15.):
                               ('date', '<=',
                                dt + datetime.timedelta(
                                    minutes=resolution / 2.)),
-                              ('field_id', '=', field_id),
+                              ('field_id', 'IN', field_ids),
                           ])['airmass'][0]
     return result
 
@@ -246,6 +251,96 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                               minimum_airmass)
         logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
     conditions += [('airmass', '<=', minimum_airmass)]
+
+    hours_obs = resolution * count_from(cursor, 'observability',
+                                        conditions=conditions) / 60.
+    return hours_obs
+
+
+def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
+                          exclude_grey_time=True,
+                          exclude_dark_time=False,
+                          minimum_airmass=2.0,
+                          hours_better=True,
+                          resolution=15.):
+    """
+    Calculate how many hours this field is observable for between two
+    datetimes.
+
+    This function uses (almost) the same inputs and returns the same information
+    as the same function intrinsic to ts.scheduling.Almanac objects.
+
+    Parameters
+    ----------
+    datetime_from, datetime_to:
+        The datetimes between which we should calculate the number of
+        observable hours remaining. These datetimes must be between the
+        start and end dates of the almanac, or an error will be returned.
+        datetime_to will default to None, such that the remainder of the
+        almanac will be used.
+    exclude_grey_time, exclude_dark_time:
+        Boolean value denoting whether to exclude grey time or dark time
+        from the calculation. Defaults to exclude_grey_time=True,
+        exclude_dark_time=False (so only dark time will be counted as
+        'observable'.) The legal combinations are:
+        False, False (all night time is counted)
+        False, True (grey time only)
+        True, False (dark time only)
+        Attempting to set both value to True will raise a ValueError, as
+        this would result in no available observing time.
+    hours_better:
+        Optional Boolean, denoting whether to return only
+        hours_observable which have airmasses superior to the airmass
+        at datetime_now (True) or not (False). Defaults to False.
+
+    Returns
+    -------
+    hours_obs:
+        The number of observable hours for this field between datetime_from
+        and datetime_to.
+
+    """
+    # Input checking
+    # Input checking
+    if datetime_to < datetime_from:
+        raise ValueError('datetime_from must occur before datetime_to')
+    if exclude_grey_time and exclude_dark_time:
+        raise ValueError('Cannot set both exclude_grey_time and '
+                         'exclude_dark_time to True - this results in no '
+                         'observing time!')
+
+    if field_ids is None:
+        raise ValueError('Please pass a list of field_ids')
+    elif not isinstance(field_ids, list):
+        field_ids = [field_ids, ]
+    if len(field_ids) == 0:
+        return []
+
+    conditions = [
+        ('field_id', 'IN', field_ids),
+        ('date', '>=', datetime_from),
+        ('sun_alt', '<=', ts.SOLAR_HORIZON)
+    ]
+    case_conditions = []
+    if datetime_to:
+        conditions += [('date', '<', datetime_to)]
+    if exclude_grey_time:
+        conditions += [('dark', '=', True)]
+    if exclude_dark_time:
+        conditions += [('dark', '=', False)]
+    if hours_better:
+        # Get the benchmark airmasses
+        bench_airmass = get_airmass(cursor, field_ids, datetime_from,
+                                    resolution=resolution)
+        # Build the case_condition for it
+        case_conditions += [
+            ('airmass', '<=',
+             [('field_id', '=', x['field_id'], x['airmass']) for
+              x in bench_airmass],
+             minimum_airmass)
+        ]
+    else:
+        conditions += [('airmass', '<=', minimum_airmass)]
 
     hours_obs = resolution * count_from(cursor, 'observability',
                                         conditions=conditions) / 60.
