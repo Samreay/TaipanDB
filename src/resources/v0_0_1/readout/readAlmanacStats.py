@@ -318,7 +318,7 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
         return []
 
     conditions = [
-        ('field_id', 'IN', field_ids),
+        # ('field_id', 'IN', field_ids),
         ('date', '>=', datetime_from),
         ('sun_alt', '<=', ts.SOLAR_HORIZON)
     ]
@@ -357,7 +357,7 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
     )
     hours_obs['count'] = resolution * hours_obs['count'] / 60.
 
-    return hours_obs
+    return hours_obs[hours_obs['field_id'] in field_ids]
 
 
 def next_night_period(cursor, dt, limiting_dt=None,
