@@ -104,7 +104,7 @@ def generate_case_string(case):
     """
     UTILITY FUNCTION - generate a single CASE PSQL string
     """
-    case_string = 'WHERE %s %s %s THEN %s' % case
+    case_string = 'WHEN %s %s %s THEN %s' % case
     return case_string
 
 
