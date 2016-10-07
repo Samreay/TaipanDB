@@ -400,7 +400,8 @@ def count_grouped_from_joined(cursor, tables,
                               group_by,
                               conditions=None,
                               conditions_combine='AND',
-                              case_conditions=None):
+                              case_conditions=None,
+                              case_conds_combine='AND'):
     """
     Count the number of rows matching the conditions, grouped by the group_by
     column.
@@ -503,7 +504,7 @@ def count_grouped_from_joined(cursor, tables,
                                                             case_conds_combine)
         query_string += ' AND %s' % case_conds_string
 
-    logging.debug(query_string)
+    # logging.debug(query_string)
 
     query_string += ' GROUP BY %s' % group_by
 
