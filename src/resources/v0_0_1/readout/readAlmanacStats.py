@@ -343,6 +343,8 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
               x in bench_airmass if x['airmass'] < minimum_airmass],
              minimum_airmass)
         ]
+        if len(case_conditions[0][2]) == 0:
+            _ = case_conditions.pop(-1)
         logging.debug(case_conditions)
     else:
         conditions += [('airmass', '<=', minimum_airmass)]
