@@ -333,6 +333,8 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
         # Get the benchmark airmasses
         bench_airmass = get_airmass(cursor, field_ids, datetime_from,
                                     resolution=resolution)
+        logging.debug('Found airmasses:')
+        logging.debug(bench_airmass)
         # Build the case_condition for it
         case_conditions += [
             ('airmass', '<=',
