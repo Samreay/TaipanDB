@@ -391,6 +391,110 @@ def count_from_joined(cursor, tables, conditions=None,
     return int(result[0][0])
 
 
+def select_count_from_joined(cursor, tables,
+                             group_by,
+                             conditions=None,
+                             conditions_combine='AND'):
+    """
+    Count the number of rows matching the conditions, grouped by the group_by
+    column.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for interacting with the database.
+    tables:
+        Tables that should be joined together (using NATURAL JOIN) to
+        find the minimum from.
+    group_by:
+        The name of the table column to group the aggregate function against.
+    conditions:
+        conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. The exception is
+        looking for columns with value NULL, which should be denoted using the
+        string 'NULL'. Defaults to None, so all rows will be returned.
+    conditions_combine:
+        Optional; string determining how the conditions should be combined.
+        Defaults to 'AND'.
+
+    Returns
+    -------
+    The minimum value of agg_column found, cast as the appropriate Python data
+    type.
+    """
+    logging.debug('Getting grouped aggregate from database')
+
+    if group_by is None:
+        return count_from_joined(cursor, tables,
+                                 conditions=conditions,
+                                 conditions_combine=conditions_combine)
+
+    if cursor is not None:
+        # Get the column names from the table itself
+        table_string = "SELECT DISTINCT column_name, data_type FROM" \
+                       " information_schema.columns " \
+                       "WHERE table_name IN (%s)" %\
+                       (','.join(map(lambda x: "'%s'" % x, tables)), )
+        logging.debug(table_string)
+        cursor.execute(table_string)
+        table_structure = cursor.fetchall()
+        try:
+            table_columns, dtypes = zip(*table_structure)
+        except ValueError:
+            # This occurs when one of the tables in empty
+            logging.info('At least one of the requested tables has no columns')
+            return []
+        columns_lower = [x.lower() for x in [group_by, ]]
+        columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
+                                i in range(len(dtypes)) if
+                                table_columns[i].lower() in
+                                columns_lower])
+        logging.debug('Found these columns with these data types:')
+        logging.debug(columns)
+        logging.debug(dtypes)
+
+    if not isinstance(tables, list):
+        tables = [tables, ]
+
+    # Aggregate function
+    query_string = 'SELECT %s, COUNT(*) FROM ' % (group_by, )
+
+    # Table join
+    query_string += ' NATURAL JOIN '.join(tables)
+
+    # Conditions
+    if conditions:
+        conditions_string = generate_conditions_string(conditions,
+                                                       combine=
+                                                       conditions_combine)
+        query_string += ' WHERE %s' % conditions_string
+
+    query_string += ' GROUP BY %s' % group_by
+
+    logging.debug(query_string)
+
+    if cursor is not None:
+        cursor.execute(query_string)
+        result = cursor.fetchall()
+
+        # Re-format the return as a numpy structured array
+        # Note that, because we know exactly what is coming back, we can
+        # code this directly rather than detecting columns
+
+        result = np.asarray(result, dtype={
+            "names": [group_by, 'count', ],
+            "formats": [psql_to_numpy_dtype(dtype) for dtype in
+                        dtypes + ['bigint']],
+        })
+        return result
+
+    return None
+
+
 def extract_from_left_joined(cursor, tables, join_on_column,
                              conditions=None, columns=None,
                              conditions_combine='AND',
