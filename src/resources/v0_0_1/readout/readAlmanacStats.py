@@ -340,7 +340,7 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
             ('airmass', '<=',
              [('field_id', '=', x['field_id'],
                min(minimum_airmass, x['airmass'])) for
-              x in bench_airmass],
+              x in bench_airmass in bench_airmass['airmass'] < minimum_airmass],
              minimum_airmass)
         ]
         logging.debug(case_conditions)
