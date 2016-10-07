@@ -7,7 +7,7 @@ import numpy as np
 from taipan.core import TaipanTarget, dist_points, TILE_RADIUS
 from ....scripts.extract import extract_from_joined, extract_from_left_joined
 from ..readout.readCentroids import execute as rCexec
-from ....scripts.manipulate import update_rows, upsert_many_rows
+from ....scripts.manipulate import update_rows, update_rows
 
 
 def targets_per_field(fields, targets):
@@ -120,7 +120,7 @@ def execute(cursor, fields=None):
         logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_obs'])
-        upsert_many_rows(cursor, 'tiling_info', tgt_per_field,
+        update_rows(cursor, 'tiling_info', tgt_per_field,
                          columns=['field_id', 'n_sci_obs'])
 
     # Read targets that are assigned, but yet to be observed
@@ -145,7 +145,7 @@ def execute(cursor, fields=None):
                           np.count_nonzero(targets_assigned - field)]
                          for field in fields]
         logging.debug('Writing target counts to database...')
-        upsert_many_rows(cursor, 'tiling_info', tgt_per_field,
+        update_rows(cursor, 'tiling_info', tgt_per_field,
                          columns=['field_id', 'n_sci_alloc'])
 
     # Read targets which are not assigned to any tile yet, nor observed
@@ -189,7 +189,7 @@ def execute(cursor, fields=None):
                          for field in fields]
         logging.debug(tgt_per_field)
         logging.debug('Writing target counts to database')
-        upsert_many_rows(cursor, 'tiling_info', tgt_per_field,
+        update_rows(cursor, 'tiling_info', tgt_per_field,
                          columns=['field_id', 'n_sci_rem'])
 
     return
