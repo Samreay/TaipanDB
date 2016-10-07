@@ -343,7 +343,8 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
     else:
         conditions += [('airmass', '<=', minimum_airmass)]
 
-    hours_obs = count_grouped_from_joined(cursor, 'observability',
+    hours_obs = count_grouped_from_joined(cursor, ['observability'],
+                                          'field_id',
                                           conditions=conditions,
                                           case_conditions=case_conditions)
     hours_obs['count'] /= 60.
