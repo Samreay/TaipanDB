@@ -173,7 +173,7 @@ def generate_case_conditions_string(conditions, combine='AND'):
     for i in range(len(altered_conditions)):
         if i > 0:
             conditions_string += ' %s' % combine[i-1]
-        conditions_string += ' %s %s %s (CASE %s ELSE %s) %s' % (
+        conditions_string += ' %s %s %s (CASE %s ELSE %s) %s END' % (
             altered_conditions[i][0],
             altered_conditions[i][1],
             altered_conditions[i][2],
