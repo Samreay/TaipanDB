@@ -303,7 +303,7 @@ def upsert_many_rows(cursor, table, data, columns=None):
     logging.debug(values_string)
 
     # Generate the string to insert the values
-    query_string = "INSERT INTO %s %s VALUES %s" % (
+    query_string = "INSERT INTO %s %s %s" % (
         table,
         "" if columns is None else "(" + ", ".join(columns) + ")",
         values_string,
