@@ -308,7 +308,7 @@ def upsert_many_rows(cursor, table, data, columns=None):
         "" if columns is None else "(" + ", ".join(columns) + ")",
         values_string,
     )
-    query_string += "ON CONFLICT (%s) DO UPDATE SET " % (','.join(pk_names), )
+    query_string += " ON CONFLICT (%s) DO UPDATE SET " % (','.join(pk_names), )
     query_string += " AND ".join(["%s = EXCLUDED.%s" % (c, c) for
                                   c in columns[len(pk_names):]])
 
