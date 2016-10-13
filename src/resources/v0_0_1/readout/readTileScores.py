@@ -64,6 +64,7 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
     if unobserved_only:
         conditions += [
             ('is_observed', '=', False),
+            ('is_queued', '=', False),
         ]
     if len(metrics) > 0 and ignore_zeros:
         conditions += [(metric, '>', 0.) for metric in metrics]
