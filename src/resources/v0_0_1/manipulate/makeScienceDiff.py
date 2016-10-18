@@ -57,7 +57,8 @@ def execute(cursor, use_only_notdone=True,
         # multi-target calculation for each priority, including all lower
         # priorities. This will create a cascade effect that will leave all
         # targets with the correct priorities.
-        priorities = list(set(targets_db['priority'])).sort()
+        priorities = list(set(targets_db['priority']))
+        priorities.sort()
         for p in priorities:
             logging.debug('Computing difficulties for priority %d targets' %
                           p)
