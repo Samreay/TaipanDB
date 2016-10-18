@@ -59,7 +59,7 @@ def execute(cursor, use_only_notdone=True,
         # targets with the correct priorities.
         priorities = list(set(targets_db['priority']))
         priorities.sort()
-        for p in priorities:
+        for p in priorities[::-1]:
             logging.debug('Computing difficulties for priority %d targets' %
                           p)
             compute_target_difficulties([o for o in return_objects if
