@@ -17,8 +17,8 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
         the tiling_info table to send back.
         Defaults to None, at which point all metrics will be sent back.
     unobserved_only:
-        Optional; Boolean value denoting whether to only return targets
-        not marked as done (True) or all targets (False). Defaults to
+        Optional; Boolean value denoting whether to only return tiles
+        not marked as done/queued (True) or all tiles (False). Defaults to
         True.
     ignore_zeros:
         Optional; Boolean value denoting whether to ignore any tiles in which

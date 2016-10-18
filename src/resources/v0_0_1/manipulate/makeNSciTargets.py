@@ -146,7 +146,7 @@ def execute(cursor, fields=None):
                          for field in fields]
         logging.debug('Writing target counts to database...')
         update_rows(cursor, 'tiling_info', tgt_per_field,
-                         columns=['field_id', 'n_sci_alloc'])
+                    columns=['field_id', 'n_sci_alloc'])
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -190,6 +190,6 @@ def execute(cursor, fields=None):
         logging.debug(tgt_per_field)
         logging.debug('Writing target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field,
-                         columns=['field_id', 'n_sci_rem'])
+                    columns=['field_id', 'n_sci_rem'])
 
     return

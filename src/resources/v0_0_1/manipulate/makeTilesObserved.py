@@ -31,7 +31,7 @@ def execute(cursor, tile_pks, time_obs=None):
     logging.info('Setting tiles as observed')
 
     # Make sure the target_ids is in list format
-    target_ids = list(tile_pks)
+    tile_pks = list(tile_pks)
 
     # Make sure the datetimes are in list format
     if time_obs is not None:

@@ -7,19 +7,19 @@ from ....scripts.manipulate import update_rows
 
 def execute(cursor, tile_pks, time_obs=None):
     """
-    Set tiles as having been queued.
+    Set a tile to be 'queued'
 
     Parameters
     ----------
     cursor:
         psycopg2 cursor for communicating with the database.
     tile_pks:
-        The list of tile primary keys to set as observed.
+        The list of tile primary keys to set as queued.
     time_obs:
         Optional; time of observation of the tile(s). Can either be a single
         datetime.datetime instance which will be applied to all tiles, or a list
         of datetime.datetime instances corresponding one-to-one with each tile
-        in tile_pks. Defaults to None.
+        in tile_pks. Defaults to None (so no time is recorded).
 
     Returns
     -------
@@ -28,8 +28,7 @@ def execute(cursor, tile_pks, time_obs=None):
 
     logging.info('Setting tiles as observed')
 
-    # Make sure the target_ids is in list format
-    target_ids = list(tile_pks)
+    tile_pks = list(tile_pks)
 
     # Make sure the datetimes are in list format
     if time_obs is not None:
@@ -37,7 +36,7 @@ def execute(cursor, tile_pks, time_obs=None):
             time_obs = list(time_obs)
             if len(time_obs) != len(tile_pks):
                 raise ValueError('If passing a list of time_obs to '
-                                 'makeTileQueued, you *must* pass *one* '
+                                 'makeTilesObserved, you *must* pass *one* '
                                  'datetime per tile')
         except TypeError:
             # Only a single datetime was passed
