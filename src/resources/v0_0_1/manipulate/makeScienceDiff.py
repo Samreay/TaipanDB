@@ -7,7 +7,8 @@ from ....scripts.extract import extract_from_joined
 from ....scripts.manipulate import update_rows
 
 
-def execute(cursor, use_only_notdone=True):
+def execute(cursor, use_only_notdone=True,
+            priority_cut=True):
     """
     Compute the difficulties of TaipanTargets and write them back to the
     database.
@@ -19,6 +20,10 @@ def execute(cursor, use_only_notdone=True):
     use_only_notdone:
         Optional Boolean, denoting whether to only use un-done targets in
         the calculation (True), or not (False). Defaults to True.
+    priority_cut:
+        Optional Boolean, denoting whether each target's difficulty should
+        be calculated using only targets with the same or lower priority
+        (True), or all targets (False). Defaults to True.
 
     Returns
     -------
@@ -47,7 +52,19 @@ def execute(cursor, use_only_notdone=True):
 
     # Do the difficulty computation
     logging.info('Computing difficulties...')
-    compute_target_difficulties(return_objects)
+    if priority_cut:
+        # Rather than do a per-target calculation, do the efficient
+        # multi-target calculation for each priority, including all lower
+        # priorities. This will create a cascade effect that will leave all
+        # targets with the correct priorities.
+        priorities = list(set(targets_db['priority'])).sort()
+        for p in priorities:
+            logging.debug('Computing difficulties for priority %d targets' %
+                          p)
+            compute_target_difficulties([o for o in return_objects if
+                                         o.priority <= p])
+    else:
+        compute_target_difficulties(return_objects)
 
     # Construct a data array to write back to the database
     data = [(t.idn, t.difficulty) for t in return_objects]

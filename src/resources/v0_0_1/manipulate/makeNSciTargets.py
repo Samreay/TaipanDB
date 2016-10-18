@@ -34,7 +34,7 @@ def targets_per_field(fields, targets):
     return output
 
 
-def execute(cursor, fields=None):
+def execute(cursor, fields=None, use_pri_sci=True):
     """
     Calculate the number of targets in each field of each status type.
 
@@ -49,6 +49,11 @@ def execute(cursor, fields=None):
         Note that this should be a list of the fields where you know changes
         have occurred. The function will automatically add adjacent, overlapping
         fields to the query.
+    use_pri_sci:
+        Optional Boolean, determining whether target numbers should be computed
+        from all targets in the database (False), or only those attached to
+        a primary science case (i.e. have at leastone of is_h0_target,
+        is_vpec_target or is_lowz_target set to True). Defaults to True
 
     Returns
     -------
@@ -72,6 +77,16 @@ def execute(cursor, fields=None):
     # Read in the fields information
     # We need to read *all* fields so we can find the overlaps
     field_tiles = rCexec(cursor)
+
+    conds_pri_sci = []
+    cond_combs_pri_sci = []
+    if use_pri_sci:
+        conds_pri_sci = [
+            ('(', 'is_h0_target', '=', True, ''),
+            ('', 'is_vpec_target', '=', True, ''),
+            ('', 'is_lowz_target', '=', True, ')'),
+        ]
+        cond_combs_pri_sci = ['OR', 'OR', 'AND']
 
     if fields is None:
         fields = [field.field_id for field in field_tiles]
@@ -103,10 +118,11 @@ def execute(cursor, fields=None):
     targets_complete = np.asarray(
         extract_from_joined(cursor,
                             ['target_posn', 'science_target'],
-                            conditions=[
+                            conditions=conds_pri_sci + [
                                 ('done', '=', True),
                                 ('field_id', 'IN', fields)
                             ],
+                            conditions_combine=cond_combs_pri_sci + ['AND'],
                             columns=['field_id']),
         dtype=int)
     # tgt_per_field = []
@@ -121,7 +137,7 @@ def execute(cursor, fields=None):
         update_rows(cursor, 'tiling_info', tgt_per_field,
                     columns=['field_id', 'n_sci_obs'])
         update_rows(cursor, 'tiling_info', tgt_per_field,
-                         columns=['field_id', 'n_sci_obs'])
+                    columns=['field_id', 'n_sci_obs'])
 
     # Read targets that are assigned, but yet to be observed
     # Targets must fulfil two criteria:
@@ -132,10 +148,15 @@ def execute(cursor, fields=None):
                                                       ['target_posn',
                                                        'science_target',
                                                        'target_field', 'tile'],
-                                                      conditions=[
+                                                      conditions=
+                                                      conds_pri_sci + [
                                                           ('done', '=', False),
                                                           ('is_observed', '=',
                                                            False),
+                                                      ],
+                                                      conditions_combine=
+                                                      cond_combs_pri_sci + [
+                                                          'AND'
                                                       ],
                                                       columns=['field_id']),
                                   dtype=int)
@@ -158,10 +179,11 @@ def execute(cursor, fields=None):
         extract_from_joined(
             cursor,
             ['target_posn', 'science_target', 'target_field', 'tile'],
-            conditions=[
+            conditions=conds_pri_sci + [
                 ('done', '=', False),
                 ('is_observed', '=', True),
             ],
+            conditions_combine=cond_combs_pri_sci + ['AND'],
             columns=['field_id'],
             distinct=True),
         dtype=int)
@@ -171,11 +193,12 @@ def execute(cursor, fields=None):
             cursor,
             ['target_posn', 'science_target', 'target_field'],
             'target_id',
-            conditions=[
+            conditions=conds_pri_sci + [
                 # ('is_science', '=', True),
                 ('done', '=', False),
                 ('tile_pk', 'IS', 'NULL'),
             ],
+            conditions_combine=cond_combs_pri_sci + ['AND'],
             columns=['field_id']),
         dtype=int)
     logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
