@@ -52,8 +52,8 @@ def execute(cursor, fields=None, use_pri_sci=True):
     use_pri_sci:
         Optional Boolean, determining whether target numbers should be computed
         from all targets in the database (False), or only those attached to
-        a primary science case (i.e. have at leastone of is_h0_target,
-        is_vpec_target or is_lowz_target set to True). Defaults to True
+        a primary science case (i.e. have at least one of is_h0_target,
+        is_vpec_target or is_lowz_target set to True). Defaults to True.
 
     Returns
     -------
