@@ -46,8 +46,14 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     conditions = []
     combine = []
 
+    # For the new implementation: ignore tiles where is_observed=True,
+    # don't care about them now
+    conditions += [('is_observed', '!=', True)]
+
     if unobserved:
         conditions += [('done', 'IS', False)]
+        if len(conditions) > 1:
+            combine += ['AND']
     if target_ids is not None:
         conditions += [('target_id', 'IN', target_ids)]
         if len(conditions) > 1:
@@ -57,20 +63,20 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             conditions += [('target_posn.field_id', 'IN', field_list)]
             if len(conditions) > 1:
                 combine += ['AND']
-    if unassigned:
-        conditions += [('(', 'is_observed', '=', True, ''),
-                       ('', 'is_observed', 'IS', 'NULL', ')')
-                       ]
-        if len(conditions) > 2:
-            combine += ['AND']
-        combine += ['OR']
-    if unqueued:
-        conditions += [('(', 'is_queued', '=', False, ''),
-                       ('', 'is_queued', 'IS', 'NULL', ')')
-                       ]
-        if len(conditions) > 2:
-            combine += ['AND']
-        combine += ['OR']
+    # if unassigned:
+    #     conditions += [('(', 'is_observed', '=', True, ''),
+    #                    ('', 'is_observed', 'IS', 'NULL', ')')
+    #                    ]
+    #     if len(conditions) > 2:
+    #         combine += ['AND']
+    #     combine += ['OR']
+    # if unqueued:
+    #     conditions += [('(', 'is_queued', '=', False, ''),
+    #                    ('', 'is_queued', 'IS', 'NULL', ')')
+    #                    ]
+    #     if len(conditions) > 2:
+    #         combine += ['AND']
+    #     combine += ['OR']
 
     logging.debug(conditions)
     logging.debug(combine)
@@ -88,6 +94,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         added_conds = ['AND']
     else:
         added_conds = []
+
     targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
                                                    'target_posn',
                                                    'target_field', 'tile'],
@@ -101,29 +108,27 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                           combine + added_conds,
                                           columns=['target_id', 'ra', 'dec',
                                                    'ux', 'uy', 'uz', 'priority',
-                                                   'difficulty'],
+                                                   'difficulty', 'is_queued',
+                                                   'is_observed'],
                                           distinct=True)
 
-    # if unassigned:
-    #     # conditions_unass = [('bug_id', 'IS', 'NULL'),
-    #     #                     ('is_observed', '=', False),
-    #                         # ('target_id', 'IN',
-    #                         # tuple(targets_db['target_id']))
-    #                         # ]
-    #     targets_db = extract_from_joined(cursor,
-    #                                    ['science_target', 'target_field',
-    #                                     'tile'],
-    #                                    conditions=[
-    #                                        ('(is_observed', '=', False),
-    #                                        ('is_observed', 'IS', 'NULL'),
-    #                                        ()
-    #                                    ],
-    #                                    columns=['target_id'],
-    #                                    distinct=True)['target_id']
-    #     logging.debug('Reducing target list to unassigned targets')
-    #     targets_assigned = np.asarray([_['target_id'] in assigned for _ in
-    #                                    targets_db])
-    #     targets_db = targets_db[~targets_assigned]
+    if unassigned:
+        # Get Boolean list which shows where 'assigned' condition satisfied
+        assigned = np.logical_and(~targets_db['is_queued'],
+                                  ~targets_db['is_observed'])
+        # Get the target_IDs that correspond to assigned rows
+        assigned = targets_db[assigned]['target_id']
+        # See which rows of targets_db correspond to those target_ids
+        bad_rows = np.in1d(targets_db['target_id'], assigned)
+        # Reduce targets_db to those rows which aren't 'bad'
+        targets_db = targets_db[~bad_rows]
+    if unqueued:
+        # Get Boolean list which shows where 'assigned' condition satisfied
+        queued = targets_db[targets_db['is_queued']]['target_id']
+        # See which rows of targets_db correspond to those target_ids
+        bad_rows = np.in1d(targets_db['target_id'], queued)
+        # Reduce targets_db to those rows which aren't 'bad'
+        targets_db = targets_db[~bad_rows]
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(
