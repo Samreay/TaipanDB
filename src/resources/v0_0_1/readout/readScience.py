@@ -158,7 +158,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         targets_db = np.array(targets_db_raw, dtype={
             'names': ['target_id', 'ra', 'dec', 'ux', 'uy', 'uz',
                       'priority', 'difficulty'],
-            'types': ['f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'i4', 'i4']
+            'formats': ['f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'i4', 'i4']
         })
 
 
