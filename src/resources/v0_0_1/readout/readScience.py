@@ -148,7 +148,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty "
             "FROM foo WHERE NOT EXISTS ("
             "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
-            "SELECT tile_pk FROM tile WHERE (%s))"
+            "SELECT tile_pk FROM tile WHERE %s )"
             % (generate_conditions_string(conditions, combine),
                generate_conditions_string(tile_conditions,
                                           tile_conditions_comb))
