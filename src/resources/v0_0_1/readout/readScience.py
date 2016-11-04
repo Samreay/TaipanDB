@@ -2,7 +2,8 @@ import logging
 import sys
 import os
 import numpy as np
-from ....scripts.extract import extract_from_joined, extract_from_left_joined
+from ....scripts.extract import extract_from_joined, extract_from_left_joined, \
+    generate_conditions_string, execute_select
 from taipan.core import TaipanTarget
 
 
@@ -46,10 +47,6 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     conditions = []
     combine = []
 
-    # For the new implementation: ignore tiles where is_observed=True,
-    # don't care about them now
-    conditions += [('is_observed', '!=', True)]
-
     if unobserved:
         conditions += [('done', 'IS', False)]
         if len(conditions) > 1:
@@ -65,11 +62,13 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                 combine += ['AND']
     # if unassigned:
     #     conditions += [('(', 'is_observed', '=', True, ''),
-    #                    ('', 'is_observed', 'IS', 'NULL', ')')
+    #                    ('', 'is_observed', 'IS', 'NULL', ')'),
+    #                    ('(', 'is_queued', '=', False, ''),
+    #                    ('', 'is_observed', 'IS', 'NULL', ')'),
     #                    ]
     #     if len(conditions) > 2:
     #         combine += ['AND']
-    #     combine += ['OR']
+    #     combine += ['OR', 'AND', 'OR']
     # if unqueued:
     #     conditions += [('(', 'is_queued', '=', False, ''),
     #                    ('', 'is_queued', 'IS', 'NULL', ')')
@@ -95,40 +94,72 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     else:
         added_conds = []
 
-    targets_db = extract_from_left_joined(cursor, ['target', 'science_target',
-                                                   'target_posn',
-                                                   'target_field', 'tile'],
-                                          ['target_id', 'target_id',
-                                           'target_id',
-                                           'tile_pk'],
-                                          conditions=conditions + [
-                                              ('is_science', "=", True,)
-                                          ],
-                                          conditions_combine=
-                                          combine + added_conds,
-                                          columns=['target_id', 'ra', 'dec',
-                                                   'ux', 'uy', 'uz', 'priority',
-                                                   'difficulty', 'is_queued',
-                                                   'is_observed'],
-                                          distinct=True)
+    if not unassigned and not unqueued:
+        targets_db = extract_from_left_joined(cursor, ['target',
+                                                       'science_target',
+                                                       'target_posn',
+                                                       'target_field', 'tile'],
+                                              ['target_id', 'target_id',
+                                               'target_id',
+                                               'tile_pk'],
+                                              conditions=conditions + [
+                                                  ('is_science', "=", True,)
+                                              ],
+                                              conditions_combine=
+                                              combine + added_conds,
+                                              columns=['target_id', 'ra', 'dec',
+                                                       'ux', 'uy', 'uz',
+                                                       'priority', 'difficulty',
+                                                       'is_queued',
+                                                       'is_observed'],
+                                              distinct=True)
+    else:
+        # For unassigned and/or unqueued, need to do a complex custom query
+        # which is too hard/unique to program into a separate function
+        # Thanks to Lance Luvaul (RSAA) for working this query out
+        tile_conditions = []
+        tile_conditions_comb = []
 
-    if unassigned:
-        # Get Boolean list which shows where 'assigned' condition satisfied
-        assigned = np.logical_and(~targets_db['is_queued'],
-                                  ~targets_db['is_observed'])
-        # Get the target_IDs that correspond to assigned rows
-        assigned = targets_db[assigned]['target_id']
-        # See which rows of targets_db correspond to those target_ids
-        bad_rows = np.in1d(targets_db['target_id'], assigned)
-        # Reduce targets_db to those rows which aren't 'bad'
-        targets_db = targets_db[~bad_rows]
-    if unqueued:
-        # Get Boolean list which shows where 'assigned' condition satisfied
-        queued = targets_db[targets_db['is_queued']]['target_id']
-        # See which rows of targets_db correspond to those target_ids
-        bad_rows = np.in1d(targets_db['target_id'], queued)
-        # Reduce targets_db to those rows which aren't 'bad'
-        targets_db = targets_db[~bad_rows]
+        if unassigned:
+            tile_conditions += [
+                ('(', 'is_queued', '=', False, ''),
+                ('', 'is_observed', '=', False, ')')
+            ]
+            tile_conditions_comb += ['AND']
+        if unqueued:
+            tile_conditions += [('is_queued', '=', True)]
+            if len(tile_conditions) > 2:
+                tile_conditions_comb += ['OR']
+
+        # Form the query - this is going to be LONG
+        targets_db_raw = execute_select(
+            cursor.connection(),
+            "WITH foo AS ( "
+            "SELECT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
+            "array_remove(array_agg(tile_pk), NULL) "
+            "AS tiles FROM "
+            "target LEFT JOIN science_target USING (target_id) "
+            "LEFT JOIN target_posn USING (target_id) "
+            "LEFT JOIN target_field USING (target_id) "
+            "WHERE %s "
+            "GROUP BY target_id )"
+            "SELECT target_id,ra,dec,ux,uy,uz,priority,difficulty "
+            "FROM foo WHERE NOT EXISTS ("
+            "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
+            "SELECT tile_pk FROM tile WHERE (%s))"
+            % (generate_conditions_string(conditions, combine),
+               generate_conditions_string(tile_conditions,
+                                          tile_conditions_comb))
+        )
+
+        # Form the return into a structured array
+        targets_db = np.array(targets_db_raw, dtype={
+            'names': ['target_id', 'ra', 'dec', 'ux', 'uy', 'uz',
+                      'priority', 'difficulty'],
+            'types': ['f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'i4', 'i4']
+        })
+
+
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(
