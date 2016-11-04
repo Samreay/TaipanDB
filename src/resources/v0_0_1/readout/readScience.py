@@ -144,7 +144,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             "LEFT JOIN target_posn USING (target_id) "
             "LEFT JOIN target_field USING (target_id) "
             "WHERE %s "
-            "GROUP BY target_id )"
+            "GROUP BY target_id,priority,difficulty )"
             "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty "
             "FROM foo WHERE NOT EXISTS ("
             "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
