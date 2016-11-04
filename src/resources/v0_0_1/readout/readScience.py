@@ -101,7 +101,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                                        # 'target_field', 'tile',
                                                        ],
                                               ['target_id', 'target_id',
-                                               'target_id',
+                                               # 'target_id',
                                                # 'tile_pk',
                                                ],
                                               conditions=conditions + [
