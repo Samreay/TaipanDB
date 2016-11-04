@@ -135,7 +135,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
 
         # Form the query - this is going to be LONG
         targets_db_raw = execute_select(
-            cursor.connection(),
+            cursor.connection,
             "WITH foo AS ( "
             "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
             "array_remove(array_agg(tile_pk), NULL) "
