@@ -102,7 +102,8 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                                        ],
                                               ['target_id', 'target_id',
                                                'target_id',
-                                               'tile_pk'],
+                                               # 'tile_pk',
+                                               ],
                                               conditions=conditions + [
                                                   ('is_science', "=", True,)
                                               ],
