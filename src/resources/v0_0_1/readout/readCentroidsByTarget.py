@@ -52,6 +52,9 @@ def execute(cursor, tgt_type, unobserved=True):
     if unobserved:
         conditions += [('done', '=', False)]
 
+    for t in tgt_type:
+        conditions += [(t, '=', True)]
+
     # Read out the relevant list of fields
     fields_affected = extract_from_left_joined(cursor, ['target_posn',
                                                         'science_target'],
