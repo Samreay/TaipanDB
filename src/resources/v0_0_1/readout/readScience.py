@@ -135,7 +135,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         targets_db_raw = execute_select(
             cursor.connection(),
             "WITH foo AS ( "
-            "SELECT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
+            "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
             "array_remove(array_agg(tile_pk), NULL) "
             "AS tiles FROM "
             "target LEFT JOIN science_target USING (target_id) "
@@ -143,7 +143,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             "LEFT JOIN target_field USING (target_id) "
             "WHERE %s "
             "GROUP BY target_id )"
-            "SELECT target_id,ra,dec,ux,uy,uz,priority,difficulty "
+            "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty "
             "FROM foo WHERE NOT EXISTS ("
             "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
             "SELECT tile_pk FROM tile WHERE (%s))"
