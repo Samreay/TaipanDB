@@ -83,7 +83,9 @@ def execute(cursor, tgt_list=None, repeats=1):
         ('(', 'visits', '>', 0, ''),
         ('', 'repeats', '>', 0, ')'),
     ]
-    combine += ['AND', 'OR']
+    if len(conditions) > 2:
+        combine += ['AND']
+    combine += ['OR']
 
     # Easy ones first - let's find all the targets that have no observations
     # against them
