@@ -192,7 +192,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         if target_ids:
             if len(target_ids) > 0:
                 tile_conditions += [
-                    ('target_id', 'IN', field_list),
+                    ('target_id', 'IN', target_ids),
                 ]
                 tile_conditions_comb += ['AND']
         # Note we *aren't* applying the field list criterion - we want to know
