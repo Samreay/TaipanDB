@@ -108,8 +108,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                               ('is_science', "=", True,)
                                           ],
                                           conditions_combine=
-                                          combine,
-                                          # + added_conds,
+                                          combine + ['AND'],
                                           columns=['target_id', 'ra', 'dec',
                                                    'ux', 'uy', 'uz',
                                                    'priority', 'difficulty',
@@ -165,21 +164,44 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         # Or, we do filtering via Python
         tile_conditions = []
         tile_conditions_comb = []
+
         if unassigned:
-            tile_conditions += [
-                ('(', 'is_queued', '=', False, ''),
-                ('', 'is_observed', '=', False, ')'),
-            ]
-            tile_conditions_comb += ['OR']
-        if unqueued:
+            if unqueued:
+                tile_conditions += [
+                    ('((', 'is_queued', '=', False, ''),
+                    ('', 'is_observed', '=', False, ')'),
+                    ('', 'is_queued', '=', True, ')'),
+                ]
+                tile_conditions_comb += ['AND', 'OR']
+            else:
+                tile_conditions += [
+                    ('(', 'is_queued', '=', False, ''),
+                    ('', 'is_observed', '=', False, ')'),
+                ]
+                tile_conditions_comb += ['AND']
+        elif unqueued and not unassigned:
             tile_conditions += [
                 ('is_queued', '=', True),
             ]
-            if len(tile_conditions) > 1:
-                tile_conditions_comb += ['OR']
+
+        if unobserved:
+            tile_conditions += [
+                ('done', '=', True),
+            ]
+            tile_conditions_comb += ['AND']
+        if target_ids:
+            if len(target_ids) > 0:
+                tile_conditions += [
+                    ('target_id', 'IN', field_list),
+                ]
+                tile_conditions_comb += ['AND']
+        # Note we *aren't* applying the field list criterion - we want to know
+        # if a target is assigned/queued in any field, not just the ones we
+        # want a return for
 
         targets_elim = extract_from_joined(cursor,
-                                           ['target_field', 'tile'],
+                                           ['science_target',
+                                            'target_field', 'tile'],
                                            conditions=tile_conditions,
                                            conditions_combine=
                                            tile_conditions_comb,
