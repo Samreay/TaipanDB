@@ -2,7 +2,9 @@ import logging
 import datetime
 import numpy as np
 
-from src.scripts.extract import extract_from_left_joined
+from src.scripts.extract import extract_from_left_joined, \
+    select_group_agg_from_joined
+
 
 def execute(cursor, tgt_list=None, repeats=1):
     """
@@ -72,16 +74,40 @@ def execute(cursor, tgt_list=None, repeats=1):
     logging.info('Reading/computing target started/completed times')
 
     conditions = []
+    combine = []
     if tgt_list:
         conditions += [('target_id', 'IN', tgt_list)]
 
+    # Only care about targets which have been touched
+    conditions += [
+        ('(', 'visits', '>', 0, ''),
+        ('', 'repeats', '>', 0, ')'),
+    ]
+    combine += ['AND', 'OR']
+
     # Easy ones first - let's find all the targets that have no observations
     # against them
-    tgt_not_started = extract_from_left_joined(cursor, ['science_target',
-                                                        'target_field',
-                                                        'tile'],
-                                               ['target_id', 'tile_pk'],
-                                               conditions=conditions + [
-                                                   ('done', '=', False),
-                                                   ('date_obs', 'IS', 'NULL'),
-                                               ], columns=['target_id'])
+    tgt_started = select_group_agg_from_joined(cursor,
+                                               ['science_target',
+                                                'target_field', 'tile',
+                                                'tiling_config'],
+                                               'min', 'date_obs',
+                                               'target_id',
+                                               conditions=conditions,
+                                               conditions_combine=combine)
+
+    conditions = []
+    if tgt_list:
+        conditions += [('target_id', 'IN', tgt_list)]
+    conditions += [('done', '=', True)]
+
+    tgt_complete = select_group_agg_from_joined(cursor,
+                                                ['science_target',
+                                                 'target_field', 'tile',
+                                                 'tiling_config'],
+                                                'max', 'date_obs',
+                                                'target_id',
+                                                conditions=conditions,
+                                                )
+
+    return tgt_started, tgt_complete
