@@ -89,79 +89,106 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     #                                           'ux', 'uy', 'uz', 'priority',
     #                                           'difficulty'])
 
-    if len(conditions) > 0:
-        added_conds = ['AND']
-    else:
-        added_conds = []
+    # if len(conditions) > 0:
+    #     added_conds = ['AND']
+    # else:
+    #     added_conds = []
 
-    if not unassigned and not unqueued:
-        targets_db = extract_from_left_joined(cursor, ['target',
-                                                       'science_target',
-                                                       'target_posn',
-                                                       # 'target_field', 'tile',
-                                                       ],
-                                              ['target_id', 'target_id',
-                                               # 'target_id',
-                                               # 'tile_pk',
-                                               ],
-                                              conditions=conditions + [
-                                                  ('is_science', "=", True,)
-                                              ],
-                                              conditions_combine=
-                                              combine + added_conds,
-                                              columns=['target_id', 'ra', 'dec',
-                                                       'ux', 'uy', 'uz',
-                                                       'priority', 'difficulty',
-                                                       'is_queued',
-                                                       'is_observed'],
-                                              distinct=True)
-    else:
+    # if not unassigned and not unqueued:
+    targets_db = extract_from_left_joined(cursor, ['target',
+                                                   'science_target',
+                                                   'target_posn',
+                                                   # 'target_field', 'tile',
+                                                   ],
+                                          ['target_id', 'target_id',
+                                           # 'target_id',
+                                           # 'tile_pk',
+                                           ],
+                                          conditions=conditions + [
+                                              ('is_science', "=", True,)
+                                          ],
+                                          conditions_combine=
+                                          combine,
+                                          # + added_conds,
+                                          columns=['target_id', 'ra', 'dec',
+                                                   'ux', 'uy', 'uz',
+                                                   'priority', 'difficulty',
+                                                   'is_queued',
+                                                   'is_observed'],
+                                          distinct=True)
+    if unassigned or unqueued:
         # For unassigned and/or unqueued, need to do a complex custom query
         # which is too hard/unique to program into a separate function
         # Thanks to Lance Luvaul (RSAA) for working this query out
+        # tile_conditions = []
+        # tile_conditions_comb = []
+        #
+        # if unassigned:
+        #     tile_conditions += [
+        #         ('(', 'is_queued', '=', False, ''),
+        #         ('', 'is_observed', '=', False, ')')
+        #     ]
+        #     tile_conditions_comb += ['AND']
+        # if unqueued:
+        #     tile_conditions += [('is_queued', '=', True)]
+        #     if len(tile_conditions) > 2:
+        #         tile_conditions_comb += ['OR']
+        #
+        # # Form the query - this is going to be LONG
+        # targets_db_raw = execute_select(
+        #     cursor.connection,
+        #     "WITH foo AS ( "
+        #     "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
+        #     "array_remove(array_agg(tile_pk), NULL) "
+        #     "AS tiles FROM "
+        #     "target LEFT JOIN science_target USING (target_id) "
+        #     "LEFT JOIN target_posn USING (target_id) "
+        #     "LEFT JOIN target_field USING (target_id) "
+        #     "WHERE %s "
+        #     "GROUP BY target_id,priority,difficulty ) "
+        #     "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty "
+        #     "FROM foo WHERE NOT EXISTS ("
+        #     "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
+        #     "SELECT tile_pk FROM tile WHERE %s ))"
+        #     % (generate_conditions_string(conditions, combine),
+        #        generate_conditions_string(tile_conditions,
+        #                                   tile_conditions_comb))
+        # )
+        #
+        # # Form the return into a structured array
+        # targets_db = np.array(targets_db_raw, dtype={
+        #     'names': ['target_id', 'ra', 'dec', 'ux', 'uy', 'uz',
+        #               'priority', 'difficulty'],
+        #     'formats': ['f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'i4', 'i4']
+        # })
+
+        # Or, we do filtering via Python
         tile_conditions = []
         tile_conditions_comb = []
-
         if unassigned:
             tile_conditions += [
                 ('(', 'is_queued', '=', False, ''),
-                ('', 'is_observed', '=', False, ')')
+                ('', 'is_observed', '=', False, ')'),
             ]
-            tile_conditions_comb += ['AND']
+            tile_conditions_comb += ['OR']
         if unqueued:
-            tile_conditions += [('is_queued', '=', True)]
-            if len(tile_conditions) > 2:
+            tile_conditions += [
+                ('is_queued', '=', True),
+            ]
+            if len(tile_conditions) > 1:
                 tile_conditions_comb += ['OR']
 
-        # Form the query - this is going to be LONG
-        targets_db_raw = execute_select(
-            cursor.connection,
-            "WITH foo AS ( "
-            "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty,"
-            "array_remove(array_agg(tile_pk), NULL) "
-            "AS tiles FROM "
-            "target LEFT JOIN science_target USING (target_id) "
-            "LEFT JOIN target_posn USING (target_id) "
-            "LEFT JOIN target_field USING (target_id) "
-            "WHERE %s "
-            "GROUP BY target_id,priority,difficulty ) "
-            "SELECT DISTINCT target_id,ra,dec,ux,uy,uz,priority,difficulty "
-            "FROM foo WHERE NOT EXISTS ("
-            "SELECT 1 FROM unnest(tiles) AS test WHERE test IN ("
-            "SELECT tile_pk FROM tile WHERE %s ))"
-            % (generate_conditions_string(conditions, combine),
-               generate_conditions_string(tile_conditions,
-                                          tile_conditions_comb))
-        )
+        targets_elim = extract_from_joined(cursor,
+                                           ['target_field', 'tile'],
+                                           conditions=tile_conditions,
+                                           conditions_combine=
+                                           tile_conditions_comb,
+                                           columns=['target_id'],
+                                           distinct=True)
 
-        # Form the return into a structured array
-        targets_db = np.array(targets_db_raw, dtype={
-            'names': ['target_id', 'ra', 'dec', 'ux', 'uy', 'uz',
-                      'priority', 'difficulty'],
-            'formats': ['f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'i4', 'i4']
-        })
-
-
+        # Trim targets_db against targets_elim
+        elim = np.in1d(targets_db['target_id'], targets_elim['target_id'])
+        targets_db = targets_db[~elim]
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(
