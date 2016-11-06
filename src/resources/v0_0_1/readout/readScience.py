@@ -186,7 +186,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
 
         if unobserved:
             tile_conditions += [
-                ('done', '=', True),
+                ('done', '=', False),
             ]
             tile_conditions_comb += ['AND']
         if target_ids:
