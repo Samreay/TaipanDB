@@ -229,7 +229,9 @@ def count_from(cursor, table, conditions=None,
 
 def extract_from_joined(cursor, tables, conditions=None, columns=None,
                         distinct=False,
-                        conditions_combine='AND'):
+                        conditions_combine='AND',
+                        case_conditions=None,
+                        case_conds_combine='AND'):
     """
     Extract rows from a database table join.
 
@@ -260,6 +262,20 @@ def extract_from_joined(cursor, tables, conditions=None, columns=None,
     conditions_combine:
         Optional; string determining how the conditions should be combined.
         Defaults to 'AND'.
+    case_conditions:
+        Special case-wise conditions. Should be a list of case-wise
+        conditions, each taking the following form:
+        - A four-tuple containing:
+            - The column that the case-wise condition applies to;
+            - The comparison operator to be used;
+            - A list of 4-tuples, each containing:
+                - The column to be checked for this case;
+                - The comparison operator to be used for this case;
+                - The comparison value to be used for this case;
+                - The value to return in this case;
+            - The ELSE value to be used.
+        The four-tuple may also be a six-tuple, with the first and last
+        elements being other formatting characters (e.g. brackets).
 
     Returns
     -------
@@ -398,10 +414,12 @@ def count_from_joined(cursor, tables, conditions=None,
 
 def count_grouped_from_joined(cursor, tables,
                               group_by,
+                              count=None,
                               conditions=None,
                               conditions_combine='AND',
                               case_conditions=None,
-                              case_conds_combine='AND'):
+                              case_conds_combine='AND',
+                              distinct=False):
     """
     Count the number of rows matching the conditions, grouped by the group_by
     column.
@@ -483,7 +501,10 @@ def count_grouped_from_joined(cursor, tables,
         tables = [tables, ]
 
     # Aggregate function
-    query_string = 'SELECT %s, COUNT(*) FROM ' % (group_by, )
+    query_string = 'SELECT %s, COUNT(%s %s) FROM ' % \
+                   (group_by,
+                    'DISTINCT' if distinct else '',
+                    '*' if count is None else count)
 
     # Table join
     query_string += ' NATURAL JOIN '.join(tables)
@@ -611,6 +632,7 @@ def extract_from_left_joined(cursor, tables, join_on_column,
             logging.info('At least one of the requested tables has no columns')
             return []
 
+        columns_orig = columns[::]
         if columns is None:
             columns = table_columns
         else:
@@ -619,8 +641,32 @@ def extract_from_left_joined(cursor, tables, join_on_column,
                           ', '.join(columns_lower))
             columns, dtypes = zip(*[(table_columns[i], dtypes[i]) for
                                     i in range(len(dtypes))
-                                    if table_columns[i].lower()
-                                    in columns_lower])
+                                    if
+                                    np.any([table_columns[i] in
+                                            c for c in columns_lower])
+                                    # table_columns[i].lower()
+                                    # in columns_lower
+                                    ])
+
+            # logging.debug('Found these columns with these data types:')
+            # logging.debug(columns)
+            # logging.debug(dtypes)
+            #
+            # columns = list(columns)
+            # dtypes = list(dtypes)
+            #
+            # logging.debug('Original requested columns:')
+            # logging.debug(columns_orig)
+            # for i in range(len(columns)):
+            #     if columns[i] not in columns_orig:
+            #         logging.debug('i=%d' % i)
+            #         # Make sure table-specific column calls are
+            #         # preserved
+            #         logging.debug([columns[i] in co for co in columns_orig])
+            #         j = [columns[i] in co for co in columns_orig].index(True)
+            #         logging.debug('j=%d' % j)
+            #         columns[i] = columns_orig[j]
+
         logging.debug('Found these columns with these data types:')
         logging.debug(columns)
         logging.debug(dtypes)
@@ -1019,8 +1065,8 @@ def execute_select(connection, statement):
 
     Returns
     -------
-        list
-            The results of the query, each row being an element in the list.
+    list : list of tuples
+        The results of the query.
     """
     cursor = connection.cursor()
     # assert statement.upper().find(
