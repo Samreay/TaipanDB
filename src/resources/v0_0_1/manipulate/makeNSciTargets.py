@@ -5,7 +5,8 @@
 import logging
 import numpy as np
 from taipan.core import TaipanTarget, dist_points, TILE_RADIUS
-from ....scripts.extract import extract_from_joined, extract_from_left_joined
+from ....scripts.extract import extract_from, extract_from_joined, \
+    extract_from_left_joined, count_grouped_from_joined
 from ..readout.readCentroids import execute as rCexec
 from ....scripts.manipulate import update_rows, update_rows
 
@@ -115,58 +116,76 @@ def execute(cursor, fields=None, use_pri_sci=True):
                       (len(fields), ', '.join(str(f) for f in fields), ))
 
     # Read completed targets
-    targets_complete = np.asarray(
-        extract_from_joined(cursor,
-                            ['target_posn', 'science_target'],
-                            conditions=conds_pri_sci + [
-                                ('done', '=', True),
-                                ('field_id', 'IN', fields)
-                            ],
-                            conditions_combine=cond_combs_pri_sci + ['AND'],
-                            columns=['field_id']),
-        dtype=int)
+    # We return the *field_id* corresponding to each applicable target, and
+    # count these up to form the number written to the database
+    targets_complete = extract_from_joined(cursor,
+                                           ['target_posn', 'science_target'],
+                                           conditions=conds_pri_sci + [
+                                               ('done', '=', True),
+                                               ('field_id', 'IN', fields)
+                                           ],
+                                           conditions_combine=
+                                           cond_combs_pri_sci + ['AND'],
+                                           columns=['target_id',
+                                                    'field_id'],
+                                           distinct=True)['field_id']
     # tgt_per_field = []
     # for field in list(set(_[1] for _ in targets_complete)):
+    logging.debug(targets_complete)
     if len(targets_complete) > 0:
         logging.debug('Counting targets per field')
-        tgt_per_field = [[field, len(targets_complete) -
-                          np.count_nonzero(targets_complete - field)]
-                         for field in fields]
-        logging.debug(tgt_per_field)
-        logging.debug('Writing target counts to database')
-        update_rows(cursor, 'tiling_info', tgt_per_field,
+        tgt_per_field_comp = [[field, len(targets_complete) -
+                               np.count_nonzero(targets_complete - field)]
+                              for field in fields]
+        logging.debug(tgt_per_field_comp)
+        logging.debug('Writing completed target counts to database')
+        update_rows(cursor, 'tiling_info', tgt_per_field_comp,
                     columns=['field_id', 'n_sci_obs'])
-        update_rows(cursor, 'tiling_info', tgt_per_field,
-                    columns=['field_id', 'n_sci_obs'])
+        # update_rows(cursor, 'tiling_info', tgt_per_field,
+        #             columns=['field_id', 'n_sci_obs'])
+
+    tgts_incomplete = extract_from_joined(cursor,
+                                          ['science_target', 'target_posn'],
+                                          conditions=conds_pri_sci + [
+                                              ('done', '=', False),
+                                              ('field_id', 'IN', fields)
+                                          ],
+                                          conditions_combine=
+                                          cond_combs_pri_sci + ['AND'],
+                                          columns=['target_id', 'field_id'],
+                                          distinct=True)
 
     # Read targets that are assigned, but yet to be observed
     # Targets must fulfil two criteria:
     # - They can't be marked as done in science_target
     # - The assigned tile must not be marked observed
-    logging.debug('Extracting assigned targets...')
-    targets_assigned = np.asarray(extract_from_joined(cursor,
-                                                      ['target_posn',
-                                                       'science_target',
-                                                       'target_field', 'tile'],
-                                                      conditions=
-                                                      conds_pri_sci + [
-                                                          ('done', '=', False),
-                                                          ('is_observed', '=',
-                                                           False),
-                                                      ],
-                                                      conditions_combine=
-                                                      cond_combs_pri_sci + [
-                                                          'AND'
-                                                      ],
-                                                      columns=['field_id']),
-                                  dtype=int)
-    if len(targets_assigned) > 0:
-        logging.debug('Counting targets per field')
-        tgt_per_field = [[field, len(targets_assigned) -
-                          np.count_nonzero(targets_assigned - field)]
-                         for field in fields]
-        logging.debug('Writing target counts to database...')
-        update_rows(cursor, 'tiling_info', tgt_per_field,
+    queued_tile_info = extract_from_joined(cursor,
+                                           ['tile', 'target_field',
+                                            'science_target'],
+                                           conditions=conds_pri_sci + [
+                                               ('is_observed', '=', False),
+                                               # ('field_id', 'IN', fields)
+                                           ],
+                                           conditions_combine=
+                                           cond_combs_pri_sci + [
+                                               # 'AND'
+                                           ],
+                                           columns=['target_id', 'field_id',
+                                                    'tile_pk'],
+                                           distinct=True,
+                                           )
+
+    field_per_tgt = tgts_incomplete[
+        np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
+    ]['field_id']
+
+    if len(field_per_tgt) > 0:
+        logging.debug('Counting assigned targets per field')
+        tgt_per_field_ass = [[field, len(field_per_tgt) -
+                              np.count_nonzero(field_per_tgt - field)]
+                             for field in set(field_per_tgt)]
+        logging.debug('Writing assigned target counts to database')
+        update_rows(cursor, 'tiling_info', tgt_per_field_ass,
                     columns=['field_id', 'n_sci_alloc'])
 
     # Read targets which are not assigned to any tile yet, nor observed
@@ -174,45 +193,19 @@ def execute(cursor, fields=None, use_pri_sci=True):
     # - Have no entries in target_field;
     # - Have entries in target_field, but all the related tiles are set to
     #   'observed' and the target isn't marked as 'done'
-    logging.debug('Extracting currently unassigned targets...')
-    target_stats_array_a = np.asarray(
-        extract_from_joined(
-            cursor,
-            ['target_posn', 'science_target', 'target_field', 'tile'],
-            conditions=conds_pri_sci + [
-                ('done', '=', False),
-                ('is_observed', '=', True),
-            ],
-            conditions_combine=cond_combs_pri_sci + ['AND'],
-            columns=['field_id'],
-            distinct=True),
-        dtype=int)
-    logging.debug('Type a shape: %s' % str(target_stats_array_a.shape))
-    target_stats_array_b = np.asarray(
-        extract_from_left_joined(
-            cursor,
-            ['target_posn', 'science_target', 'target_field'],
-            'target_id',
-            conditions=conds_pri_sci + [
-                # ('is_science', '=', True),
-                ('done', '=', False),
-                ('tile_pk', 'IS', 'NULL'),
-            ],
-            conditions_combine=cond_combs_pri_sci + ['AND'],
-            columns=['field_id']),
-        dtype=int)
-    logging.debug('Type b shape: %s' % str(target_stats_array_b.shape))
-    target_stats_array = np.concatenate((target_stats_array_a,
-                                         target_stats_array_b))
-    # tgt_per_field = []
-    if len(target_stats_array) > 0:
-        logging.debug('Counting targets per field')
-        tgt_per_field = [[field, len(target_stats_array) -
-                          np.count_nonzero(target_stats_array - field)]
-                         for field in fields]
-        logging.debug(tgt_per_field)
-        logging.debug('Writing target counts to database')
-        update_rows(cursor, 'tiling_info', tgt_per_field,
+    # Can just reverse what we did above!
+
+    field_per_tgt = tgts_incomplete[
+        ~np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
+    ]['field_id']
+
+    if len(field_per_tgt) > 0:
+        logging.debug('Counting remaining targets per field')
+        tgt_per_field_nil = [[field, len(field_per_tgt) -
+                              np.count_nonzero(field_per_tgt - field)]
+                             for field in set(field_per_tgt)]
+        logging.debug('Writing remaining target counts to database')
+        update_rows(cursor, 'tiling_info', tgt_per_field_nil,
                     columns=['field_id', 'n_sci_rem'])
 
     return
