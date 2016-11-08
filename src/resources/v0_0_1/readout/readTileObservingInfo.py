@@ -21,14 +21,31 @@ def execute(cursor, field_ids=None):
         which tile was observed when.
     """
 
-    obs_tile_info = extract_from_joined(cursor, ['field', 'tile', 'tiling_config'],
+    conditions = [
+        ('(', 'is_observed', '=', True, ''),
+        ('', 'date_obs', 'IS NOT', 'NULL', ')'),
+    ]
+    combine = ['OR']
+
+    if field_ids is not None:
+        field_ids = list(field_ids)
+        conditions += [
+            ('field_id', 'IN', field_ids)
+        ]
+        combine += ['AND']
+
+    obs_tile_info = extract_from_joined(cursor, ['field', 'tile',
+                                                 'tiling_config'],
                                         columns=['ra', 'dec',
                                                  'field_id', 'tile_pk',
                                                  'date_config', 'date_obs'],
-                                        conditions=[
-                                            ('is_observed','=',True),
-                                            ('date_obs', 'IS NOT', 'NULL'),
-                                        ],
-                                        conditions_combine='OR')
+                                        conditions=conditions,
+                                        conditions_combine=combine)
+
+    # We'd like the airmass information as well
+    # We need to do a case-conditions extract for that
+    case_conditions = [
+
+    ]
     
     return obs_tile_info
