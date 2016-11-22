@@ -8,6 +8,7 @@ from taipan.core import TaipanTarget, dist_points, TILE_RADIUS
 from ....scripts.extract import extract_from, extract_from_joined, \
     extract_from_left_joined, count_grouped_from_joined
 from ..readout.readCentroids import execute as rCexec
+from ..readout.readTileScores import execute as rTSexec
 from ....scripts.manipulate import update_rows, update_rows
 
 
@@ -35,7 +36,8 @@ def targets_per_field(fields, targets):
     return output
 
 
-def execute(cursor, fields=None, use_pri_sci=True):
+def execute(cursor, fields=None, use_pri_sci=True,
+            unobserved_only=True):
     """
     Calculate the number of targets in each field of each status type.
 
@@ -55,6 +57,10 @@ def execute(cursor, fields=None, use_pri_sci=True):
         from all targets in the database (False), or only those attached to
         a primary science case (i.e. have at least one of is_h0_target,
         is_vpec_target or is_lowz_target set to True). Defaults to True.
+    unobserved_only : Boolean, optional
+        Whether to write tile scores only against tiles where that haven't
+        been observed yet (True), or against all tiles of that field (False).
+        Defaults to True.
 
     Returns
     -------
@@ -88,6 +94,13 @@ def execute(cursor, fields=None, use_pri_sci=True):
             ('', 'is_lowz_target', '=', True, ')'),
         ]
         cond_combs_pri_sci = ['OR', 'OR', 'AND']
+
+    write_conds = []
+    if unobserved_only:
+        unobs_tiles = rTSexec(cursor, unobserved_only=True)['tile_pk']
+        write_conds += [
+            ('tile_pk', 'IN', unobs_tiles),
+        ]
 
     if fields is None:
         fields = [field.field_id for field in field_tiles]
@@ -140,7 +153,8 @@ def execute(cursor, fields=None, use_pri_sci=True):
         logging.debug(tgt_per_field_comp)
         logging.debug('Writing completed target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field_comp,
-                    columns=['field_id', 'n_sci_obs'])
+                    columns=['field_id', 'n_sci_obs'],
+                    conditions=write_conds)
         # update_rows(cursor, 'tiling_info', tgt_per_field,
         #             columns=['field_id', 'n_sci_obs'])
 
@@ -186,7 +200,8 @@ def execute(cursor, fields=None, use_pri_sci=True):
                              for field in set(field_per_tgt)]
         logging.debug('Writing assigned target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field_ass,
-                    columns=['field_id', 'n_sci_alloc'])
+                    columns=['field_id', 'n_sci_alloc'],
+                    conditions=write_conds)
 
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
@@ -206,6 +221,7 @@ def execute(cursor, fields=None, use_pri_sci=True):
                              for field in set(field_per_tgt)]
         logging.debug('Writing remaining target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field_nil,
-                    columns=['field_id', 'n_sci_rem'])
+                    columns=['field_id', 'n_sci_rem'],
+                    conditions=write_conds)
 
     return
