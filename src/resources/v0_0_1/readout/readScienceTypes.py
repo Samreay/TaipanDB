@@ -37,7 +37,8 @@ def execute(cursor, target_ids=None):
     targets_db = extract_from(cursor, 'science_target',
                               conditions=conditions,
                               columns=['target_id', 'is_vpec_target',
-                                       'is_H0_target', 'is_lowz_target'])
+                                       'is_h0_target', 'is_lowz_target',
+                                       'priority'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
