@@ -148,7 +148,8 @@ def update_rows(cursor, table, data, columns=None,
 
     if conditions:
         conditions_string = generate_conditions_string(conditions)
-        string += ' WHERE %s' % conditions_string
+        # Note we use AND here, because WHERE has already been invoked above
+        string += ' AND %s' % conditions_string
 
     logging.debug(string)
 
