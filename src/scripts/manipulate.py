@@ -63,7 +63,8 @@ def update_rows_all(cursor, table, data, columns=None, conditions=None):
 
 
 def update_rows(cursor, table, data, columns=None,
-                columns_to_match=1):
+                columns_to_match=1,
+                conditions=None):
     """
     Update values in already-existing table rows by matching against a
     reference column.
@@ -90,6 +91,13 @@ def update_rows(cursor, table, data, columns=None,
         Increasing this value will cause a multiple-column match to be used.
         The columns variable *must* be defined if you wish to use
         columns_to_match.
+    conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        such that all rows will be affected.
 
     Returns
     -------
@@ -137,7 +145,12 @@ def update_rows(cursor, table, data, columns=None,
     string += "AS c(%s) " % ','.join(columns)
     string += " AND ".join(["WHERE c.%s = t.%s" % (columns[i], columns[i])
                             for i in range(columns_to_match)])
-    # logging.debug(string)
+
+    if conditions:
+        conditions_string = generate_conditions_string(conditions)
+        string += ' WHERE %s' % conditions_string
+
+    logging.debug(string)
 
     if cursor is not None:
         cursor.execute(string)
