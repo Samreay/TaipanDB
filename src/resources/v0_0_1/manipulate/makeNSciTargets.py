@@ -97,7 +97,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
 
     write_conds = []
     if unobserved_only:
-        unobs_tiles = rTSexec(cursor, unobserved_only=True)['tile_pk']
+        unobs_tiles = list(rTSexec(cursor, unobserved_only=True)['tile_pk'])
         write_conds += [
             ('tile_pk', 'IN', unobs_tiles),
         ]
