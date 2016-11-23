@@ -39,8 +39,8 @@ def execute(cursor, conditions, tables_to_join=None):
                                        conditions=conditions,
                                        columns=['tile_pk'])
     else:
-        tile_pks =  extract_from(cursor, 'tile', conditions=conditions,
-                                 columns=['tile_pk'])
+        tile_pks = extract_from(cursor, 'tile', conditions=conditions,
+                                columns=['tile_pk'])
 
     # Flatten the tile_pks list
     tile_pks = [p[0] for p in tile_pks]

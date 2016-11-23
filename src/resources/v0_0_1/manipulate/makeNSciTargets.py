@@ -9,6 +9,7 @@ from ....scripts.extract import extract_from, extract_from_joined, \
     extract_from_left_joined, count_grouped_from_joined
 from ..readout.readCentroids import execute as rCexec
 from ..readout.readTileScores import execute as rTSexec
+from ..readout.readTilePK import execute as rTPKexec
 from ....scripts.manipulate import update_rows, update_rows
 
 
@@ -97,8 +98,11 @@ def execute(cursor, fields=None, use_pri_sci=True,
 
     write_conds = []
     if unobserved_only:
-        unobs_tiles = list(rTSexec(cursor, unobserved_only=True,
-                                   metrics=[])['tile_pk'])
+        unobs_tiles = list(rTPKexec(cursor,
+                                    conditions=[
+                                        ('is_queued', '=', False),
+                                        ('is_observed', '=', False),
+                                    ]))
         write_conds += [
             ('tile_pk', 'IN', unobs_tiles),
         ]
