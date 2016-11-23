@@ -89,10 +89,10 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     #                                           'ux', 'uy', 'uz', 'priority',
     #                                           'difficulty'])
 
-    # if len(conditions) > 0:
-    #     added_conds = ['AND']
-    # else:
-    #     added_conds = []
+    if len(conditions) > 0:
+        added_conds = ['AND']
+    else:
+        added_conds = []
 
     # if not unassigned and not unqueued:
     targets_db = extract_from_left_joined(cursor, ['target',
@@ -108,7 +108,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                               ('is_science', "=", True,)
                                           ],
                                           conditions_combine=
-                                          combine + ['AND'],
+                                          combine + added_conds,
                                           columns=['target_id', 'ra', 'dec',
                                                    'ux', 'uy', 'uz',
                                                    'priority', 'difficulty',
