@@ -202,7 +202,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
         logging.debug('Counting assigned targets per field')
         tgt_per_field_ass = [[field, len(field_per_tgt) -
                               np.count_nonzero(field_per_tgt - field)]
-                             for field in set(field_per_tgt)]
+                             for field in fields]
         logging.debug('Writing assigned target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field_ass,
                     columns=['field_id', 'n_sci_alloc'],
@@ -223,7 +223,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
         logging.debug('Counting remaining targets per field')
         tgt_per_field_nil = [[field, len(field_per_tgt) -
                               np.count_nonzero(field_per_tgt - field)]
-                             for field in set(field_per_tgt)]
+                             for field in fields]
         logging.debug('Writing remaining target counts to database')
         update_rows(cursor, 'tiling_info', tgt_per_field_nil,
                     columns=['field_id', 'n_sci_rem'],
