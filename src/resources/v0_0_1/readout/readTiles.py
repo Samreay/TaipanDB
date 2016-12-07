@@ -45,7 +45,7 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
     Returns
     -------
-    tile_list[, candidate_targets, guide_targets, standard_targets]:
+    tile_list, candidate_targets, guide_targets, standard_targets]:
         A list of TaipanTile objects corresponding to the tiles in the
         database. If target lists are not passed into the function, the
         function will return the target lists it generates (so that repeat
