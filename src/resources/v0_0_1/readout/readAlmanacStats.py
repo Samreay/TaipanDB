@@ -248,7 +248,9 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         conditions += [('dark', '=', False)]
     if hours_better:
         # Get the benchmark airmass
-        minimum_airmass = min(get_airmass(cursor, field_id, datetime_from),
+        # [0] gives the only result, then [1] gives the airmass
+        minimum_airmass = min(get_airmass(cursor, field_id,
+                                          datetime_from)[0][1],
                               minimum_airmass)
         logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
     conditions += [('airmass', '<=', minimum_airmass)]
