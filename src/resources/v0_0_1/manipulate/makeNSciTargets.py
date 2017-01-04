@@ -178,19 +178,26 @@ def execute(cursor, fields=None, use_pri_sci=True,
     # Targets must fulfil two criteria:
     # - They can't be marked as done in science_target
     # - The assigned tile must not be marked observed
+    # Note that we want the queued tile info from ALL tiles, because targets
+    # at the edge of the region of interest may be assigned to tiles outside
+    # the ROI
     queued_tile_info = extract_from_joined(cursor,
                                            ['tile', 'target_field',
                                             'science_target'],
                                            conditions=conds_pri_sci + [
                                                ('is_observed', '=', False),
+                                               ('is_queued', '=', False),
                                                # ('field_id', 'IN', fields)
                                            ],
                                            conditions_combine=
                                            cond_combs_pri_sci + [
+                                               'AND',
                                                # 'AND'
                                            ],
-                                           columns=['target_id', 'field_id',
-                                                    'tile_pk'],
+                                           columns=['target_id',
+                                                    # 'field_id',
+                                                    # 'tile_pk',
+                                                    ],
                                            distinct=True,
                                            )
 
