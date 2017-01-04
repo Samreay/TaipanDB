@@ -73,7 +73,7 @@ def execute(cursor):
         if not fault_detected:
             print('All good for field %d' % field_id)
 
-        return
+    return
 
 if __name__ == '__main__':
     logging.debug('Getting connection')
