@@ -9,7 +9,7 @@ import logging
 
 def execute(cursor):
     # Need to determine the field_ids in the system
-    cursor.execute('SELECT DISTINCT field_id FROM field ORDER BY field ASC')
+    cursor.execute('SELECT DISTINCT field_id FROM field ORDER BY field_id ASC')
     field_ids = [f[0] for f in cursor.fetchall()]
 
     # Loop over each field_id and compare the manually derived n_sci_* values
