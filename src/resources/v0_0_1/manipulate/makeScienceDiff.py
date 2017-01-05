@@ -45,7 +45,7 @@ def execute(cursor, use_only_notdone=True,
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
-        ucposn=(g['ux'], g['uy'], g['uz']),
+        usposn=(g['ux'], g['uy'], g['uz']),
     ) for g in targets_db]
 
     logging.info('Extracted %d targets from database' % len(return_objects))

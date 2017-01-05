@@ -216,7 +216,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
         difficulty=g['difficulty'],
-        ucposn=(g['ux'], g['uy'], g['uz']),
+        usposn=(g['ux'], g['uy'], g['uz']),
         ) for g in targets_db]
 
     logging.info('Extracted %d targets from database' % len(return_objects))

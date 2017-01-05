@@ -70,7 +70,7 @@ def execute(cursor, field_list=None, tile_list=None):
                                                     'dec', 'ux', 'uy', 'uz'],
                                            distinct=True)
         req_tileobjs = [TaipanTile(f['ra'], f['dec'], field_id=f['field_id'],
-                                   ucposn=[f['ux'], f['uy'], f['uz']])
+                                   usposn=[f['ux'], f['uy'], f['uz']])
                         for f in req_tileobjs]
         logging.debug(req_tileobjs)
     else:

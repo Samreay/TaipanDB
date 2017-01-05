@@ -51,7 +51,7 @@ def execute(cursor):
                        'field_id=%s AND NOT done AND target_id NOT IN '
                        '(SELECT DISTINCT target_id FROM tile NATURAL JOIN '
                        'target_field WHERE NOT is_observed)',
-                       (field_id,)
+                       (field_id, )
                        )
         n_sci_rem_manual = cursor.fetchall()[0][0]
 

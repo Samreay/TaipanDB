@@ -38,7 +38,7 @@ def execute(cursor, field_ids=None):
                                 conditions=conditions)
 
     return_objects = [TaipanTile(c['ra'], c['dec'], field_id=c['field_id'],
-                                 ucposn=[c['ux'], c['uy'], c['uz']])
+                                 usposn=[c['ux'], c['uy'], c['uz']])
                       for c in centroids_db]
 
     logging.info('Extracted %d centroids from database' % centroids_db.shape[0])

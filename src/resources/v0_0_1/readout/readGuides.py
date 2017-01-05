@@ -43,7 +43,7 @@ def execute(cursor, field_list=None):
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], guide=True,
-        ucposn=(g['ux'], g['uy'], g['uz']),
+        usposn=(g['ux'], g['uy'], g['uz']),
         ) for g in guides_db]
 
     logging.info('Extracted %d guides from database' % guides_db.shape[0])
