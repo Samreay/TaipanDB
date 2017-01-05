@@ -198,12 +198,14 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
 
     Parameters
     ----------
-    datetime_from, datetime_to:
+    datetime_from, datetime_to: datetime.datetime objects
         The datetimes between which we should calculate the number of
         observable hours remaining. These datetimes must be between the
         start and end dates of the almanac, or an error will be returned.
         datetime_to will default to None, such that the remainder of the
         almanac will be used.
+    field_id: integer
+        The ID of the field to consider
     exclude_grey_time, exclude_dark_time:
         Boolean value denoting whether to exclude grey time or dark time
         from the calculation. Defaults to exclude_grey_time=True,
@@ -214,10 +216,18 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         True, False (dark time only)
         Attempting to set both value to True will raise a ValueError, as
         this would result in no available observing time.
+    minimum_airmass: float
+        Something of a misnomer; this is actually the *maximum* airmass at which
+        a field should be considered visible (a.k.a. the minimum altitude).
+        Defaults to 2.0 (i.e. an altitude of 30 degrees). If hours_better
+        is used, the comparison airmass will be the minimum of the airmass at
+        datetime_from and minimum_airmass.
     hours_better:
         Optional Boolean, denoting whether to return only
         hours_observable which have airmasses superior to the airmass
-        at datetime_now (True) or not (False). Defaults to False.
+        at datetime_from (True) or not (False). Defaults to False.
+    resolution : float
+        Resolution of the Almanac in minutes. Defaults to 15.
 
     Returns
     -------

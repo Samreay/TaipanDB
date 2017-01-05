@@ -57,16 +57,16 @@ def execute(cursor):
 
         # Do comparison
         fault_detected = False
-        if n_sci_obs != n_sci_obs_manual:
+        if n_sci_obs != n_sci_obs_manual and n_sci_obs is not None and n_sci_obs_manual is not None:
             print('n_sci_obs   mismatch in field %s - db value %5d, '
                   'actual value %5d' % (field_id, n_sci_obs, n_sci_obs_manual))
             fault_detected = True
-        if n_sci_alloc != n_sci_alloc_manual:
+        if n_sci_alloc != n_sci_alloc_manual and n_sci_alloc is not None and n_sci_alloc_manual is not None:
             print('n_sci_alloc mismatch in field %s - db value %5d, '
                   'actual value %5d' % (field_id, n_sci_alloc,
                                         n_sci_alloc_manual))
             fault_detected = True
-        if n_sci_obs != n_sci_obs_manual:
+        if n_sci_obs != n_sci_obs_manual and n_sci_rem is not None and n_sci_rem_manual is not None:
             print('n_sci_rem   mismatch in field %s - db value %5d, '
                   'actual value %5d' % (field_id, n_sci_rem, n_sci_rem_manual))
             fault_detected = True
