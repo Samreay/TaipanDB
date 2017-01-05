@@ -3,14 +3,14 @@
 import logging
 # from taipan.core import TaipanTile
 from taipan.scheduling import Almanac, DarkAlmanac, ephem_to_dt, localize_utc_dt
-from ....scripts.create import insert_many_rows
-from ....scripts.manipulate import upsert_many_rows
-# from ....scripts.extract import extract_from, extract_from_joined
+from src.scripts.create import insert_many_rows
+from src.scripts.manipulate import upsert_many_rows
+# from src.scripts.extract import extract_from, extract_from_joined
 import numpy as np
 
-from ..readout.readCentroids import execute as rCexec
+from src.resources.v0_0_1.readout.readCentroids import execute as rCexec
 
-from ....scripts.connection import get_connection
+from src.scripts.connection import get_connection
 
 import datetime
 import sys
