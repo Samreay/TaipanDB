@@ -178,3 +178,5 @@ if __name__ == '__main__':
         execute(cursor, field.field_id, almanac, dark_almanac=dark_alm)
         logging.info('Inserted almanac %5d / %5d' % (i, len(fields), ))
         i += 1
+        # Commit after every Almanac due to the expense of computing
+        conn.commit()
