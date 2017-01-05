@@ -15,7 +15,7 @@ from src.scripts.connection import get_connection
 import datetime
 import sys
 
-from ..readout import readScience as rSc
+from src.resources.v0_0_1.readout import readScience as rSc
 
 
 # def compute_sci_targets_complete(cursor, tile, tgt_list):
