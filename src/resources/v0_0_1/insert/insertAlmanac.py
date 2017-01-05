@@ -36,7 +36,7 @@ from src.resources.v0_0_1.readout import readScience as rSc
 #     query_result = rSc.execute(cursor)
 
 
-def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
+def execute(cursor, field_id, almanac, dark_almanac=None, update=None):
     """
     Insert the given almanac into the database.
 
@@ -166,7 +166,9 @@ if __name__ == '__main__':
 
     fields = rCexec(cursor)
 
+    logging.info('Generating dark almanac...')
     dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    logging.info('Done!')
 
     i = 1
     for field in fields:
