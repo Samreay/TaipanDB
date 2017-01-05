@@ -2,13 +2,18 @@
 
 import logging
 # from taipan.core import TaipanTile
-from taipan.scheduling import DarkAlmanac, ephem_to_dt, localize_utc_dt
+from taipan.scheduling import Almanac, DarkAlmanac, ephem_to_dt, localize_utc_dt
 from ....scripts.create import insert_many_rows
 from ....scripts.manipulate import upsert_many_rows
 # from ....scripts.extract import extract_from, extract_from_joined
 import numpy as np
 
+from ..readout.readCentroids import execute as rCexec
+
+from ....scripts.connection import get_connection
+
 import datetime
+import sys
 
 from ..readout import readScience as rSc
 
@@ -33,7 +38,7 @@ from ..readout import readScience as rSc
 
 def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     """
-    Insert the given tiles into the database.
+    Insert the given almanac into the database.
 
     Parameters
     ----------
@@ -117,3 +122,57 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=False):
     logging.info('Insertion of almanac completed')
 
     return
+
+if __name__ == '__main__':
+    # Use this module as a script to generate Almanac data for all fields
+    # currently existing in the database
+    # Get a cursor
+
+    sim_start = datetime.date(2017, 4, 1)
+    sim_end = datetime.date(2027, 4, 1)
+    global_start = datetime.datetime.now()
+
+    # Override the sys.excepthook behaviour to log any errors
+    # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
+    def excepthook_override(exctype, value, tb):
+        logging.error('My Error Information')
+        logging.error('Type:', exctype)
+        logging.error('Value:', value)
+        logging.error('Traceback:', tb)
+
+
+    sys.excepthook = excepthook_override
+
+    # Set the logging to write to terminal AND file
+    logging.basicConfig(
+        level=logging.INFO,
+        filename='./almanac_insert_%s_to_%s_at_%s' % (
+            sim_start.strftime('%Y%m%d'),
+            sim_end.strftime('%Y%m%d'),
+            global_start.strftime('%Y%m%d-%H%M'),
+        ),
+        filemode='w'
+    )
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.info('Inserting almanacs into database')
+
+    # TODO: Correct package imports & references
+    logging.info('Getting connection')
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    fields = rCexec(cursor)
+
+    dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+
+    i = 1
+    for field in fields:
+        almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
+                          minimum_airmass=2.0, populate=True, resolution=15.)
+        logging.info('Computed almanac %5d / %5d' % (i, len(fields), ))
+        execute(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+        logging.info('Inserted almanac %5d / %5d' % (i, len(fields), ))
+        i += 1
