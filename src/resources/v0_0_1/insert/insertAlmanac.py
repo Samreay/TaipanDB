@@ -176,7 +176,7 @@ if __name__ == '__main__':
                           minimum_airmass=2.0, populate=True, resolution=15.)
         logging.info('Computed almanac %5d / %5d' % (i, len(fields), ))
         execute(cursor, field.field_id, almanac, dark_almanac=dark_alm)
-        logging.info('Inserted almanac %5d / %5d' % (i, len(fields), ))
         i += 1
         # Commit after every Almanac due to the expense of computing
         conn.commit()
+        logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
