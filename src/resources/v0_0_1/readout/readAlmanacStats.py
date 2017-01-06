@@ -12,6 +12,26 @@ import datetime
 import logging
 
 
+def check_almanac_finish(cursor):
+    """
+    Find the last date which the almanacs are calibrated for.
+
+    Parameters
+    ----------
+    cursor : psycopg2 cursor object
+        For communication with the database
+
+    Returns
+    -------
+    datetime_max : datetime.datetime instance
+        The final date found in the observability database table
+    """
+    datetime_max = select_max_from_joined(cursor,
+                                          ['observability'])
+    return datetime_max
+
+
+
 def get_fields_available(cursor, datetime,
                          minimum_airmass=2.0,
                          resolution=15.):
