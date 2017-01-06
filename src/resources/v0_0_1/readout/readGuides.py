@@ -42,7 +42,7 @@ def execute(cursor, field_list=None):
                                          distinct=True)
 
     return_objects = [TaipanTarget(
-        g['target_id'], g['ra'], g['dec'], guide=True,
+        g['target_id'], g['ra'], g['dec'], guide=True, science=False,
         usposn=(g['ux'], g['uy'], g['uz']),
         ) for g in guides_db]
 

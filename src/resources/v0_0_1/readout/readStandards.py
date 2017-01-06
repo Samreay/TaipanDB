@@ -42,7 +42,7 @@ def execute(cursor, field_list=None):
                                             distinct=True)
 
     return_objects = [TaipanTarget(s['target_id'], s['ra'], s['dec'],
-                                   standard=True,
+                                   standard=True, science=False,
                                    usposn=(s['ux'], s['uy'],
                                            s['uz'])) for s in standards_db]
 
