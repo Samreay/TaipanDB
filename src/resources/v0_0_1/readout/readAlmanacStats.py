@@ -27,7 +27,7 @@ def check_almanac_finish(cursor):
         The final date found in the observability database table
     """
     datetime_max = select_max_from_joined(cursor,
-                                          ['observability'])
+                                          ['observability'], 'date')
     return datetime_max
 
 
