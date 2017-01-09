@@ -69,4 +69,7 @@ def update(cursor):
         cursor.connection.commit()
         logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
 
+    # Create a date-only index on the observability table to improve performance
+    create.create_index(cursor, 'observability', ['date'], ordering='ASC')
+
     return

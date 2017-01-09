@@ -314,4 +314,3 @@ def create_index(cursor, table, columns, ordering=None):
                                              ordering if ordering else '')
 
     cursor.execute(string)
-
