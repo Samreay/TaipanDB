@@ -31,7 +31,6 @@ def check_almanac_finish(cursor):
     return datetime_max
 
 
-
 def get_fields_available(cursor, datetime,
                          minimum_airmass=2.0,
                          resolution=15.):

@@ -266,3 +266,52 @@ if __name__ == "__main__":
     conn = None
     create_tables(conn)
 
+
+def create_index(cursor, table, columns, ordering=None):
+    """
+    Create a btree index within the specified database table.
+
+    This is an outstanding boost to performance if the standard indexing (via
+    the primary key specified in the table creation) is not sufficient. The
+    most obvious example is the indexing of the large 'observability' table
+    by date, in addition to the standard (field_id, date) pair.
+
+    The index will not be named by the user - the database server will use
+    a sensible default name.
+
+    Parameters
+    ----------
+    cursor : psycopg2.cursor object
+        For communication with the database
+    table : str
+        The database table to be indexed
+    columns : list of str, or str
+        Either a list of columns for indexing, or a single column name.
+    ordering : str, defaults to None
+        You can specify an ordering to the index ('ASC' or 'DESC') here,
+        if applicable. Defaults to None, at which point no ordering will be
+        applied. Ordering can only be applied to single-column indices.
+
+    Returns
+    -------
+    Nil. Database is updated in-situ.
+    """
+    # Input checking
+    if not isinstance(columns, list):
+        columns = [columns, ]
+
+    allowed_orderings = ['ASC', 'DESC']
+    if ordering is not None:
+        if len(columns) > 1:
+            raise ValueError('ordering may only be used when supplying a '
+                             'single column to the index')
+        if ordering not in allowed_orderings:
+            raise ValueError('ordering must be one of %s' %
+                             allowed_orderings.join(', '))
+
+    string = "CREATE INDEX ON %s (%s %s)" % (table,
+                                             columns.join(','),
+                                             ordering if ordering else '')
+
+    cursor.execute(string)
+
