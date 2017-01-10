@@ -7,7 +7,7 @@ from taipan.core import TaipanTarget
 
 def execute(cursor, target_ids=None):
     """
-    Retrieve an array of target IDs and associated types.
+    Read the number of visits and repeats for targets in the database.
 
     Parameters
     ----------

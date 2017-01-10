@@ -78,7 +78,7 @@ def execute(cursor, target_ids=None, field_list=None,
                                   columns=['target_id', 'ra', 'dec',
                                            'is_h0_target', 'is_lowz_target',
                                            'is_vpec_target', 'priority',
-                                           'date_obs'],
+                                           'date_obs', 'done'],
                                   conditions=conditions)
 
     return obs_log

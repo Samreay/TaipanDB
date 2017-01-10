@@ -1,7 +1,7 @@
 import logging
 import sys
 import os
-from ....scripts.extract import extract_from
+from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
 
 
@@ -34,11 +34,12 @@ def execute(cursor, target_ids=None):
     else:
         conditions = None
 
-    targets_db = extract_from(cursor, 'science_target',
-                              conditions=conditions,
-                              columns=['target_id', 'is_vpec_target',
-                                       'is_h0_target', 'is_lowz_target',
-                                       'priority'])
+    targets_db = extract_from_joined(cursor, ['science_target', 'target'],
+                                     conditions=conditions,
+                                     columns=['target_id', 'ra', 'dec',
+                                              'is_vpec_target',
+                                              'is_h0_target', 'is_lowz_target',
+                                              'priority'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
