@@ -43,4 +43,4 @@ def execute(cursor, field_list=None, target_list=None):
                                     columns=['target_id', 'field_id'])
 
     logging.info('Extracted %d target positions from database' % len(db_return))
-    return list(flatten(db_return))
+    return db_return
