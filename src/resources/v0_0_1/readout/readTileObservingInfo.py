@@ -38,6 +38,7 @@ def execute(cursor, field_ids=None):
                                                  'tiling_config'],
                                         columns=['ra', 'dec',
                                                  'field_id', 'tile_pk',
+                                                 'tile_id',
                                                  'date_config', 'date_obs'],
                                         conditions=conditions,
                                         conditions_combine=combine)
