@@ -70,7 +70,9 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
         conditions += [(metric, '>', 0.) for metric in metrics]
 
     # Fetch the metrics from the tiling info table
-    return extract_from_joined(cursor, ['field', 'tile', 'tiling_info', ],
+    return extract_from_joined(cursor, ['field', 'tile', 'tiling_info',
+                                        'tiling_config'],
                                conditions=conditions,
                                columns=
-                               ['tile_pk', 'field_id', 'ra', 'dec'] + metrics)
+                               ['tile_pk', 'field_id', 'ra', 'dec',
+                                'date_config'] + metrics)
