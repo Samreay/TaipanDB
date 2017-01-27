@@ -222,9 +222,13 @@ def execute(cursor, fields=None, use_pri_sci=True,
     #   'observed' and the target isn't marked as 'done'
     # Can just reverse what we did above!
 
-    field_per_tgt = tgts_incomplete[
-        ~np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
-    ]['field_id']
+    # field_per_tgt = tgts_incomplete[
+    #     ~np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
+    # ]['field_id']
+
+    # ALGORITHM CHANGE
+    # n_sci_rem should now track *all* unobserved targets (allocated or no)
+    field_per_tgt = tgts_incomplete['field_id']
 
     if len(field_per_tgt) > 0:
         logging.debug('Counting remaining targets per field')

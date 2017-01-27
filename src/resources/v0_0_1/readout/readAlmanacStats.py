@@ -133,16 +133,16 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         compatibility with the function in ts.scheduling.Almanac objects.
     """
     # Input checking
-    if datetime_to < datetime_from:
-        raise ValueError('datetime_from must occur before datetime_to')
-    if dark and grey:
-        raise ValueError('Only one of dark or grey may be True (or both may '
-                         'be False to get all night time back)')
     if datetime_to is None:
         datetime_to = select_max_from_joined(cursor, ['observability'],
                                              'date', conditions=[
                 ('field_id', '=', field_id),
             ])
+    if datetime_to < datetime_from:
+        raise ValueError('datetime_from must occur before datetime_to')
+    if dark and grey:
+        raise ValueError('Only one of dark or grey may be True (or both may '
+                         'be False to get all night time back)')
 
     # Read in the obs_start and obs_end times. It does this as follows:
     # - obs_start is the first time in the database after datetime_from and
