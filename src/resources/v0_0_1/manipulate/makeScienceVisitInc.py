@@ -28,7 +28,8 @@ def execute(cursor, target_ids):
     target_ids = list(target_ids)
 
     # Increment the rows
-    increment_rows(cursor, 'science_target', 'visits',
-                   ref_column='target_id', ref_values=target_ids, inc=1)
+    if len(target_ids) > 0:
+        increment_rows(cursor, 'science_target', 'visits',
+                       ref_column='target_id', ref_values=target_ids, inc=1)
 
     return

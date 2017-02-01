@@ -73,12 +73,14 @@ def execute(cursor, target_ids=None, field_list=None,
     logging.debug(conditions)
 
     obs_log = extract_from_joined(cursor,
-                                  ['tiling_config', 'tile', 'target_field',
+                                  ['tiling_config', 'tile', 'tiling_info',
+                                   'target_field',
                                    'science_target', 'target'],
                                   columns=['target_id', 'ra', 'dec', 'tile_pk',
                                            'is_h0_target', 'is_lowz_target',
                                            'is_vpec_target', 'priority',
-                                           'date_obs', 'done'],
+                                           'date_obs', 'done',
+                                           'prior_sum'],
                                   conditions=conditions)
 
     return obs_log
