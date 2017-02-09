@@ -45,7 +45,7 @@ def execute(cursor, target_ids=None):
                                               'zspec',
                                               'col_gi', 'col_jk',
                                               'priority',
-                                              'visits', 'repeats'])
+                                              'visits', 'repeats', 'done'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
