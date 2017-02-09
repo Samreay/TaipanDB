@@ -39,6 +39,11 @@ def execute(cursor, target_ids=None):
                                      columns=['target_id', 'ra', 'dec',
                                               'is_vpec_target',
                                               'is_h0_target', 'is_lowz_target',
+                                              'is_lrg', 'is_nir', 'is_iband',
+                                              'is_prisci_vpec_target',
+                                              'is_full_vpec_target',
+                                              'zspec',
+                                              'col_gi', 'col_jk',
                                               'priority'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
