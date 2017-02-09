@@ -44,7 +44,8 @@ def execute(cursor, target_ids=None):
                                               'is_full_vpec_target',
                                               'zspec',
                                               'col_gi', 'col_jk',
-                                              'priority'])
+                                              'priority',
+                                              'visits', 'repeats'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
