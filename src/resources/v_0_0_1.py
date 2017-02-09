@@ -1,14 +1,17 @@
-from ..scripts import create
-from .v0_0_1.ingest import loadGuides, loadScience, loadCentroids, loadStandards
-from .v0_0_1.manipulate import makeScienceDiff, makeTargetPosn
+from src.scripts import create
+from src.resources.v0_0_1.ingest import loadGuides, loadScience, \
+    loadCentroids, loadStandards
+from src.resources.v0_0_1.manipulate import makeScienceDiff, makeTargetPosn
 
 from src.resources.v0_0_1.insert.insertAlmanac import execute as iAexec
 
-from ..resources.v0_0_1.readout.readCentroids import execute as rCexec
-from ..resources.v0_0_1.readout.readScienceTypes import execute as rScTyexec
+from src.resources.v0_0_1.readout.readCentroids import execute as rCexec
+from src.resources.v0_0_1.readout.readScienceTypes import execute as \
+    rScTyexec
 
-from ..resources.v0_0_1.manipulate.makeScienceTypes import execute as mScTyexec
-from ..resources.v0_0_1.manipulate.makeSciencePriorities import execute as \
+from src.resources.v0_0_1.manipulate.makeScienceTypes import execute as \
+    mScTyexec
+from src.resources.v0_0_1.manipulate.makeSciencePriorities import execute as \
     mScPexec
 
 from taipan.scheduling import Almanac, DarkAlmanac
