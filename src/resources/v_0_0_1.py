@@ -8,6 +8,8 @@ from ..resources.v0_0_1.readout.readCentroids import execute as rCexec
 
 from taipan.scheduling import Almanac, DarkAlmanac
 
+from src.scripts.connection import get_connection
+
 import os
 import datetime
 import logging
@@ -74,3 +76,27 @@ def update(cursor):
     create.create_index(cursor, 'observability', ['date'], ordering='ASC')
 
     return
+
+
+if __name__ == '__main__':
+    # Set the logging to write to terminal AND file
+    logging.basicConfig(
+        level=logging.INFO,
+        filename='./prep.log',
+        filemode='w'
+    )
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.info('Executing fullsurvey.py as file')
+    logging.info('*** THIS IS AN INSTANT-FEEDBACK SIMULATION')
+
+    # Get a cursor
+    # TODO: Correct package imports & references
+    logging.debug('Getting connection')
+    conn = get_connection()
+    cursor = conn.cursor()
+    # Execute the simulation based on command-line arguments
+    logging.debug('Doing update function')
+    update(cursor)
