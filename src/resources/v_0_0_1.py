@@ -34,7 +34,8 @@ def update(cursor):
     standards_file = data_dir + 'random_mock_standards_160928.fits'
     loadStandards.execute(cursor, standards_file=standards_file)
 
-    science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
     loadScience.execute(cursor, science_file=science_file)
 
     # Commit here in case something further along fails
