@@ -1,13 +1,21 @@
 # science_target table
 # Used for storing generic target information for scientific targets
-name           type        nullable        default_value       foreign_key_table   pk       unit    unique  description
-target_id      bigint      False           None                target              True     None    True    "Target id (internal)"
-is_h0_target   boolean     False           None                None                False    None    None    "For H0 science"
-is_vpec_target boolean     False           None                None                False    None    None    "For pec. vel. science"
-is_lowz_target boolean     False           None                None                False    None    None    "For low z science"
-visits         integer     False           0                   None                False    None    None    "number of anticipated visits"
-repeats        integer     False           0                   None                False    None    None    "number of repeats so far"
-priority       integer     False           1                   None                False    None    None    "priority of target"
-difficulty     integer     False           1                   None                False    None    None    "difficulty of target"
-done           boolean     False           false               None                False    None    None    "if observations of target have completed"
+name                        type        nullable        default_value       foreign_key_table   pk       unit    unique  description
+target_id                   bigint      False           None                target              True     None    True    "Target id (internal)"
+is_h0_target                boolean     False           None                None                False    None    None    "For H0 science"
+is_vpec_target              boolean     False           None                None                False    None    None    "For pec. vel. science"
+is_prisci_vpec_target       boolean     False           false               None                False    None    None    "SIM ONLY - prisci vpec target"
+is_full_vpec_target         boolean     False           false               None                False    None    None    "SIM ONLY - full survey vpec target"
+is_lowz_target              boolean     False           None                None                False    None    None    "For low z science"
+col_gi                      float       True            0.0                 None                False    None    None    "(g-i) colour (optical)"
+col_JK                      float       True            0.0                 None                False    None    None    "(J-K) colour (NIR)"
+is_nir                      boolean     False           False               None                False    None    None    "Is target NIR selected?"
+is_lrg                      boolean     False           False               None                False    None    None    "Is target LRG selected?"
+is_iband                    boolean     False           False               None                False    None    None    "Is target i-band selected?"
+zspec                       float       True            0.0                 None                False    None    None    "FIXME What is this?"
+visits                      integer     False           0                   None                False    None    None    "number of anticipated visits"
+repeats                     integer     False           0                   None                False    None    None    "number of repeats so far"
+priority                    integer     False           1                   None                False    None    None    "priority of target"
+difficulty                  integer     False           1                   None                False    None    None    "difficulty of target"
+done                        boolean     False           false               None                False    None    None    "if observations of target have completed"
 

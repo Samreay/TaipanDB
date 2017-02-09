@@ -2,6 +2,7 @@ import logging
 from astropy.table import Table
 from ....scripts.create import insert_many_rows
 from taipan.core import polar2cart
+import numpy as np
 
 
 def execute(cursor, science_file=None):
@@ -36,20 +37,49 @@ def execute(cursor, science_file=None):
     # Do some stuff to convert science_table into values_table
     # (This is dependent on the structure of science_file)
     logging.debug('Creating tables for database load')
-    values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
-                      float(row['ra']), float(row['dec']),
-                      True, False, False] 
-                      + list(polar2cart((row['ra'], row['dec'])))
-                     for row in science_table]
-    columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                "IS_GUIDE", "UX", "UY", "UZ"]
-    values_table2 = [[row['uniqid'] + int(1e9)*row['reference'],
-                      row['priority'],
-                      bool(row['is_H0']), bool(row['is_vpec']),
-                      bool(row['is_lowz'])]
-                     for row in science_table]
-    columns2 = ["TARGET_ID", "PRIORITY", "IS_H0_TARGET", "IS_VPEC_TARGET",
-                "IS_LOWZ_TARGET"]
+    if science_file.split('/')[-1] == 'priority_science.v0.101_20160331.fits':
+        values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False]
+                          + list(polar2cart((row['ra'], row['dec'])))
+                         for row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [[row['uniqid'] + int(1e9)*row['reference'],
+                          row['priority'],
+                          bool(row['is_H0']), bool(row['is_vpec']),
+                          bool(row['is_lowz'])]
+                         for row in science_table]
+        columns2 = ["TARGET_ID", "PRIORITY", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    "IS_LOWZ_TARGET"]
+    elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.0_170206.fits':
+        # This catalogue doesn't include target_ids - we need to form them
+        id_start = 1001000005
+        science_table['uniqid'] = np.arange(id_start,
+                                            id_start+len(science_table))
+        values_table1 = [[row['uniqid'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [row['uniqid'],
+                         False, False, False,
+                         row['z_obs'],
+                         row['gmag'] - row['imag'],
+                         row['Jmag_Vega'] - row['Kmag_Vega'],
+                         row['is_nircol_selected'], row['is_optLRG_selected'],
+                         row['is_iband_selected'],
+                         row['is_prisci_vpec_target'],
+                         row['is_full_vpec_target'] for row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
+                    "IS_NIR", "IS_LRG", "IS_IBAND", "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET"]
+    else:
+        logging.info("I don't know the structure of this file %s - aborting" %
+                     science_file)
 
     logging.debug('Loading to cursor')
     # Insert into database
