@@ -5,8 +5,15 @@ from .v0_0_1.manipulate import makeScienceDiff, makeTargetPosn
 from src.resources.v0_0_1.insert.insertAlmanac import execute as iAexec
 
 from ..resources.v0_0_1.readout.readCentroids import execute as rCexec
+from ..resources.v0_0_1.readout.readScienceTypes import execute as rScTyexec
+
+from ..resources.v0_0_1.manipulate.makeScienceTypes import execute as mScTyexec
+from ..resources.v0_0_1.manipulate.makeSciencePriorities import execute as \
+    mScPexec
 
 from taipan.scheduling import Almanac, DarkAlmanac
+from taipan.simulate.logic import compute_target_types, \
+    compute_target_priorities_tree
 
 from src.scripts.connection import get_connection
 
@@ -41,14 +48,40 @@ def update(cursor):
     loadScience.execute(cursor, science_file=science_file)
 
     # Commit here in case something further along fails
+    logging.info('Committing raw target information...')
     cursor.connection.commit()
+    logging.info('...done!')
 
+    logging.info('Computing target difficulties...')
     makeScienceDiff.execute(cursor)
 
+    logging.info('Computing target-field relationships...')
     makeTargetPosn.execute(cursor)
 
     # Commit again
+    logging.info('Committing computed target information...')
     cursor.connection.commit()
+    logging.info('...done!')
+
+    # Compute target priorities and types
+    target_types_init = rScTyexec(cursor)
+    # Compute and store target types
+    tgt_types = compute_target_types(target_types_init, prisci=True)
+    mScTyexec(cursor, tgt_types['target_id'], tgt_types['is_h0_target'],
+              tgt_types['is_vpec_target'], tgt_types['is_lowz_target'])
+    # Compute and store priorities
+    # Need back consistent, up-to-date types, so read back what we just put
+    # into the database
+    target_types = rScTyexec(cursor)
+    priorities = compute_target_priorities_tree(target_types,
+                                                default_priority=0, prisci=True)
+    mScPexec(cursor, target_types['target_id'], priorities)
+
+
+    # Commit again
+    logging.info('Committing target type/priority information...')
+    cursor.connection.commit()
+    logging.info('...done!')
 
     # Instantiate the Almanacs
     sim_start = datetime.date(2017, 4, 1)

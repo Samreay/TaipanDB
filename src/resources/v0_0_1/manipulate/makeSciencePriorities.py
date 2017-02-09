@@ -15,9 +15,9 @@ def execute(cursor, target_ids, priorities):
         psycopg2 cursor for communicating with the database.
     target_ids:
         The list of target_ids to do priority updates for.
-    is_h0_target, is_vpec_target, is_lowz_target:
-        Lists of Booleans, denoting whether the corresponding target is of
-        that type. Lists must have the same length as target_ids, and must
+    priorities:
+        Lists of ints, denoting target priority. List must have the same
+        length as target_ids, and must
         have a one-to-one correspondence with that list.
 
     Returns
