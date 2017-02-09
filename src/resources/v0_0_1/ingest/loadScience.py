@@ -69,10 +69,11 @@ def execute(cursor, science_file=None):
                           row['z_obs'],
                           row['gmag'] - row['imag'],
                           row['Jmag_Vega'] - row['Kmag_Vega'],
-                          row['is_nircol_selected'], row['is_optLRG_selected'],
-                          row['is_iband_selected'],
-                          row['is_prisci_vpec_target'],
-                          row['is_full_vpec_target']] for row in science_table]
+                          bool(row['is_nircol_selected']),
+                          bool(row['is_optLRG_selected']),
+                          bool(row['is_iband_selected']),
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['is_full_vpec_target'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
                     "IS_NIR", "IS_LRG", "IS_IBAND", "IS_PRISCI_VPEC_TARGET",
@@ -80,6 +81,7 @@ def execute(cursor, science_file=None):
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)
+        return
 
     logging.debug('Loading to cursor')
     # Insert into database
