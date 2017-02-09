@@ -52,7 +52,7 @@ def execute(cursor, science_file=None):
                          for row in science_table]
         columns2 = ["TARGET_ID", "PRIORITY", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     "IS_LOWZ_TARGET"]
-    elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.0_170208.fits':
+    elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.1_170208.fits':
         # This catalogue doesn't include target_ids - we need to form them
         id_start = 1001000005
         science_table['uniqid'] = np.arange(id_start,
