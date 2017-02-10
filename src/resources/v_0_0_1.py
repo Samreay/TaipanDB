@@ -23,6 +23,7 @@ from src.scripts.connection import get_connection
 import os
 import datetime
 import logging
+import sys
 
 
 def update(cursor):
@@ -126,6 +127,17 @@ def update(cursor):
 
 
 if __name__ == '__main__':
+
+    def excepthook_override(exctype, value, tb):
+        logging.error(
+            'My Error Information\nType: %s\nValue: %s\nTraceback: %s' %
+            (exctype, value, tb, ))
+        # logging.error('Type:', exctype)
+        # logging.error('Value:', value)
+        # logging.error('Traceback:', tb)
+        return
+    sys.excepthook = excepthook_override
+
     # Set the logging to write to terminal AND file
     logging.basicConfig(
         level=logging.INFO,
