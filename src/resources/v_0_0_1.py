@@ -26,60 +26,71 @@ import logging
 
 
 def update(cursor):
-    resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
-    data_dir = "/data/resources/0.0.1/"
-    table_dir = resource_dir + os.sep + "tables"
-
-    create.create_tables(cursor, table_dir)
-
-    fields_file = data_dir + "pointing_centers.radec"
-    loadCentroids.execute(cursor, fields_file=fields_file)
-
-    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-                             # "reduced.guides_nodups.fits"
-    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    guides_file = data_dir + 'random_mock_guides_160930.fits'
-    loadGuides.execute(cursor, guides_file=guides_file)
-
-    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    #                             'reduced.standards_nodups.fits'
-    standards_file = data_dir + 'random_mock_standards_160928.fits'
-    loadStandards.execute(cursor, standards_file=standards_file)
-
-    # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-    science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    loadScience.execute(cursor, science_file=science_file)
-
-    # Commit here in case something further along fails
-    logging.info('Committing raw target information...')
-    cursor.connection.commit()
-    logging.info('...done!')
-
-    logging.info('Computing target difficulties...')
-    makeScienceDiff.execute(cursor)
-
-    logging.info('Computing target-field relationships...')
-    makeTargetPosn.execute(cursor)
-
-    # Commit again
-    logging.info('Committing computed target information...')
-    cursor.connection.commit()
-    logging.info('...done!')
+    # resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
+    # data_dir = "/data/resources/0.0.1/"
+    # table_dir = resource_dir + os.sep + "tables"
+    #
+    # create.create_tables(cursor, table_dir)
+    #
+    # fields_file = data_dir + "pointing_centers.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file)
+    #
+    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+    #                          # "reduced.guides_nodups.fits"
+    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    # guides_file = data_dir + 'random_mock_guides_160930.fits'
+    # loadGuides.execute(cursor, guides_file=guides_file)
+    #
+    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    # #                             'reduced.standards_nodups.fits'
+    # standards_file = data_dir + 'random_mock_standards_160928.fits'
+    # loadStandards.execute(cursor, standards_file=standards_file)
+    #
+    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
+    # loadScience.execute(cursor, science_file=science_file)
+    #
+    # # Commit here in case something further along fails
+    # logging.info('Committing raw target information...')
+    # cursor.connection.commit()
+    # logging.info('...done!')
+    #
+    # logging.info('Computing target difficulties...')
+    # makeScienceDiff.execute(cursor)
+    #
+    # logging.info('Computing target-field relationships...')
+    # makeTargetPosn.execute(cursor)
+    #
+    # # Commit again
+    # logging.info('Committing computed target information...')
+    # cursor.connection.commit()
+    # logging.info('...done!')
 
     # Compute target priorities and types
     target_types_init = rScTyexec(cursor)
     # Compute and store target types
-    tgt_types = compute_target_types(target_types_init, prisci=True)
-    mScTyexec(cursor, tgt_types['target_id'], tgt_types['is_h0_target'],
-              tgt_types['is_vpec_target'], tgt_types['is_lowz_target'])
-    # Compute and store priorities
-    # Need back consistent, up-to-date types, so read back what we just put
-    # into the database
-    target_types = rScTyexec(cursor)
-    priorities = compute_target_priorities_tree(target_types,
-                                                default_priority=0, prisci=True)
-    mScPexec(cursor, target_types['target_id'], priorities)
+    # Do it in batches of 200,000 to avoid overloading the VM memory
+    batch_size = 200000
+    i = 0
+    while i < len(target_types_init):
+        tgt_types = compute_target_types(target_types_init[i:i+batch_size],
+                                         prisci=True)
+        mScTyexec(cursor, tgt_types['target_id'], tgt_types['is_h0_target'],
+                  tgt_types['is_vpec_target'], tgt_types['is_lowz_target'])
+        i += batch_size
 
+    target_types = rScTyexec(cursor)
+    i = 0
+    while i < len(target_types):
+        # Compute and store priorities
+        # Need back consistent, up-to-date types, so read back what we just put
+        # into the database
+        priorities = compute_target_priorities_tree(
+            target_types[i:i+batch_size],
+            default_priority=0,
+            prisci=True)
+        mScPexec(cursor, target_types['target_id'][i:i+batch_size], priorities)
+        i += batch_size
 
     # Commit again
     logging.info('Committing target type/priority information...')
