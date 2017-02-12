@@ -90,7 +90,7 @@ def update(cursor):
             target_types[i:i+batch_size],
             default_priority=0,
             prisci=True)
-        mScPexec(cursor, target_types['target_id'][i:i+batch_size], priorities)
+        mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
         i += batch_size
 
     # Commit again
@@ -148,8 +148,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    logging.info('Executing fullsurvey.py as file')
-    logging.info('*** THIS IS AN INSTANT-FEEDBACK SIMULATION')
+    logging.info('*** COMMENCING DATABASE PREP')
 
     # Get a cursor
     # TODO: Correct package imports & references
