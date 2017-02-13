@@ -67,36 +67,36 @@ def update(cursor):
     # cursor.connection.commit()
     # logging.info('...done!')
 
-    # Compute target priorities and types
-    target_types_init = rScTyexec(cursor)
-    # Compute and store target types
-    # Do it in batches of 200,000 to avoid overloading the VM memory
-    batch_size = 200000
-    i = 0
-    while i < len(target_types_init):
-        tgt_types = compute_target_types(target_types_init[i:i+batch_size],
-                                         prisci=True)
-        mScTyexec(cursor, tgt_types['target_id'], tgt_types['is_h0_target'],
-                  tgt_types['is_vpec_target'], tgt_types['is_lowz_target'])
-        i += batch_size
-
-    target_types = rScTyexec(cursor)
-    i = 0
-    while i < len(target_types):
-        # Compute and store priorities
-        # Need back consistent, up-to-date types, so read back what we just put
-        # into the database
-        priorities = compute_target_priorities_tree(
-            target_types[i:i+batch_size],
-            default_priority=0,
-            prisci=True)
-        mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
-        i += batch_size
-
-    # Commit again
-    logging.info('Committing target type/priority information...')
-    cursor.connection.commit()
-    logging.info('...done!')
+    # # Compute target priorities and types
+    # target_types_init = rScTyexec(cursor)
+    # # Compute and store target types
+    # # Do it in batches of 200,000 to avoid overloading the VM memory
+    # batch_size = 200000
+    # i = 0
+    # while i < len(target_types_init):
+    #     tgt_types = compute_target_types(target_types_init[i:i+batch_size],
+    #                                      prisci=True)
+    #     mScTyexec(cursor, tgt_types['target_id'], tgt_types['is_h0_target'],
+    #               tgt_types['is_vpec_target'], tgt_types['is_lowz_target'])
+    #     i += batch_size
+    #
+    # target_types = rScTyexec(cursor)
+    # i = 0
+    # while i < len(target_types):
+    #     # Compute and store priorities
+    #     # Need back consistent, up-to-date types, so read back what we just put
+    #     # into the database
+    #     priorities = compute_target_priorities_tree(
+    #         target_types[i:i+batch_size],
+    #         default_priority=0,
+    #         prisci=True)
+    #     mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
+    #     i += batch_size
+    #
+    # # Commit again
+    # logging.info('Committing target type/priority information...')
+    # cursor.connection.commit()
+    # logging.info('...done!')
 
     # Instantiate the Almanacs
     sim_start = datetime.date(2017, 4, 1)
