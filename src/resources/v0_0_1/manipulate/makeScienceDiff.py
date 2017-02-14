@@ -60,7 +60,8 @@ def execute(cursor, use_only_notdone=True,
         conditions += [('field_id', 'IN', affected_fields)]
 
     # We need to read in *all* the targets, not just the ones we want
-    targets_db = extract_from_joined(cursor, ['target', 'science_target'],
+    targets_db = extract_from_joined(cursor, ['target', 'science_target',
+                                              'target_posn'],
                                      conditions=conditions,
                                      columns=['target_id', 'ra', 'dec',
                                               'ux', 'uy', 'uz', 'priority'])
