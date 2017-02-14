@@ -310,7 +310,7 @@ def create_index(cursor, table, columns, ordering=None):
                              allowed_orderings.join(', '))
 
     string = "CREATE INDEX ON %s (%s %s)" % (table,
-                                             columns.join(','),
+                                             ','.join(columns),
                                              ordering if ordering else '')
 
     cursor.execute(string)
