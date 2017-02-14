@@ -11,11 +11,8 @@ from matplotlib.cbook import flatten
 
 def execute(cursor, tgt_type, unobserved=True):
     """
-    Calculate which fields will be affected by changes to the fields/tiles
-    passed as inputs, and return a list of them.
-
-    The user should pass ONLY field_list OR tile_list. Passing neither will
-    raise a ValueError; passing both will cause field_list to take priority.
+    Calculate which field(s) contain targets of a particular type, or
+    group of types.
 
     Parameters
     ----------

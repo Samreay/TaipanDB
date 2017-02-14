@@ -3,8 +3,10 @@
 import logging
 from taipan.core import compute_target_difficulties
 from taipan.core import TaipanTarget
-from ....scripts.extract import extract_from_joined
+from ....scripts.extract import extract_from, extract_from_joined
 from ....scripts.manipulate import update_rows
+
+from ..readout import readCentroidsAffected as rCA
 
 import numpy as np
 
@@ -41,10 +43,21 @@ def execute(cursor, use_only_notdone=True,
     if use_only_notdone:
         conditions = [("done", "=", False)]
     else:
-        conditions = None
+        conditions = []
 
     if target_list is not None:
         target_list = list(target_list)
+
+        # Work out which fields these targets are on
+        target_fields = extract_from(cursor, 'target_posn',
+                                     conditions=[('target_id', 'IN',
+                                                  target_list), ],
+                                     columns=['field_id'])['field_id']
+
+        # Now work out which fields are affected by this
+        affected_fields = rCA.execute(cursor, field_list=target_fields)
+
+        conditions += [('field_id', 'IN', affected_fields)]
 
     # We need to read in *all* the targets, not just the ones we want
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
