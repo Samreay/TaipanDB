@@ -6,9 +6,11 @@ from taipan.core import TaipanTarget
 from ....scripts.extract import extract_from_joined
 from ....scripts.manipulate import update_rows
 
+import numpy as np
+
 
 def execute(cursor, use_only_notdone=True,
-            priority_cut=True):
+            priority_cut=True, target_list=None):
     """
     Compute the difficulties of TaipanTargets and write them back to the
     database.
@@ -24,6 +26,9 @@ def execute(cursor, use_only_notdone=True,
         Optional Boolean, denoting whether each target's difficulty should
         be calculated using only targets with the same or lower priority
         (True), or all targets (False). Defaults to True.
+    target_list : list of ints, optional
+        Optional list of target IDs for which we wish to compute
+        difficulties.
 
     Returns
     -------
@@ -38,6 +43,10 @@ def execute(cursor, use_only_notdone=True,
     else:
         conditions = None
 
+    if target_list is not None:
+        target_list = list(target_list)
+
+    # We need to read in *all* the targets, not just the ones we want
     targets_db = extract_from_joined(cursor, ['target', 'science_target'],
                                      conditions=conditions,
                                      columns=['target_id', 'ra', 'dec',
@@ -57,18 +66,40 @@ def execute(cursor, use_only_notdone=True,
         # multi-target calculation for each priority, including all lower
         # priorities. This will create a cascade effect that will leave all
         # targets with the correct priorities.
-        priorities = list(set(targets_db['priority']))
+        if target_list is not None:
+            priorities = list(set(targets_db[
+                                      np.in1d(targets_db['target_id'],
+                                              target_list)]['priority']))
+        else:
+            priorities = list(set(targets_db['priority']))
         priorities.sort()
         for p in priorities[::-1]:
             logging.debug('Computing difficulties for priority %d targets' %
                           p)
-            compute_target_difficulties([o for o in return_objects if
-                                         o.priority <= p])
+            if target_list is not None:
+                compute_target_difficulties([o for o in return_objects if
+                                             o.priority == p and
+                                             o.idn in target_list],
+                                            full_target_list=[o for o in
+                                                              return_objects if
+                                                              o.priority <= p])
+            else:
+                compute_target_difficulties([o for o in return_objects if
+                                             o.priority <= p])
     else:
-        compute_target_difficulties(return_objects)
+        if target_list is not None:
+            compute_target_difficulties(
+                [o for o in return_objects if o.idn in target_list],
+                full_target_list=return_objects)
+        else:
+            compute_target_difficulties(return_objects)
 
     # Construct a data array to write back to the database
-    data = [(t.idn, t.difficulty) for t in return_objects]
+    if target_list is not None:
+        data = [(t.idn, t.difficulty) for t in return_objects if
+                t.idn in target_list]
+    else:
+        data = [(t.idn, t.difficulty) for t in return_objects]
 
     # Write the results to the science_target table
     update_rows(cursor, 'science_target', data,
