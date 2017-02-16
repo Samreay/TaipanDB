@@ -52,7 +52,8 @@ def execute(cursor, use_only_notdone=True,
         target_fields = extract_from(cursor, 'target_posn',
                                      conditions=[('target_id', 'IN',
                                                   target_list), ],
-                                     columns=['field_id'])['field_id']
+                                     columns=['target_id',
+                                              'field_id'])['field_id']
 
         # Now work out which fields are affected by this
         affected_fields = rCA.execute(cursor, field_list=target_fields)
