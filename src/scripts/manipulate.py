@@ -232,7 +232,9 @@ def update_rows_temptable(cursor, table, data, columns=None,
                        " WHERE table_name='%s'" % (table,))
         db_columns = cursor.fetchall()
         if columns is None:
-            columns = [_[0] for _ in db_columns]
+            raise ValueError('Although a keyword argument, '
+                             'update_rows_temptable cannot be called without '
+                             'specifying columns')
         else:
             db_columns = [_ for _ in db_columns if _[0] in columns]
 
