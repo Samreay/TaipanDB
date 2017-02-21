@@ -265,7 +265,7 @@ def update_rows_temptable(cursor, table, data, columns=None,
 
     # Kill the temporary table
     logging.debug('DROPing temporary table')
-    cursor.execute('DROP update_rows_temp')
+    cursor.execute('DROP TABLE update_rows_temp')
 
     logging.debug('update_rows_temptable done!')
 
