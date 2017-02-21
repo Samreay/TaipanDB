@@ -2,6 +2,7 @@
 import logging
 from utils import str_psql, str_special, str_dts, generate_conditions_string
 from create import insert_many_rows, create_index
+from extract import extract_from
 import numpy as np
 
 
@@ -231,16 +232,17 @@ def update_rows_temptable(cursor, table, data, columns=None,
                        " WHERE table_name='%s'" % (table,))
         db_columns = cursor.fetchall()
         if columns is None:
-            columns = db_columns[np.in1d(db_columns['column_name'], columns)]
+            columns = [_[0] for _ in db_columns]
+        else:
+            db_columns = [_ for _ in db_columns if _[0] in columns]
 
     # Create a temporary table to hold the data we wish to update
     logging.debug('Creating temp table')
     cursor.execute("CREATE TEMPORARY TABLE update_rows_temp "
-                   "(%s) " % ', '.join(
-        ['%s %s' % (row['column_name'], row['data_type']) for
-         row in db_columns if
-         row['column_name'] in columns]
-    ))
+                   "(%s) " % ', '.join(['%s %s' % _ for
+                                        _ in db_columns if
+                                        _[0] in columns])
+                   )
     # Insert the data into the temporary table
     logging.debug('Writing to temp table')
     insert_many_rows(cursor, 'update_rows_temp', data, columns=columns)
@@ -258,7 +260,7 @@ def update_rows_temptable(cursor, table, data, columns=None,
                     ','.join(['%s=x.%s' % (c, c, ) for c in
                               columns[columns_to_match:]]),
                     ','.join(['%s=x.%s' % (c, c, ) for c in
-                              columns_to_match[:columns_to_match]]), )
+                              columns[:columns_to_match]]), )
                    )
 
     # Kill the temporary table
