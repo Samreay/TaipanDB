@@ -57,6 +57,9 @@ def execute(cursor, use_only_notdone=True,
 
         # Now work out which fields are affected by this
         affected_fields = rCA.execute(cursor, field_list=target_fields)
+        # Or, to increases speed, only re-compute difficulties for target_fields
+        # This is wrong, but not grossly so
+        # affected_fields = target_fields
 
         conditions += [('field_id', 'IN', affected_fields)]
 

@@ -1,6 +1,7 @@
 # Insert data into existing DB rows
 import logging
 from utils import str_psql, str_special, str_dts, generate_conditions_string
+from create import insert_many_rows, create_index
 import numpy as np
 
 
@@ -161,6 +162,110 @@ def update_rows(cursor, table, data, columns=None,
         logging.info('No database update (no cursor), but parsing %d rows '
                      'of %s into table %s parsed successfully'
                      % (len(data), ', '.join(columns), table,))
+
+    return
+
+
+def update_rows_temptable(cursor, table, data, columns=None,
+                          columns_to_match=1,
+                          conditions=None):
+    """
+    As for update_rows, but does it using a temporary table rather than
+    storing the information directly in the query - more performant for
+    large (thousand+ row) inserts.
+
+    Parameters
+    ----------
+    cursor:
+        psycopg2 cursor for accessing the database.
+    table:
+        Which table to insert data into
+    data:
+        List of lists (or similar) of data to be enteted. Each sub-list
+        corresponds to one row to be inserted into the database. The first
+        data column(s) *must* be the column(s) to match rows against.
+    columns:
+        Optional list of column names to be written. Must be a list of column
+        names which matches the order of the data points in each sub-list of
+        data. Defaults to None, which means all columns will be written to in
+        their database-defined order (and presumes that the column to be matched
+        on is the first column in the table).
+    columns_to_match:
+        Optional; integer denoting the number of columns to match against. This
+        defaults to one, such that only the first column is matched against.
+        Increasing this value will cause a multiple-column match to be used.
+        The columns variable *must* be defined if you wish to use
+        columns_to_match.
+    conditions:
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. Defaults to None,
+        such that all rows will be affected.
+
+    Returns
+    -------
+    Nil. Data is pushed into the table at the appropriate rows.
+    """
+
+    logging.info('Inserting data into table %s using a temp table' % table)
+    # Make sure that columns_to_match is valid, and matches with the number
+    # of columns requested
+    columns_to_match = int(columns_to_match)
+    if columns_to_match <= 0:
+        raise ValueError('columns_to_match must be >= 1')
+    if columns_to_match > 1:
+        if columns is None:
+            raise ValueError('columns must be defined if using a '
+                             'columns_to_match > 1')
+        if len(columns) <= columns_to_match:
+            raise ValueError('columns_to_match must be < the length of the '
+                             'list of columns')
+    # Get the column names if they weren't passed
+    if cursor is not None:
+        # Get the columns from the table itself if not provided,
+        # otherwise get data types for requested columns
+        cursor.execute("SELECT column_name,data_type"
+                       " FROM information_schema.columns"
+                       " WHERE table_name='%s'" % (table,))
+        db_columns = cursor.fetchall()
+        if columns is None:
+            columns = db_columns[np.in1d(db_columns['column_name'], columns)]
+
+    # Create a temporary table to hold the data we wish to update
+    logging.debug('Creating temp table')
+    cursor.execute("CREATE TEMPORARY TABLE update_rows_temp "
+                   "(%s) " % ', '.join(
+        ['%s %s' % (row['column_name'], row['data_type']) for
+         row in db_columns if
+         row['column_name'] in columns]
+    ))
+    # Insert the data into the temporary table
+    logging.debug('Writing to temp table')
+    insert_many_rows(cursor, 'update_rows_temp', data, columns=columns)
+    # Create an index on the columns_to_match to increase speed
+    create_index(cursor, 'update_rows_temp',
+                 columns[:columns_to_match])
+
+    # Copy the data from the temporary table to the 'live' table
+    logging.debug('Copying data to live table')
+    cursor.execute('UPDATE %s '
+                   'SET %s '
+                   'FROM update_rows_temp x '
+                   'WHERE %s' %
+                   (table,
+                    ','.join(['%s=x.%s' % (c, c, ) for c in
+                              columns[columns_to_match:]]),
+                    ','.join(['%s=x.%s' % (c, c, ) for c in
+                              columns_to_match[:columns_to_match]]), )
+                   )
+
+    # Kill the temporary table
+    logging.debug('DROPing temporary table')
+    cursor.execute('DROP update_rows_temp')
+
+    logging.debug('update_rows_temptable done!')
 
     return
 
