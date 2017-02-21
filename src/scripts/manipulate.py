@@ -259,7 +259,7 @@ def update_rows_temptable(cursor, table, data, columns=None,
                    (table,
                     ','.join(['%s=x.%s' % (c, c, ) for c in
                               columns[columns_to_match:]]),
-                    ','.join(['%s=x.%s' % (c, c, ) for c in
+                    ','.join(['%s.%s=x.%s' % (table, c, c, ) for c in
                               columns[:columns_to_match]]), )
                    )
 
