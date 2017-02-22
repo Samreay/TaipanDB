@@ -1,11 +1,11 @@
 import logging
 import sys
 import os
-from ....scripts.extract import extract_from
+from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTile
 
 
-def execute(cursor, field_ids=None):
+def execute(cursor, field_ids=None, tile_list=None):
     """
     Read centroid (i.e. field) parameters from the database.
 
@@ -16,6 +16,11 @@ def execute(cursor, field_ids=None):
     field_ids:
         Optional; list of field IDs to return from the database. Defaults to
         None, at which point all field centroids are returned.
+    tile_list : optional, list of ints
+        List of tile PKs that we wish to get the field information for.
+        Defaults to None, at which point all fields are returned. If both
+        field_ids and tile_list are provided, field_ids takes precendence to
+        avoid unexpected behaviour.
 
     Returns
     -------
@@ -26,16 +31,18 @@ def execute(cursor, field_ids=None):
     """
     logging.info('Reading tile centroids from database')
 
-    if field_ids is None:
-        conditions = None
-    else:
-        field_ids = list(field_ids)
-        conditions = [('field_id', 'IN', field_ids)]
+    conditions = []
 
-    centroids_db = extract_from(cursor, 'field',
-                                columns=['field_id', 'ra', 'dec',
-                                         'ux', 'uy', 'uz'],
-                                conditions=conditions)
+    if field_ids is not None:
+        conditions += [('field_id', 'IN', field_ids)]
+    elif tile_list is not None:
+        conditions += [('tile_pk', 'IN', tile_list)]
+
+    centroids_db = extract_from_joined(cursor, ['tile', 'field'],
+                                       columns=['field_id', 'ra', 'dec',
+                                                'ux', 'uy', 'uz'],
+                                       distinct=True,
+                                       conditions=conditions)
 
     return_objects = [TaipanTile(c['ra'], c['dec'], field_id=c['field_id'],
                                  usposn=[c['ux'], c['uy'], c['uz']])
