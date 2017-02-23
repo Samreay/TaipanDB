@@ -1,7 +1,7 @@
 import logging
 import sys
 import os
-from ....scripts.extract import extract_from_joined
+from ....scripts.extract import extract_from_left_joined
 from taipan.core import TaipanTile
 
 
@@ -38,11 +38,11 @@ def execute(cursor, field_ids=None, tile_list=None):
     elif tile_list is not None:
         conditions += [('tile_pk', 'IN', tile_list)]
 
-    centroids_db = extract_from_joined(cursor, ['tile', 'field'],
-                                       columns=['field_id', 'ra', 'dec',
-                                                'ux', 'uy', 'uz'],
-                                       distinct=True,
-                                       conditions=conditions)
+    centroids_db = extract_from_left_joined(cursor, ['field', 'tile'],
+                                            columns=['field_id', 'ra', 'dec',
+                                                     'ux', 'uy', 'uz'],
+                                            distinct=True,
+                                            conditions=conditions)
 
     return_objects = [TaipanTile(c['ra'], c['dec'], field_id=c['field_id'],
                                  usposn=[c['ux'], c['uy'], c['uz']])
