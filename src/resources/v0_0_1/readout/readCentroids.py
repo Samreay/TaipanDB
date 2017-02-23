@@ -34,7 +34,7 @@ def execute(cursor, field_ids=None, tile_list=None):
     conditions = []
 
     if field_ids is not None:
-        conditions += [('field_id', 'IN', field_ids)]
+        conditions += [('field.field_id', 'IN', field_ids)]
     elif tile_list is not None:
         conditions += [('tile_pk', 'IN', tile_list)]
 
