@@ -39,6 +39,7 @@ def execute(cursor, field_ids=None, tile_list=None):
         conditions += [('tile_pk', 'IN', tile_list)]
 
     centroids_db = extract_from_left_joined(cursor, ['field', 'tile'],
+                                            'field_id',
                                             columns=['field_id', 'ra', 'dec',
                                                      'ux', 'uy', 'uz'],
                                             distinct=True,
