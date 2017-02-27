@@ -1,7 +1,7 @@
 # Compute the difficulties of non-satisfied targets in the database
 
 import logging
-from taipan.core import compute_target_difficulties, TaipanTarget,
+from taipan.core import compute_target_difficulties, TaipanTarget
 from taipan.core import TARGET_PRIORITY_MS
 from ....scripts.extract import extract_from, extract_from_joined
 from ....scripts.manipulate import update_rows, update_rows_temptable
