@@ -69,7 +69,8 @@ def execute(cursor, use_only_notdone=True,
                                               'target_posn'],
                                      conditions=conditions,
                                      columns=['target_id', 'ra', 'dec',
-                                              'ux', 'uy', 'uz', 'priority'])
+                                              'ux', 'uy', 'uz', 'priority'],
+                                     distinct=True)
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
