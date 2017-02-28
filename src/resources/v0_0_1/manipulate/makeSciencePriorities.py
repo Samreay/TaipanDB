@@ -2,7 +2,7 @@
 # (i.e. target was observed, but not well enought to be counted as a completion
 
 import logging
-from ....scripts.manipulate import increment_rows, update_rows
+from ....scripts.manipulate import increment_rows, update_rows_temptable
 
 
 def execute(cursor, target_ids, priorities):
@@ -40,7 +40,7 @@ def execute(cursor, target_ids, priorities):
 
     update_array = [[target_ids[i], priorities[i]] for
                     i in range(len(target_ids))]
-    update_rows(cursor, 'science_target', update_array,
-                columns=['target_id', 'priority'])
+    update_rows_temptable(cursor, 'science_target', update_array,
+                          columns=['target_id', 'priority'])
 
     return
