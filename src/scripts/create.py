@@ -197,6 +197,7 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100,
     )
     if skip_on_conflict:
         string += " ON CONFLICT DO NOTHING"
+
     logging.debug("MANY ROW INSERT: " + string 
                   + "... total of %d elements" % len(values))
 
@@ -208,6 +209,7 @@ def insert_many_rows(cursor, table, values, columns=None, batch=100,
             rows = values[index:end]
             index = end
             current_string = string % ",".join(["%s"] * len(rows))
+            # logging.debug(current_string)
             cursor.execute(current_string, rows)
 
 

@@ -247,7 +247,8 @@ def update_rows_temptable(cursor, table, data, columns=None,
                    )
     # Insert the data into the temporary table
     logging.debug('Writing to temp table')
-    insert_many_rows(cursor, 'update_rows_temp', data, columns=columns)
+    insert_many_rows(cursor, 'update_rows_temp', data,
+                     columns=columns)
     # Create an index on the columns_to_match to increase speed
     create_index(cursor, 'update_rows_temp',
                  columns[:columns_to_match])

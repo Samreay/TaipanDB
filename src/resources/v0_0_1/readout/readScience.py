@@ -52,7 +52,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
         if len(conditions) > 1:
             combine += ['AND']
     if target_ids is not None:
-        conditions += [('target_id', 'IN', target_ids)]
+        conditions += [('target.target_id', 'IN', target_ids)]
         if len(conditions) > 1:
             combine += ['AND']
     if field_list is not None:
