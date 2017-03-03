@@ -38,7 +38,7 @@ def execute(cursor, target_ids, priorities):
         raise ValueError('target_ids and priorities must be of the same '
                          'length!')
 
-    update_array = [[target_ids[i], priorities[i]] for
+    update_array = [[int(target_ids[i]), int(priorities[i])] for
                     i in range(len(target_ids))]
     update_rows_temptable(cursor, 'science_target', update_array,
                           columns=['target_id', 'priority'])
