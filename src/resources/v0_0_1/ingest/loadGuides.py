@@ -4,7 +4,7 @@ import logging
 from astropy.table import Table
 
 
-def execute(cursor, guides_file=None):
+def execute(cursor, guides_file=None, mark_active=True):
     """
     Insert guide targets from file into the database.
 
@@ -34,11 +34,12 @@ def execute(cursor, guides_file=None):
                      int(row['ucacid']),
                      float(row['raj2000']),
                      float(row['dej2000']),
-                     False, False, True]
+                     False, False, True,
+                    mark_active]
                     + list(polar2cart((row['raj2000'], row['dej2000'])))
                     for row in guides_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "UX", "UY", "UZ"]
+               "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

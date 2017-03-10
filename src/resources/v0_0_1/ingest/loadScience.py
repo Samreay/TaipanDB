@@ -5,7 +5,7 @@ from taipan.core import polar2cart
 import numpy as np
 
 
-def execute(cursor, science_file=None):
+def execute(cursor, science_file=None, mark_active=True):
     """
     Load science targets from file into the database.
 
@@ -40,11 +40,12 @@ def execute(cursor, science_file=None):
     if science_file.split('/')[-1] == 'priority_science.v0.101_20160331.fits':
         values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False]
+                          True, False, False,
+                          mark_active]
                           + list(polar2cart((row['ra'], row['dec'])))
                          for row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'] + int(1e9)*row['reference'],
                           row['priority'],
                           bool(row['is_H0']), bool(row['is_vpec']),

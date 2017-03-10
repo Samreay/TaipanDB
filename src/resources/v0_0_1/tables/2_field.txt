@@ -9,3 +9,4 @@ uy          double      False           None                None                
 uz          double      False           None                None                False   None    None     "z projection on unit sphere"
 num_tiles   integer     False           0                   None                False   None    None     "Number of tiles created from field"
 num_visits  integer     False           0                   None                False   None    None     "Number of tiles observed in field"
+is_active   boolean     False           True                None                False   None    None     "Is field currently in use"

@@ -5,7 +5,7 @@ from ....scripts.extract import extract_from_left_joined
 from taipan.core import TaipanTile
 
 
-def execute(cursor, field_ids=None, tile_list=None):
+def execute(cursor, field_ids=None, tile_list=None, active_only=True):
     """
     Read centroid (i.e. field) parameters from the database.
 
@@ -37,6 +37,9 @@ def execute(cursor, field_ids=None, tile_list=None):
         conditions += [('field.field_id', 'IN', field_ids)]
     elif tile_list is not None:
         conditions += [('tile_pk', 'IN', tile_list)]
+
+    if active_only:
+        conditions += [('is_active', '=', True)]
 
     centroids_db = extract_from_left_joined(cursor, ['field', 'tile'],
                                             'field_id',

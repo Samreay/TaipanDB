@@ -12,7 +12,8 @@ import numpy as np
 
 
 def execute(cursor, use_only_notdone=True,
-            priority_cut=True, target_list=None):
+            priority_cut=True, target_list=None,
+            active_only=True):
     """
     Compute the difficulties of TaipanTargets and write them back to the
     database.
@@ -41,7 +42,7 @@ def execute(cursor, use_only_notdone=True,
     logging.info('Reading science targets from database')
 
     if use_only_notdone:
-        conditions = [("done", "=", False)]
+        conditions = [("done", "IS", "NULL")]
     else:
         conditions = []
 
@@ -62,6 +63,9 @@ def execute(cursor, use_only_notdone=True,
         # affected_fields = target_fields
 
         conditions += [('field_id', 'IN', affected_fields)]
+
+    if active_only:
+        conditions += [('is_active', '=', True)]
 
     # We need to read in *all* the targets, not just the ones we want to
     # re-compute difficulties for

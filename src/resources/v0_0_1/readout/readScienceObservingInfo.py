@@ -95,7 +95,8 @@ def execute(cursor, target_ids=None, field_list=None):
                                                      conditions=[
                                                          ('is_science', '=',
                                                           True),
-                                                         ('done', '=', True),
+                                                         ('done', 'IS NOT',
+                                                          'NULL'),
                                                          ('date_obs', 'IS NOT',
                                                           'NULL')
                                                      ])

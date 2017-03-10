@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib.cbook import flatten
 
 
-def execute(cursor, field_list=None, tile_list=None):
+def execute(cursor, field_list=None, tile_list=None, active_only=True):
     """
     Calculate which fields will be affected by changes to the fields/tiles
     passed as inputs, and return a list of them.
@@ -55,7 +55,7 @@ def execute(cursor, field_list=None, tile_list=None):
         tile_list = list(tile_list)
 
     # Pull in all of the existing fields
-    fields_tileobjs = rCexec(cursor)
+    fields_tileobjs = rCexec(cursor, active_only=active_only)
 
     # Pull in the fields or tiles which have flagged by the user
     if tile_list is not None:
@@ -67,7 +67,8 @@ def execute(cursor, field_list=None, tile_list=None):
                                                 tuple(tile_list)),
                                            ],
                                            columns=['field_id', 'ra',
-                                                    'dec', 'ux', 'uy', 'uz'],
+                                                    'dec', 'ux', 'uy', 'uz',
+                                                    'is_active'],
                                            distinct=True)
         req_tileobjs = [TaipanTile(f['ra'], f['dec'], field_id=f['field_id'],
                                    usposn=[f['ux'], f['uy'], f['uz']])

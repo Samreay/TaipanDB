@@ -80,7 +80,7 @@ def execute(cursor, target_ids=None, field_list=None,
                                            'is_h0_target', 'is_lowz_target',
                                            'is_vpec_target', 'priority',
                                            'date_obs', 'done',
-                                           'prior_sum'],
+                                           'prior_sum', 'bug_id'],
                                   conditions=conditions)
 
     return obs_log

@@ -6,7 +6,7 @@ from taipan.core import TaipanTarget
 from matplotlib.cbook import flatten
 
 
-def execute(cursor, field_list=None, target_list=None):
+def execute(cursor, field_list=None, target_list=None, active_only=True):
     """
     Retrieve an array of target IDs and associated fields.
 
@@ -37,8 +37,15 @@ def execute(cursor, field_list=None, target_list=None):
         conditions += [('field_id', 'IN', field_list)]
     if target_list:
         conditions += [('target_id', 'IN', target_list)]
+    if active_only:
+        if field_list:
+            conditions += [('field.is_active', '=', True)]
+        elif target_list:
+            conditions += [('target.is_active', '=', True)]
 
-    db_return = extract_from_joined(cursor, ['target_posn'],
+    db_return = extract_from_joined(cursor, ['target',
+                                             'target_posn',
+                                             'field'],
                                     conditions=conditions,
                                     columns=['target_id', 'field_id'])
 

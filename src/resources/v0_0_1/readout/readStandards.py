@@ -5,7 +5,7 @@ from ....scripts.extract import extract_from_left_joined
 from taipan.core import TaipanTarget
 
 
-def execute(cursor, field_list=None):
+def execute(cursor, field_list=None, active_only=True):
     """
     Read standard targets from the database.
 
@@ -33,6 +33,8 @@ def execute(cursor, field_list=None):
     conditions = [('is_standard', "=", True)]
     if field_list:
         conditions += [('field_id', 'IN', field_list)]
+    if active_only:
+        conditions += [('is_active', '=', True)]
 
     standards_db = extract_from_left_joined(cursor, ['target', 'target_posn'],
                                             'target_id',

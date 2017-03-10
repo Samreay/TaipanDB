@@ -8,7 +8,7 @@ from ....scripts.create import insert_many_rows
 from taipan.core import polar2cart
 
 
-def execute(cursor, fields_file=None):
+def execute(cursor, fields_file=None, mark_active=True):
     """
     Load field pointings from file to database
 
@@ -34,11 +34,11 @@ def execute(cursor, fields_file=None):
     # Get centroids
     with open(fields_file, 'r') as fileobj:
         datatable = pd.read_csv(fileobj, delim_whitespace=True)
-    values = [[index, row['ra'], row['dec']]
+    values = [[index, row['ra'], row['dec'], mark_active]
               + list(polar2cart((row['ra'], row['dec'])))
               for index, row in datatable.iterrows()]
 
-    columns = ["FIELD_ID", "RA", "DEC", "UX", "UY", "UZ"]
+    columns = ["FIELD_ID", "RA", "DEC", "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

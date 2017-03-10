@@ -31,5 +31,8 @@ def execute(cursor, target_ids):
     if len(target_ids) > 0:
         increment_rows(cursor, 'science_target', 'visits',
                        ref_column='target_id', ref_values=target_ids, inc=1)
+        # Increment the observations value of the rows
+        increment_rows(cursor, 'science_target', 'observations',
+                       ref_column='target_id', ref_values=target_ids, inc=1)
 
     return

@@ -8,7 +8,7 @@ from taipan.core import TaipanTarget
 
 
 def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
-            target_ids=None, field_list=None):
+            target_ids=None, field_list=None, active_only=True):
     """
     Extract science targets from the database
 
@@ -48,7 +48,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     combine = []
 
     if unobserved:
-        conditions += [('done', 'IS', False)]
+        conditions += [('done', 'IS', 'NULL')]
         if len(conditions) > 1:
             combine += ['AND']
     if target_ids is not None:
@@ -60,6 +60,10 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             conditions += [('target_posn.field_id', 'IN', field_list)]
             if len(conditions) > 1:
                 combine += ['AND']
+    if active_only:
+        conditions += [('target.is_active', '=', True)]
+        if len(conditions) > 1:
+            combine += ['AND']
     # if unassigned:
     #     conditions += [('(', 'is_observed', '=', True, ''),
     #                    ('', 'is_observed', 'IS', 'NULL', ')'),
@@ -186,7 +190,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
 
         if unobserved:
             tile_conditions += [
-                ('done', '=', False),
+                ('done', '=', 'NULL'),
             ]
             tile_conditions_comb += ['AND']
         if target_ids:

@@ -101,7 +101,7 @@ def execute(cursor, tgt_list=None, repeats=1):
     conditions = []
     if tgt_list:
         conditions += [('target_id', 'IN', tgt_list)]
-    conditions += [('done', '=', True)]
+    conditions += [('done', 'IS NOT', 'NULL')]
 
     tgt_complete = select_group_agg_from_joined(cursor,
                                                 ['science_target',

@@ -47,7 +47,7 @@ def execute(cursor, tgt_type, unobserved=True):
     conditions = []
 
     if unobserved:
-        conditions += [('done', '=', False)]
+        conditions += [('done', 'IS', 'NULL')]
 
     for t in tgt_type:
         conditions += [(t, '=', True)]

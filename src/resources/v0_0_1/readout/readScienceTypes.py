@@ -5,7 +5,7 @@ from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTarget
 
 
-def execute(cursor, target_ids=None):
+def execute(cursor, target_ids=None, active_only=True):
     """
     Retrieve an array of target IDs and associated types.
 
@@ -31,6 +31,8 @@ def execute(cursor, target_ids=None):
         if len(target_ids) == 0:
             return []
         conditions = [('target_id', 'IN', tuple(target_ids)), ]
+    elif active_only:
+        conditions = [('is_active', '=', True)]
     else:
         conditions = None
 
@@ -46,7 +48,7 @@ def execute(cursor, target_ids=None):
                                               'col_gi', 'col_jk',
                                               'priority',
                                               'visits', 'repeats', 'done',
-                                              'difficulty'])
+                                              'difficulty', 'is_active'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db

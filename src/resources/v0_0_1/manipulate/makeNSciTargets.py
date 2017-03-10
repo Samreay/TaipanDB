@@ -139,7 +139,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
     targets_complete = extract_from_joined(cursor,
                                            ['target_posn', 'science_target'],
                                            conditions=conds_pri_sci + [
-                                               ('done', '=', True),
+                                               ('done', 'IS NOT', 'NULL'),
                                                ('field_id', 'IN', fields)
                                            ],
                                            conditions_combine=
@@ -166,7 +166,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
     tgts_incomplete = extract_from_joined(cursor,
                                           ['science_target', 'target_posn'],
                                           conditions=conds_pri_sci + [
-                                              ('done', '=', False),
+                                              ('done', 'IS', 'NULL'),
                                               ('field_id', 'IN', fields)
                                           ],
                                           conditions_combine=

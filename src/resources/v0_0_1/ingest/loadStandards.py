@@ -5,7 +5,7 @@ from taipan.core import polar2cart
 from ...v0_0_1 import SKY_TARGET_ID
 
 
-def execute(cursor, standards_file=None):
+def execute(cursor, standards_file=None, mark_active=True):
     """
     Load standard targets from file into the database.
 
@@ -35,11 +35,12 @@ def execute(cursor, standards_file=None):
                      # + int(1e9)*row['reference'],
                      float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
-                     False, True, False] +
+                     False, True, False,
+                     True] +
                     list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                     for row in standards_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "UX", "UY", "UZ"]
+               "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

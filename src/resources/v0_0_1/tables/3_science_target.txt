@@ -12,10 +12,11 @@ col_JK                      float       True            0.0                 None
 is_nir                      boolean     False           False               None                False    None    None    "Is target NIR selected?"
 is_lrg                      boolean     False           False               None                False    None    None    "Is target LRG selected?"
 is_iband                    boolean     False           False               None                False    None    None    "Is target i-band selected?"
-zspec                       float       True            0.0                 None                False    None    None    "FIXME What is this?"
+zspec                       float       True            0.0                 None                False    None    None    "Spectroscopic redshift"
 visits                      integer     False           0                   None                False    None    None    "number of anticipated visits"
 repeats                     integer     False           0                   None                False    None    None    "number of repeats so far"
+observations                integer     False           0                   None                False    None    None    "number of total obs. of this target"
 priority                    integer     False           1                   None                False    None    None    "priority of target"
 difficulty                  integer     False           1                   None                False    None    None    "difficulty of target"
-done                        boolean     False           false               None                False    None    None    "if observations of target have completed"
+done                        timestamp   True            None                None                False    None    None    "Date when target was marked done"
 
