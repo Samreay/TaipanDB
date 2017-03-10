@@ -24,6 +24,7 @@ import os
 import datetime
 import logging
 import sys
+import traceback
 
 
 def update(cursor):
@@ -128,15 +129,22 @@ def update(cursor):
 
 
 if __name__ == '__main__':
-
+    # Override the sys.excepthook behaviour to log any errors
+    # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
     def excepthook_override(exctype, value, tb):
-        logging.error(
-            'My Error Information\nType: %s\nValue: %s\nTraceback: %s' %
-            (exctype, value, tb, ))
+        # logging.error(
+        #     'My Error Information\nType: %s\nValue: %s\nTraceback: %s' %
+        #     (exctype, value, traceback.print_tb(tb), ))
+        # logging.error('Uncaught error/exception detected',
+        #               exctype=(exctype, value, tb))
+        logging.critical(''.join(traceback.format_tb(tb)))
+        logging.critical('{0}: {1}'.format(exctype, value))
         # logging.error('Type:', exctype)
         # logging.error('Value:', value)
         # logging.error('Traceback:', tb)
         return
+
+
     sys.excepthook = excepthook_override
 
     # Set the logging to write to terminal AND file
