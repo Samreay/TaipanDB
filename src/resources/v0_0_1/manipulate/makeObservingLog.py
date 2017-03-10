@@ -10,6 +10,8 @@ from src.scripts.manipulate import insert_many_rows
 import numpy as np
 from numpy.lib.recfunctions import append_fields
 
+import logging
+
 def execute(cursor, tile_pk, target_list, success_targets,
             datetime_at=datetime.datetime.now()):
     """
@@ -39,6 +41,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
     -------
     Nil. Rows are written into the observing_log database table.
     """
+    logging.info('Writing to observing log table')
     # Input checking
     tile_pk = int(tile_pk)
     target_list = list(target_list)
@@ -56,6 +59,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
                          tile_pk)
 
     # Read in the existing target information for the targets observed
+    logging.debug('Reading in target information')
     tgt_info = rScTy.execute(cursor, target_ids=target_list)
     # Sort the input success_targets lists s.t. it matches the ordering of
     # tgt_info
@@ -63,6 +67,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
     tgt_ordering = np.argsort(target_list)
     success_targets = list(np.asarray(success_targets)[tgt_ordering])
 
+    logging.debug('Appending target tile and success')
     # Append the extra necessary columns to the tgt_info array
     # tile_pk
     tgt_info = append_fields(tgt_info, 'tile_pk', [tile_pk]*len(tgt_info),
@@ -71,6 +76,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
     tgt_info = append_fields(tgt_info, 'success', success_targets,
                              dtypes=bool, usemask=False)
 
+    logging.debug('Writing')
     # Write the information back into the observing_log database
     insert_many_rows(cursor, 'observing_log',
                      tgt_info[['target_id',
@@ -94,5 +100,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
                                'tile_pk']],  # Names & order must match table
                                              # definition
                      )
+
+    logging.debug('Observing log complete')
 
     return
