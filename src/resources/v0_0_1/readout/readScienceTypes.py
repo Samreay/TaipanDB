@@ -48,7 +48,8 @@ def execute(cursor, target_ids=None, active_only=True):
                                               'col_gi', 'col_jk',
                                               'priority',
                                               'visits', 'repeats', 'done',
-                                              'difficulty', 'is_active'])
+                                              'difficulty', 'is_active',
+                                              'success', 'observations'])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
