@@ -49,6 +49,10 @@ def execute(cursor, target_ids, set_done=True,
         update_done = list([[id, True] for id in target_ids])
         if len(update_done) > 0:
             update_rows(cursor, 'science_target', update_done,
-                        columns=['target_id', 'done'])
+                        columns=['target_id', 'success'])
+            update_rows(cursor, 'science_target',
+                        [(id, done_at) for id in target_ids],
+                        columns=['target_id', 'done'],
+                        conditions=[('done', 'IS', 'NULL')])
 
     return

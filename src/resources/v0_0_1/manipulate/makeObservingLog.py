@@ -21,8 +21,8 @@ def execute(cursor, tile_pk, target_list, success_targets,
     ----------
     cursor : psycopg2 connection.cursor object
         Required for communicating with the database
-    tile_pk : int
-        The primary key of the tile we're adding to the observing log.
+    tile_pk : list of ints
+        The primary keys of the tile we're adding to the observing log.
     target_list : list of ints
         The list of science targets that were observed on this tile.
         This list needs to be provided
@@ -32,17 +32,26 @@ def execute(cursor, tile_pk, target_list, success_targets,
         List of Booleans, denoting whether this observation led to 'success'
         for each target in target_list. There is a one-to-one correspondence
         between the lists.
-    datetime_at : datetime.datetime object
-        Datetime at which the tile was observed. The datetime should be
+    datetime_at : List of datetime.datetime objects
+        List of datetime.datetime objects, corresponding to to when each tile
+        was observed. The datetime should be
         expressed in UTC; the datetime object itself should be timezone-naive.
 
     Returns
     -------
     Nil. Rows are written into the observing_log database table.
     """
+
     logging.info('Writing to observing log table')
     # Input checking
-    tile_pk = int(tile_pk)
+    if not isinstance(tile_pk, list):
+        tile_pk = [tile_pk, ]
+    if not isinstance(datetime_at, list):
+        datetime_at = [datetime_at, ]
+    if len(tile_pk) != len(datetime_at):
+        raise ValueError('tile_pk and datetime_at must be a single '
+                         'int/datetime, or lists of the same of matching '
+                         'length')
     target_list = list(target_list)
     success_targets = list(success_targets)
     if len(target_list) != len(success_targets):
