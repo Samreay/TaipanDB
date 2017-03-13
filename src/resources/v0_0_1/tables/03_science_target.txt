@@ -19,4 +19,4 @@ observations                integer     False           0                   None
 priority                    integer     False           1                   None                False    None    None    "priority of target"
 difficulty                  integer     False           1                   None                False    None    None    "difficulty of target"
 done                        timestamp   True            None                None                False    None    None    "Date when target was marked done"
-
+success                     boolean     False           False               None                False    None    None    "Has the target been successfully observed"
