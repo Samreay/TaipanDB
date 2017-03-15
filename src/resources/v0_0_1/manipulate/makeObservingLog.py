@@ -68,8 +68,8 @@ def execute(cursor, tile_pk, target_list, success_targets,
     #                      tile_pk)
     # Instead, should make sure all passed targets are actually on this tile
     if not np.all(np.in1d(target_list, targets_by_db)):
-        raise ValueError('At least one target in target_list is not on tile '
-                         '%d, according to the database' % tile_pk)
+        raise ValueError('At least one target in target_list is not on tiles '
+                         '%s, according to the database' % str(tile_pk))
 
     # Read in the existing target information for the targets observed
     logging.debug('Reading in target information')
@@ -83,8 +83,11 @@ def execute(cursor, tile_pk, target_list, success_targets,
     logging.debug('Appending target tile and success')
     # Append the extra necessary columns to the tgt_info array
     # tile_pk
-    tgt_info = append_fields(tgt_info, 'tile_pk', [tile_pk]*len(tgt_info),
+    tgt_info = append_fields(tgt_info, 'tile_pk', [0]*len(tgt_info),
                              dtypes=int, usemask=False)
+    for pk in tile_pk:
+        tgt_this_pk = rScTi.execute(cursor, pk)
+        tgt_info[np.in1d(tgt_info['target_id'], tgt_this_pk)]['tile_pk'] = pk
     # success
     tgt_info = append_fields(tgt_info, 'success', success_targets,
                              dtypes=bool, usemask=False)
