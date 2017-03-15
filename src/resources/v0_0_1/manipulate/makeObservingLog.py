@@ -60,7 +60,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
 
     # Read in the targets on this tile - make sure target_list matches
     # this
-    targets_by_db = rScTi.execute(cursor)
+    targets_by_db = rScTi.execute(cursor, tile_pk)
     # ACTUALLY, this is wrong - we don't record anything for a bug failure
     # if set(targets_by_db) != set(target_list):
     #     raise ValueError("The target_list you provided doesn't match the "
