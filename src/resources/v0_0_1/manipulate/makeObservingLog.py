@@ -89,8 +89,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
         tgt_this_pk = rScTi.execute(cursor, pk)
         tgt_info[np.in1d(tgt_info['target_id'], tgt_this_pk)]['tile_pk'] = pk
     # success
-    tgt_info = append_fields(tgt_info, 'success', success_targets,
-                             dtypes=bool, usemask=False)
+    tgt_info['success'] = success_targets
 
     logging.debug('Writing')
     # Write the information back into the observing_log database
