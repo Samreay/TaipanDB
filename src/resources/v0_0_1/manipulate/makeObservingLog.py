@@ -15,7 +15,7 @@ import logging
 from psycopg2.extensions import register_adapter, AsIs
 def adapt_numpy_bool(numpy_bool):
   return AsIs(numpy_bool)
-register_adapter(np.bool, adapt_numpy_bool)
+register_adapter(np.bool_, adapt_numpy_bool)
 
 def execute(cursor, tile_pk, target_list, success_targets,
             datetime_at=datetime.datetime.now()):
