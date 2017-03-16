@@ -109,7 +109,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
                                'visits',
                                'repeats',
                                'priority',
-                               'difficulty'
+                               'difficulty',
                                'done',
                                'success',
                                'tile_pk']],  # Names & order must match table
