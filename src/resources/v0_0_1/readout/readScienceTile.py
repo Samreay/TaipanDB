@@ -31,7 +31,7 @@ def execute(cursor, tile_pk):
     # Input checking
     try:
         _ = tile_pk[0]
-    except IndexError or TypeError:
+    except (IndexError, TypeError, ):
         tile_pk = [int(tile_pk), ]
 
     conditions = [('tile_pk', 'IN', tile_pk), ]
