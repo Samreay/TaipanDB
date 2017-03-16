@@ -149,6 +149,9 @@ def update_rows(cursor, table, data, columns=None,
                             for i in range(columns_to_match)])
 
     if conditions:
+        for condition in conditions:
+            condition[0] = 't.' + condition[0]  # Need to make condition
+                                                # unambiguous
         conditions_string = generate_conditions_string(conditions)
         # Note we use AND here, because WHERE has already been invoked above
         string += ' AND %s' % conditions_string
