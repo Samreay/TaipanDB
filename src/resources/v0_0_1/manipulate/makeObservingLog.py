@@ -90,6 +90,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
     # tile_pk
     tgt_info = append_fields(tgt_info, 'tile_pk', [0]*len(tgt_info),
                              dtypes=int, usemask=False)
+    print tgt_info
     for pk in tile_pk:
         print pk
         tgt_this_pk = rScTi.execute(cursor, pk)
