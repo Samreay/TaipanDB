@@ -95,7 +95,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
         print pk
         tgt_this_pk = rScTi.execute(cursor, pk)
         print tgt_this_pk
-        tgt_info[np.in1d(tgt_info['target_id'], tgt_this_pk)]['tile_pk'] = pk
+        tgt_info['tile_pk'][np.in1d(tgt_info['target_id'], tgt_this_pk)] = pk
     # success
     tgt_info['success'] = success_targets
 
