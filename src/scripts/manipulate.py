@@ -150,8 +150,17 @@ def update_rows(cursor, table, data, columns=None,
 
     if conditions:
         for condition in conditions:
-            condition[0] = 't.' + condition[0]  # Need to make condition
-                                                # unambiguous
+            if len(condition) == 3:
+                condition = ('t.' + condition[0], condition[1], condition[2], )
+            elif len(condition) == 5:
+                condition = (condition[0],
+                             't.' + condition[1],
+                             condition[2],
+                             condition[3],
+                             condition[4])
+            else:
+                raise ValueError('condition %s is not a correct length' %
+                                 str(condition))
         conditions_string = generate_conditions_string(conditions)
         # Note we use AND here, because WHERE has already been invoked above
         string += ' AND %s' % conditions_string
