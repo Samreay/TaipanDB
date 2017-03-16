@@ -117,9 +117,26 @@ def execute(cursor, tile_pk, target_list, success_targets,
                                'difficulty',
                                'done',
                                'success',
-                               'tile_pk']],  # Names & order must match table
-                                             # definition
-                     )
+                               'tile_pk']],
+                     columns=['target_id',
+                              'is_h0_target',
+                              'is_vpec_target',
+                              'is_prisci_vpec_target',
+                              'is_full_vpec_target',
+                              'is_lowz_target',
+                              'col_gi',
+                              'col_jk',
+                              'is_nir',
+                              'is_lrg',
+                              'is_iband',
+                              'zspec',
+                              'visits',
+                              'repeats',
+                              'priority',
+                              'difficulty',
+                              'done',
+                              'success',
+                              'tile_pk'])
 
     logging.debug('Observing log complete')
 
