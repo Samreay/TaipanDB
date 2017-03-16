@@ -12,6 +12,11 @@ from numpy.lib.recfunctions import append_fields
 
 import logging
 
+from psycopg2.extensions import register_adapter, AsIs
+def adapt_numpy_bool(numpy_float64):
+  return AsIs(numpy_bool)
+register_adapter(numpy.bool, adapt_numpy_bool)
+
 def execute(cursor, tile_pk, target_list, success_targets,
             datetime_at=datetime.datetime.now()):
     """
@@ -89,7 +94,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
         tgt_this_pk = rScTi.execute(cursor, pk)
         tgt_info[np.in1d(tgt_info['target_id'], tgt_this_pk)]['tile_pk'] = pk
     # success
-    tgt_info['success'] = [bool(b) for b in success_targets]
+    tgt_info['success'] = success_targets
 
     logging.debug('Writing')
     # Write the information back into the observing_log database
