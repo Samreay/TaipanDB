@@ -149,20 +149,20 @@ def update_rows(cursor, table, data, columns=None,
                             for i in range(columns_to_match)])
 
     if conditions:
-        for i in range(len(conditions)):
-            if len(conditions[i]) == 3:
-                conditions[i] = ('t.' + conditions[i][0],
-                                 conditions[i][1],
-                                 conditions[i][2], )
-            elif len(conditions[i]) == 5:
-                conditions[i] = (conditions[i][0],
-                                 't.' + conditions[i][1],
-                                 conditions[i][2],
-                                 conditions[i][3],
-                                 conditions[i][4])
-            else:
-                raise ValueError('condition %s is not a correct length' %
-                                 str(conditions[i]))
+        # for i in range(len(conditions)):
+        #     if len(conditions[i]) == 3:
+        #         conditions[i] = ('t.' + conditions[i][0],
+        #                          conditions[i][1],
+        #                          conditions[i][2], )
+        #     elif len(conditions[i]) == 5:
+        #         conditions[i] = (conditions[i][0],
+        #                          't.' + conditions[i][1],
+        #                          conditions[i][2],
+        #                          conditions[i][3],
+        #                          conditions[i][4])
+        #     else:
+        #         raise ValueError('condition %s is not a correct length' %
+        #                          str(conditions[i]))
         conditions_string = generate_conditions_string(conditions)
         # Note we use AND here, because WHERE has already been invoked above
         string += ' AND %s' % conditions_string

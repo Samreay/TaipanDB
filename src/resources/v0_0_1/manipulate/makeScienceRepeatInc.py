@@ -53,6 +53,6 @@ def execute(cursor, target_ids, set_done=True,
             update_rows(cursor, 'science_target',
                         [(id, done_at) for id in target_ids],
                         columns=['target_id', 'done'],
-                        conditions=[('done', 'IS', 'NULL')])
+                        conditions=[('t.done', 'IS', 'NULL')])
 
     return
