@@ -32,14 +32,14 @@ def update(cursor):
     data_dir = "/data/resources/0.0.1/"
     # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
     table_dir = resource_dir + os.sep + "tables"
-    table_dir = '/data/resources/tables_to_replace'
+    # table_dir = '/data/resources/tables_to_replace'
 
-    # Clear out the targets table
-    logging.info('Removing existing target catalogues')
-    cursor.execute('DELETE FROM target')
-    # Destroy the existing science_targets table
-    logging.info('Removing science table')
-    cursor.execute('DROP TABLE science_target')
+    # # Clear out the targets table
+    # logging.info('Removing existing target catalogues')
+    # cursor.execute('DELETE FROM target')
+    # # Destroy the existing science_targets table
+    # logging.info('Removing science table')
+    # cursor.execute('DROP TABLE science_target')
 
     create.create_tables(cursor, table_dir)
 
