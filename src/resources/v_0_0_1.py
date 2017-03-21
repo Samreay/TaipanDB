@@ -34,7 +34,11 @@ def update(cursor):
     table_dir = resource_dir + os.sep + "tables"
     table_dir = '/data/resources/tables_to_replace'
 
+    # Clear out the targets table
+    logging.info('Removing existing target catalogues')
+    cursor.execute('DELETE FROM target')
     # Destroy the existing science_targets table
+    logging.info('Removing science table')
     cursor.execute('DROP TABLE science_target')
 
     create.create_tables(cursor, table_dir)
