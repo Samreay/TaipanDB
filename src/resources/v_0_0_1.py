@@ -30,25 +30,29 @@ import traceback
 def update(cursor):
     resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
     data_dir = "/data/resources/0.0.1/"
-    data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
+    # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
     table_dir = resource_dir + os.sep + "tables"
+    table_dir = '/data/resources/tables_to_replace'
 
-    # create.create_tables(cursor, table_dir)
-    #
+    # Destroy the existing science_targets table
+    cursor.execute('DROP TABLE science_target')
+
+    create.create_tables(cursor, table_dir)
+
     # fields_file = data_dir + "pointing_centers.radec"
     # loadCentroids.execute(cursor, fields_file=fields_file)
-    #
-    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-    #                          # "reduced.guides_nodups.fits"
-    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    # guides_file = data_dir + 'random_mock_guides_160930.fits'
-    # loadGuides.execute(cursor, guides_file=guides_file)
-    #
-    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    # #                             'reduced.standards_nodups.fits'
-    # standards_file = data_dir + 'random_mock_standards_160928.fits'
-    # loadStandards.execute(cursor, standards_file=standards_file)
-    #
+
+    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             # "reduced.guides_nodups.fits"
+    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    guides_file = data_dir + 'random_mock_guides_160930.fits'
+    loadGuides.execute(cursor, guides_file=guides_file)
+
+    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    #                             'reduced.standards_nodups.fits'
+    standards_file = data_dir + 'random_mock_standards_160928.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
+
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
     science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
@@ -61,7 +65,7 @@ def update(cursor):
 
 
     logging.info('Computing target-field relationships...')
-    makeTargetPosn.execute(cursor, do_guides=False, do_standards=False)
+    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True)
 
     # Commit again
     logging.info('Committing computed target information...')
