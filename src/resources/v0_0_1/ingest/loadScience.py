@@ -70,6 +70,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           row['z_obs'],
                           row['gmag'] - row['imag'],
                           row['Jmag_Vega'] - row['Kmag_Vega'],
+                          row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
                           bool(row['is_optLRG_selected']),
                           bool(row['is_iband_selected']),
@@ -77,6 +78,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_full_vpec_target'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
+                    "EBV", "GLAT",
                     "IS_NIR", "IS_LRG", "IS_IBAND", "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET"]
     else:

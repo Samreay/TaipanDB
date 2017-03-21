@@ -9,6 +9,8 @@ is_full_vpec_target         boolean     False           false               None
 is_lowz_target              boolean     False           None                None                False    None    None    "For low z science"
 col_gi                      float       True            0.0                 None                False    None    None    "(g-i) colour (optical)"
 col_JK                      float       True            0.0                 None                False    None    None    "(J-K) colour (NIR)"
+ebv                         float       True            0.0                 None                False    None    None    "BV extinction"
+glat                        float       True            0.0                 None                False    None    None    "Galactic latitude"
 is_nir                      boolean     False           False               None                False    None    None    "Is target NIR selected?"
 is_lrg                      boolean     False           False               None                False    None    None    "Is target LRG selected?"
 is_iband                    boolean     False           False               None                False    None    None    "Is target i-band selected?"
