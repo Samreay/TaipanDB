@@ -74,12 +74,15 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_nircol_selected']),
                           bool(row['is_optLRG_selected']),
                           bool(row['is_iband_selected']),
+                          bool(row['is_in_census_region']),  # new proxy for lowz
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
                     "EBV", "GLAT",
-                    "IS_NIR", "IS_LRG", "IS_IBAND", "IS_PRISCI_VPEC_TARGET",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
