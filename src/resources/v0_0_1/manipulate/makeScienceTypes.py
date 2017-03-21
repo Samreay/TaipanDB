@@ -57,7 +57,7 @@ def execute(cursor, target_ids, is_h0_target, is_vpec_target,
     type_dict = {
         'is_h0_target': is_h0_target,
         'is_vpec_target': is_vpec_target,
-        'is_lowz_target': is_lowz_target,
+        # 'is_lowz_target': is_lowz_target,
     }
 
     for t in type_dict.keys():
