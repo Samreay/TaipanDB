@@ -43,8 +43,8 @@ def update(cursor):
 
     create.create_tables(cursor, table_dir)
 
-    # fields_file = data_dir + "pointing_centers.radec"
-    # loadCentroids.execute(cursor, fields_file=fields_file)
+    fields_file = data_dir + "pointing_centers.radec"
+    loadCentroids.execute(cursor, fields_file=fields_file)
 
     # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
                              # "reduced.guides_nodups.fits"
