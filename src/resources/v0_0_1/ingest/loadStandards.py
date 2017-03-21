@@ -31,7 +31,7 @@ def execute(cursor, standards_file=None, mark_active=True):
     standards_table = Table.read(standards_file)
     # logging.debug(standards_table)
 
-    values_table = [[int(row['objID'])+int(1e11),
+    values_table = [[int(row['objID']),
                      # + int(1e9)*row['reference'],
                      float(row['ra_SCOS']),
                      float(row['dec_SCOS']),
