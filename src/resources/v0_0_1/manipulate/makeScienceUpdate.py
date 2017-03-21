@@ -14,7 +14,8 @@ import datetime
 import numpy as np
 
 
-def execute(cursor, target_info_array):
+def execute(cursor, target_info_array,
+            block_size=100000):
     """
     Update target priorities & difficulties in the database.
 
@@ -61,13 +62,17 @@ def execute(cursor, target_info_array):
     #                                          'is_vpec_target',
     #                                          'is_lowz_target'])
 
-    update_rows_temptable(cursor, 'science_target',
-                          data, columns=['target_id',
-                                         'difficulty',
-                                         'priority',
-                                         'is_h0_target',
-                                         'is_vpec_target',
-                                         'is_lowz_target'])
+    i = 0
+    while i < len(data):
+        update_rows_temptable(cursor, 'science_target',
+                              data[i:i+block_size],
+                              columns=['target_id',
+                                       'difficulty',
+                                       'priority',
+                                       'is_h0_target',
+                                       'is_vpec_target',
+                                       'is_lowz_target'])
+        i += block_size
 
     end = datetime.datetime.now()
     delta = (end - start).total_seconds()

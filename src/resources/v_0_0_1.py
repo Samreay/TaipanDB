@@ -28,10 +28,11 @@ import traceback
 
 
 def update(cursor):
-    # resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
-    # data_dir = "/data/resources/0.0.1/"
-    # table_dir = resource_dir + os.sep + "tables"
-    #
+    resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
+    data_dir = "/data/resources/0.0.1/"
+    data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
+    table_dir = resource_dir + os.sep + "tables"
+
     # create.create_tables(cursor, table_dir)
     #
     # fields_file = data_dir + "pointing_centers.radec"
@@ -58,13 +59,13 @@ def update(cursor):
     # logging.info('...done!')
 
 
-    # logging.info('Computing target-field relationships...')
-    # makeTargetPosn.execute(cursor)
-    #
-    # # Commit again
-    # logging.info('Committing computed target information...')
-    # cursor.connection.commit()
-    # logging.info('...done!')
+    logging.info('Computing target-field relationships...')
+    makeTargetPosn.execute(cursor)
+
+    # Commit again
+    logging.info('Committing computed target information...')
+    cursor.connection.commit()
+    logging.info('...done!')
 
     # Compute target priorities and types
     target_types_init = rScTyexec(cursor)

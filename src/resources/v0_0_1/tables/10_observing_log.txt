@@ -1,7 +1,7 @@
 # science_target table
 # Used for storing observing information. Basically a copy of the information in science_target, with success and tile_pk added
 name                        type        nullable        default_value       foreign_key_table   pk       unit    unique  description
-target_id                   bigint      False           None                target              True     None    True    "Target id (internal)"
+target_id                   bigint      False           None                target              True     None    None    "Target id (internal)"
 is_h0_target                boolean     False           None                None                False    None    None    "For H0 science"
 is_vpec_target              boolean     False           None                None                False    None    None    "For pec. vel. science"
 is_prisci_vpec_target       boolean     False           false               None                False    None    None    "SIM ONLY - prisci vpec target"
