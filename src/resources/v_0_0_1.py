@@ -51,7 +51,8 @@ def update(cursor):
     #
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    # loadScience.execute(cursor, science_file=science_file)
+    science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    loadScience.execute(cursor, science_file=science_file)
     #
     # # Commit here in case something further along fails
     # logging.info('Committing raw target information...')
