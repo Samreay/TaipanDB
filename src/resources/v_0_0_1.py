@@ -60,7 +60,7 @@ def update(cursor):
 
 
     logging.info('Computing target-field relationships...')
-    makeTargetPosn.execute(cursor)
+    makeTargetPosn.execute(cursor, do_guides=False, do_standards=False)
 
     # Commit again
     logging.info('Committing computed target information...')

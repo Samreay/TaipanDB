@@ -1,8 +1,13 @@
 import logging
 from astropy.table import Table
-from ....scripts.create import insert_many_rows
+from src.scripts.create import insert_many_rows
 from taipan.core import polar2cart
 import numpy as np
+import sys
+import datetime
+import traceback
+
+from src.scripts.connection import get_connection
 
 
 def execute(cursor, science_file=None, mark_active=True):
@@ -74,7 +79,49 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_nircol_selected']),
                           bool(row['is_optLRG_selected']),
                           bool(row['is_iband_selected']),
-                          bool(row['is_in_census_region']),  # new proxy for lowz
+                          bool(
+                              (156. < row['ra'] <= 225. and
+                               -5 < row['dec'] < 4) or
+                              (225. < row['ra'] < 238. and
+                               -3. < row['dec'] < 4.) or
+                              ((row['ra'] > 329.5 or row['ra'] < 53.5) and
+                               -35.6 < row['dec'] < -25.7)
+                          ),  # Compute if target is in KiDS regions
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['is_full_vpec_target'])] for row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
+                    "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET"]
+    elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.2_170303.fits':
+        # This catalogue doesn't include target_ids - we need to form them
+        values_table1 = [[row['uniqid'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [[row['uniqid'],
+                          False, False, False,
+                          row['z_obs'],
+                          row['gmag'] - row['imag'],
+                          row['Jmag_Vega'] - row['Kmag_Vega'],
+                          row['extBV'], row['glat'],
+                          bool(row['is_nircol_selected']),
+                          bool(row['is_optLRG_selected']),
+                          bool(row['is_iband_selected']),
+                          bool(
+                              (156. < row['ra'] <= 225. and
+                               -5 < row['dec'] < 4) or
+                              (225. < row['ra'] < 238. and
+                               -3. < row['dec'] < 4.) or
+                              ((row['ra'] > 329.5 or row['ra'] < 53.5) and
+                               -35.6 < row['dec'] < -25.7)
+                          ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
@@ -89,7 +136,7 @@ def execute(cursor, science_file=None, mark_active=True):
                      science_file)
         return
 
-    logging.debug('Loading to cursor')
+    logging.info('Loading science targets to cursor')
     # Insert into database
     if cursor is not None:
         insert_many_rows(cursor, "target", values_table1, columns=columns1)
@@ -98,3 +145,57 @@ def execute(cursor, science_file=None, mark_active=True):
         logging.info("Loaded Science")
     else:
         logging.info("No database - however, dry-run of loading successful")
+
+
+if __name__ == '__main__':
+    global_start = datetime.datetime.now()
+
+    # Override the sys.excepthook behaviour to log any errors
+    # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
+    def excepthook_override(exctype, value, tb):
+        # logging.error(
+        #     'My Error Information\nType: %s\nValue: %s\nTraceback: %s' %
+        #     (exctype, value, traceback.print_tb(tb), ))
+        # logging.error('Uncaught error/exception detected',
+        #               exctype=(exctype, value, tb))
+        logging.critical(''.join(traceback.format_tb(tb)))
+        logging.critical('{0}: {1}'.format(exctype, value))
+        # logging.error('Type:', exctype)
+        # logging.error('Value:', value)
+        # logging.error('Traceback:', tb)
+        return
+    sys.excepthook = excepthook_override
+
+    # Set the logging to write to terminal AND file
+    logging.basicConfig(
+        level=logging.INFO,
+        filename='sciloadmanual.log',
+        filemode='w'
+    )
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.info('Manually inserting science targets only')
+
+    # Get a cursor
+    logging.debug('Getting connection')
+    conn = get_connection()
+    cursor = conn.cursor()
+    # Execute the simulation based on command-line arguments
+    logging.debug('Doing execute function')
+    execute(cursor,
+            science_file='Taipan_mock_inputcat_v1.1_170208.fits')
+    conn.commit()
+
+    global_end = datetime.datetime.now()
+    global_delta = global_end - global_start
+    logging.info('')
+    logging.info('--------')
+    logging.info('INSERT COMPLETE COMPLETE')
+    logging.info('Run time:')
+    logging.info('%dh %dm %2.1fs' % (
+        global_delta.total_seconds() // 3600,
+        (global_delta.total_seconds() % 3600) // 60,
+        global_delta.total_seconds() % 60,
+    ))
