@@ -20,4 +20,3 @@ difficulty                  integer     False           1                   None
 done                        timestamp   True            None                None                False    None    None    "Date when target was marked done"
 success                     boolean     False           None                None                False    None    None    "if this observation was a 'success'"
 tile_pk                     integer     False           None                tile                True     None    None    "Tile pk (internal use)"
-
