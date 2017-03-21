@@ -106,7 +106,7 @@ def execute(cursor, science_file=None, mark_active=True):
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                     "IS_GUIDE", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
-                          False, False, False,
+                          False, False, # False,
                           row['z_obs'],
                           row['gmag'] - row['imag'],
                           row['Jmag_Vega'] - row['Kmag_Vega'],
@@ -125,7 +125,8 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
-                    "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "COL_JK",
                     "EBV", "GLAT",
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
