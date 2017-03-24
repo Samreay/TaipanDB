@@ -4,6 +4,10 @@ import os
 from ....scripts.extract import extract_from_joined
 from taipan.core import TaipanTile
 
+from src.resources.v0_0_1.readout import readAlmanacStats as rAS
+
+from numpy.lib.recfunctions import append_fields
+
 
 def execute(cursor, field_ids=None):
     """
