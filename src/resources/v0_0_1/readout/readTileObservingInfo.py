@@ -35,11 +35,13 @@ def execute(cursor, field_ids=None):
         combine += ['AND']
 
     obs_tile_info = extract_from_joined(cursor, ['field', 'tile',
-                                                 'tiling_config'],
+                                                 'tiling_config',
+                                                 'tiling_info'],
                                         columns=['ra', 'dec',
                                                  'field_id', 'tile_pk',
                                                  'tile_id',
-                                                 'date_config', 'date_obs'],
+                                                 'date_config', 'date_obs',
+                                                 'prior_sum', 'n_sci_rem'],
                                         conditions=conditions,
                                         conditions_combine=combine)
 
