@@ -89,12 +89,16 @@ def execute(cursor, fields=None, use_pri_sci=True,
     conds_pri_sci = []
     cond_combs_pri_sci = []
     if use_pri_sci:
+        # conds_pri_sci = [
+        #     ('(', 'is_h0_target', '=', True, ''),
+        #     ('', 'is_vpec_target', '=', True, ''),
+        #     ('', 'is_lowz_target', '=', True, ')'),
+        # ]
+        # cond_combs_pri_sci = ['OR', 'OR', 'AND']
         conds_pri_sci = [
-            ('(', 'is_h0_target', '=', True, ''),
-            ('', 'is_vpec_target', '=', True, ''),
-            ('', 'is_lowz_target', '=', True, ')'),
+            ('priority', '>', 49)
         ]
-        cond_combs_pri_sci = ['OR', 'OR', 'AND']
+        cond_combs_pri_sci = ['AND']
 
     write_conds = []
     if unobserved_only:
@@ -103,9 +107,13 @@ def execute(cursor, fields=None, use_pri_sci=True,
                                         ('is_queued', '=', False),
                                         ('is_observed', '=', False),
                                     ]))
-        write_conds += [
-            ('tile_pk', 'IN', unobs_tiles),
-        ]
+        if len(unobs_tiles) > 0:
+            write_conds += [
+                ('tile_pk', 'IN', unobs_tiles),
+            ]
+        else:
+            # No tile to write against - abort
+            return
 
     if fields is None:
         fields = [field.field_id for field in field_tiles]

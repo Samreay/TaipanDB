@@ -97,7 +97,6 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET"]
     elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.2_170303.fits':
-        # This catalogue doesn't include target_ids - we need to form them
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
                           True, False, False,
