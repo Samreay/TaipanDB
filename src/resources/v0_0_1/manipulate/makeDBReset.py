@@ -29,4 +29,6 @@ def execute(cursor):
     update_science_targets(cursor, do_tp=True, do_d=True)
     logging.info('Done!')
 
+    cursor.connection.commit()
+
     return
