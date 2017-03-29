@@ -46,6 +46,7 @@ def execute(cursor, target_ids=None, active_only=True):
                                               'is_full_vpec_target',
                                               'zspec',
                                               'col_gi', 'col_jk', 'ebv', 'glat',
+                                              'mag_j',
                                               'priority',
                                               'visits', 'repeats', 'done',
                                               'difficulty', 'is_active',
