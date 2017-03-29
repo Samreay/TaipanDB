@@ -110,7 +110,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           False, False, # False,
                           row['z_obs'],
                           row['gmag'] - row['imag'],
-                          row['Jmag_Vega'] - row['Kmag_Vega'],
+                          row['Jmag_Vega'] - row['Kmag_Vega'] + 0.2,
                           row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
                           bool(row['is_optLRG_selected']),
