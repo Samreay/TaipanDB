@@ -75,7 +75,8 @@ def execute(cursor, science_file=None, mark_active=True):
                           row['z_obs'],
                           row['gmag'] - row['imag'],
                           row['Jmag_Vega'] - row['Kmag_Vega'],
-                          row['extBV'], row['glat'],
+                          row['Jmag_Vega'],
+                          row['extBV'], row['glat'], row['glon'],
                           bool(row['is_nircol_selected']),
                           bool(row['is_optLRG_selected']),
                           bool(row['is_iband_selected']),
@@ -88,10 +89,11 @@ def execute(cursor, science_file=None, mark_active=True):
                                -35.6 < row['dec'] < -25.7)
                           ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
-                          bool(row['is_full_vpec_target'])] for row in science_table]
+                          bool(row['is_full_vpec_target'])] for
+                         row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
-                    "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK",
-                    "EBV", "GLAT",
+                    "IS_LOWZ_TARGET", "ZSPEC", "COL_GI", "COL_JK", "MAG_J",
+                    "EBV", "GLAT", "GLON",
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
                     "IS_PRISCI_VPEC_TARGET",
@@ -122,7 +124,8 @@ def execute(cursor, science_file=None, mark_active=True):
                                -35.6 < row['dec'] < -25.7)
                           ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
-                          bool(row['is_full_vpec_target'])] for row in science_table]
+                          bool(row['is_full_vpec_target']),
+                          bool(row(['has_sdss_zspec']))] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
                     "ZSPEC", "COL_GI", "COL_JK",
@@ -130,7 +133,7 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
                     "IS_PRISCI_VPEC_TARGET",
-                    "IS_FULL_VPEC_TARGET"]
+                    "IS_FULL_VPEC_TARGET", "SUCCESS"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)
