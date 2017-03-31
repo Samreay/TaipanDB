@@ -125,6 +125,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target']),
+                          bool(row(['has_sdss_zspec'])),
                           bool(row(['has_sdss_zspec']))] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
@@ -133,7 +134,8 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
                     "IS_PRISCI_VPEC_TARGET",
-                    "IS_FULL_VPEC_TARGET", "SUCCESS"]
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)

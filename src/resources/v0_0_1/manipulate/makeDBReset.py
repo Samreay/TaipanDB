@@ -23,6 +23,9 @@ def execute(cursor):
                    'repeats=0,'
                    'done=NULL,'
                    'success=False')
+    cursor.execute('UPDATE science_target SET '
+                   'success=true WHERE '
+                   'has_sdss_zspec')
     logging.info('Done!')
     # Re-compute the target priority and difficulty information
     logging.info('Updating science target information...')
