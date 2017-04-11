@@ -125,8 +125,8 @@ def execute(cursor, science_file=None, mark_active=True):
                           ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target']),
-                          bool(row(['has_sdss_zspec'])),
-                          bool(row(['has_sdss_zspec']))] for row in science_table]
+                          bool(row['has_sdss_zspec']),
+                          bool(row['has_sdss_zspec'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
                     "ZSPEC", "COL_GI", "COL_JK",
