@@ -41,40 +41,40 @@ def update(cursor):
     # logging.info('Removing science table')
     # cursor.execute('DROP TABLE science_target')
 
-    # create.create_tables(cursor, table_dir)
+    create.create_tables(cursor, table_dir)
+
+    fields_file = data_dir + "pointing_centers.radec"
+    loadCentroids.execute(cursor, fields_file=fields_file)
+
+    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             # "reduced.guides_nodups.fits"
+    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    guides_file = data_dir + 'random_mock_guides_160930.fits'
+    loadGuides.execute(cursor, guides_file=guides_file)
+
+    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    #                             'reduced.standards_nodups.fits'
+    standards_file = data_dir + 'random_mock_standards_160928.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
+
+    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
+    science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    loadScience.execute(cursor, science_file=science_file)
     #
-    # fields_file = data_dir + "pointing_centers.radec"
-    # loadCentroids.execute(cursor, fields_file=fields_file)
-    #
-    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-    #                          # "reduced.guides_nodups.fits"
-    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    # guides_file = data_dir + 'random_mock_guides_160930.fits'
-    # loadGuides.execute(cursor, guides_file=guides_file)
-    #
-    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    # #                             'reduced.standards_nodups.fits'
-    # standards_file = data_dir + 'random_mock_standards_160928.fits'
-    # loadStandards.execute(cursor, standards_file=standards_file)
-    #
-    # # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
-    # loadScience.execute(cursor, science_file=science_file)
-    # #
-    # # # Commit here in case something further along fails
-    # # logging.info('Committing raw target information...')
-    # # cursor.connection.commit()
-    # # logging.info('...done!')
-    #
-    #
-    # logging.info('Computing target-field relationships...')
-    # makeTargetPosn.execute(cursor, do_guides=True, do_standards=True)
-    #
-    # # Commit again
-    # logging.info('Committing computed target information...')
+    # # Commit here in case something further along fails
+    # logging.info('Committing raw target information...')
     # cursor.connection.commit()
     # logging.info('...done!')
+
+
+    logging.info('Computing target-field relationships...')
+    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True)
+
+    # Commit again
+    logging.info('Committing computed target information...')
+    cursor.connection.commit()
+    logging.info('...done!')
 
     # Compute target priorities and types
     target_types_init = rScTyexec(cursor)
@@ -110,30 +110,30 @@ def update(cursor):
     cursor.connection.commit()
     logging.info('...done!')
 
-    # # Instantiate the Almanacs
-    # sim_start = datetime.date(2017, 4, 1)
-    # sim_end = datetime.date(2027, 4, 1)
-    # global_start = datetime.datetime.now()
-    #
-    # fields = rCexec(cursor)
-    #
-    # logging.info('Generating dark almanac...')
-    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    # logging.info('Done!')
+    # Instantiate the Almanacs
+    sim_start = datetime.date(2017, 4, 1)
+    sim_end = datetime.date(2027, 4, 1)
+    global_start = datetime.datetime.now()
 
-    # i = 1
-    # for field in fields:
-    #     almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
-    #                       minimum_airmass=2.0, populate=True, resolution=15.)
-    #     logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
-    #     iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
-    #     # Commit after every Almanac due to the expense of computing
-    #     cursor.connection.commit()
-    #     logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
-    #     i += 1
-    #
-    # # Create a date-only index on the observability table to improve performance
-    # create.create_index(cursor, 'observability', ['date'], ordering='ASC')
+    fields = rCexec(cursor)
+
+    logging.info('Generating dark almanac...')
+    dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    logging.info('Done!')
+
+    i = 1
+    for field in fields:
+        almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
+                          minimum_airmass=2.0, populate=True, resolution=15.)
+        logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
+        iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+        # Commit after every Almanac due to the expense of computing
+        cursor.connection.commit()
+        logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
+        i += 1
+
+    # Create a date-only index on the observability table to improve performance
+    create.create_index(cursor, 'observability', ['date'], ordering='ASC')
 
     return
 
