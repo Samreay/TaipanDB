@@ -110,6 +110,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           False, False, # False,
                           row['z_obs'],
                           row['gmag'] - row['imag'],
+                          row['Jmag_Vega'],
                           row['Jmag_Vega'] - row['Kmag_Vega'] + 0.2,
                           row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
@@ -129,7 +130,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['has_sdss_zspec'])] for row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
-                    "ZSPEC", "COL_GI", "COL_JK",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
                     "EBV", "GLAT",
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
