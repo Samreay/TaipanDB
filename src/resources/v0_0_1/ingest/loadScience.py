@@ -118,7 +118,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_iband_selected']),
                           bool(
                               (156. < row['ra'] <= 225. and
-                               -5 < row['dec'] < 4) or
+                               -5 < row['dec'] < 4.) or
                               (225. < row['ra'] < 238. and
                                -3. < row['dec'] < 4.) or
                               ((row['ra'] > 329.5 or row['ra'] < 53.5) and
