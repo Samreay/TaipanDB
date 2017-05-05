@@ -5,7 +5,7 @@ import datetime
 from ....scripts.manipulate import update_rows
 
 
-def execute(cursor, tile_pks, time_obs=None):
+def execute(cursor, tile_pks, time_obs=None, hrs_better=None, airmass=None):
     """
     Set tiles as having been observed.
 
@@ -32,6 +32,14 @@ def execute(cursor, tile_pks, time_obs=None):
 
     # Make sure the target_ids is in list format
     tile_pks = list(tile_pks)
+    if hrs_better is None:
+        hrs_better = [None, ] * len(tile_pks)
+    if airmass is None:
+        airmass = [None, ] * len(tile_pks)
+    if len(hrs_better) != len(tile_pks):
+        raise ValueError('hrs_better must the same length as tile_pks')
+    if len(airmass) != len(tile_pks):
+        raise ValueError('airmass must the same length as tile_pks')
 
     # Make sure the datetimes are in list format
     if time_obs is not None:
@@ -46,10 +54,13 @@ def execute(cursor, tile_pks, time_obs=None):
             time_obs = [time_obs, ] * len(tile_pks)
 
     # Form the data list
-    data_list = list([[tile_pk, True, False] for tile_pk in tile_pks])
+    data_list = list([[tile_pks[i], True, False,
+                       hrs_better[i], airmass[i]] for i in
+                      range(len(tile_pks))])
     # Update the rows
     update_rows(cursor, 'tile', data_list, columns=['tile_pk', 'is_observed',
-                                                    'is_queued'])
+                                                    'is_queued', 'hrs_better',
+                                                    'airmass'])
 
     # Put in the observation times
     if time_obs is not None:
