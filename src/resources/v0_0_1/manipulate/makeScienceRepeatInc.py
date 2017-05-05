@@ -8,7 +8,8 @@ import datetime
 
 
 def execute(cursor, target_ids, set_done=True,
-            done_at=datetime.datetime.now()):
+            done_at=datetime.datetime.now(),
+            inc=1):
     """
     Increment the visit number of the passed targets
 
@@ -35,10 +36,10 @@ def execute(cursor, target_ids, set_done=True,
 
     # Increment the repeat value of the rows
     increment_rows(cursor, 'science_target', 'repeats',
-                   ref_column='target_id', ref_values=target_ids, inc=1)
+                   ref_column='target_id', ref_values=target_ids, inc=inc)
     # Increment the observations value of the rows
     increment_rows(cursor, 'science_target', 'observations',
-                   ref_column='target_id', ref_values=target_ids, inc=1)
+                   ref_column='target_id', ref_values=target_ids, inc=inc)
     # Set the visits value of the rows back to 0
     update_visits = list([[id, 0] for id in target_ids])
     if len(update_visits) > 0:
