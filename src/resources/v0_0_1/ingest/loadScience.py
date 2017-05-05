@@ -98,7 +98,9 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_LOWZ_TARGET",
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET"]
-    elif science_file.split('/')[-1] == 'Taipan_mock_inputcat_v1.2_170303.fits':
+    elif science_file.split('/')[-1] in [
+        'Taipan_mock_inputcat_v1.2_170303.fits',
+        'Taipan_mock_inputcat_v1.3_170504.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
                           True, False, False,
@@ -122,7 +124,8 @@ def execute(cursor, science_file=None, mark_active=True):
                               (225. < row['ra'] < 238. and
                                -3. < row['dec'] < 4.) or
                               ((row['ra'] > 329.5 or row['ra'] < 53.5) and
-                               -35.6 < row['dec'] < -25.7)
+                               -35.6 < row['dec'] < -25.7) and
+                              row['is_iband_selected']
                           ),  # Compute if target is in KiDS regions
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target']),

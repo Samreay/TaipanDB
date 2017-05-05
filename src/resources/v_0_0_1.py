@@ -59,7 +59,8 @@ def update(cursor):
 
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
     loadScience.execute(cursor, science_file=science_file)
     #
     # # Commit here in case something further along fails
@@ -134,6 +135,8 @@ def update(cursor):
 
     # Create a date-only index on the observability table to improve performance
     create.create_index(cursor, 'observability', ['date'], ordering='ASC')
+
+    cursor.connection.commit()
 
     return
 
