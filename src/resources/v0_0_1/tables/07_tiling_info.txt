@@ -6,6 +6,7 @@ tile_pk     integer     False           None                tile                
 n_sci_rem   integer     None            None                None                None    None    None     "Sci. targets remaining in field"
 n_sci_obs   integer     None            None                None                None    None    None     "Sci. targets observed in field"
 n_sci_alloc integer     None            None                None                None    None    None     "Sci. targets allocated to tile"
+n_done      integer     None            None                None                None    None    None     "Targets done in field"
 diff_sum    integer     True            None                None                None    None    None     "Score - difficulty sum"
 diff_prod   integer     True            None                None                None    None    None     "Score - difficulty product"
 prior_sum   integer     True            None                None                None    None    None     "Score - priority sum"

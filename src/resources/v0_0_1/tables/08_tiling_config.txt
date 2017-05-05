@@ -4,3 +4,5 @@ name        type        nullable        default_value       foreign_key_table   
 tile_pk     integer     False           None                tile                True    None    None     "Tile pk (internal use)"
 date_config timestamp   False           None                None                None    None    None     "Date tile was configured"
 date_obs    timestamp   True            None                None                None    None    None     "Date tile was observed"
+hrs_better  float       True            None                None                None    None    None     "Hours_better when tile obs."
+airmass     float       True            None                None                None    None    None     "Airmass at tile obs."
