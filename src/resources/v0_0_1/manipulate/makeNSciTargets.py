@@ -248,4 +248,20 @@ def execute(cursor, fields=None, use_pri_sci=True,
                     columns=['field_id', 'n_sci_rem'],
                     conditions=write_conds)
 
+    # Count the number of science targets marked with 'success' in the field
+    # Don't worry about what they are
+    done_target_count = count_grouped_from_joined(cursor,
+                                                  ['target_posn',
+                                                   'science_target'],
+                                                  'field_id',
+                                                  conditions=[
+                                                      ('success', '=', True),
+                                                      ('field_id', 'IN',
+                                                       fields),
+                                                  ])
+    done_target_count = [[_['field_id'], _['count']] for _ in done_target_count]
+    update_rows(cursor, 'tiling_info', done_target_count,
+                columns=['field_id', 'n_done'],
+                conditions=write_conds)
+
     return
