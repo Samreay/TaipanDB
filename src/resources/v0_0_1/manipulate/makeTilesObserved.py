@@ -54,19 +54,17 @@ def execute(cursor, tile_pks, time_obs=None, hrs_better=None, airmass=None):
             time_obs = [time_obs, ] * len(tile_pks)
 
     # Form the data list
-    data_list = list([[tile_pks[i], True, False,
-                       hrs_better[i], airmass[i]] for i in
+    data_list = list([[tile_pks[i], True, False, ] for i in
                       range(len(tile_pks))])
     # Update the rows
     update_rows(cursor, 'tile', data_list, columns=['tile_pk', 'is_observed',
-                                                    'is_queued', 'hrs_better',
-                                                    'airmass'])
+                                                    'is_queued'])
 
-    # Put in the observation times
+    # Put in the observation times and other obseing info
     if time_obs is not None:
-        data_obs = zip(tile_pks, time_obs)
+        data_obs = zip(tile_pks, time_obs, hrs_better, airmass)
         logging.debug(data_obs)
         update_rows(cursor, 'tiling_config', data_obs,
-                    columns=['tile_pk', 'date_obs'])
+                    columns=['tile_pk', 'date_obs', 'hrs_better', 'airmass'])
 
     return
