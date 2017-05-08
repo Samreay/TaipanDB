@@ -33,9 +33,9 @@ def execute(cursor, tile_pks, time_obs=None, hrs_better=None, airmass=None):
     # Make sure the target_ids is in list format
     tile_pks = list(tile_pks)
     if hrs_better is None:
-        hrs_better = [None, ] * len(tile_pks)
+        hrs_better = ['NULL', ] * len(tile_pks)
     if airmass is None:
-        airmass = [None, ] * len(tile_pks)
+        airmass = ['NULL', ] * len(tile_pks)
     if len(hrs_better) != len(tile_pks):
         raise ValueError('hrs_better must the same length as tile_pks')
     if len(airmass) != len(tile_pks):
