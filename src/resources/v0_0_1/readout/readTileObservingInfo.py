@@ -45,7 +45,9 @@ def execute(cursor, field_ids=None):
                                                  'field_id', 'tile_pk',
                                                  'tile_id',
                                                  'date_config', 'date_obs',
-                                                 'prior_sum', 'n_sci_rem'],
+                                                 'prior_sum', 'n_sci_rem',
+                                                 'hrs_better', 'airmass',
+                                                 ],
                                         conditions=conditions,
                                         conditions_combine=combine)
 
