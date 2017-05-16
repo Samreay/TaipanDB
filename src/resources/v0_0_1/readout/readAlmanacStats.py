@@ -207,7 +207,8 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                      exclude_dark_time=False,
                      minimum_airmass=2.0,
                      hours_better=True,
-                     resolution=15.):
+                     resolution=15.,
+                     airmass_delta=0.05):
     """
     Calculate how many hours this field is observable for between two
     datetimes.
@@ -247,6 +248,14 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         at datetime_from (True) or not (False). Defaults to False.
     resolution : float
         Resolution of the Almanac in minutes. Defaults to 15.
+    airmass_delta : float
+        Denotes the delta airmass that should be used to compute 
+        hours_observable if hours_better=True. The hours_observable will be
+        computed against a threshold airmass value of 
+        (airmass_now + airmass_delta). This
+        has the effect of 'softening' the hours_observable calculation for
+        zenith fields, i.e. fields rapidly heading towards the minimum_airmass
+        limit will be prioritized over those just passing through zenith.
 
     Returns
     -------
@@ -280,8 +289,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         # [0] gives the only result, then [1] gives the airmass
         minimum_airmass = min(get_airmass(cursor, field_id,
                                           datetime_from)
-                              [0][1]
-                              ,
+                              [0][1] + airmass_delta,
                               minimum_airmass)
         logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
     conditions += [('airmass', '<=', minimum_airmass)]
