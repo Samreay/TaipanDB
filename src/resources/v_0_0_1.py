@@ -27,6 +27,59 @@ import sys
 import traceback
 
 
+# Define the fields we want to make indices for
+TABLE_INDICES = {
+    'target': [
+        'is_standard',
+        'is_guide',
+        'is_science',
+        'is_active',
+    ],
+    'science_target': [
+        'done',
+        'success',
+        'is_lowz_target',
+    ],
+    'target_field': [
+        'tile_pk',
+    ],
+    'target_posn': [
+        'target_id',
+        'field_id',
+    ],
+    'tile': [
+        'field_id',
+        'is_queued',
+        'is_observed',
+    ],
+    'tiling_config': [
+        'date_config',
+        'date_obs',
+    ],
+    'tiling_info': [
+        'tile_pk',
+        'field_id',
+    ],
+    'observability': [
+        'date',
+        'field_id',
+        'airmass',
+        'sun_alt',
+    ]
+}
+
+
+def generate_indices(cursor):
+    logging.info('Generating table indices')
+    for tab, fields in TABLE_INDICES:
+        for field in fields:
+            logging.debug('Starting to index table %s on field %s' %
+                          (tab, field, ))
+            create.create_index(cursor, tab, [field, ], ordering=None)
+    logging.info('Indexing complete!')
+    return
+
+
 def update(cursor):
     resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
     data_dir = "/data/resources/0.0.1/"
