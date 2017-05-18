@@ -11,7 +11,7 @@ from matplotlib.cbook import flatten
 
 
 def execute(cursor, tgt_type, unobserved=True,
-            threshold_value=1):
+            threshold_value=1, assigned_only=True):
     """
     Calculate which field(s) contain targets of a particular type, or
     group of types.
@@ -26,6 +26,9 @@ def execute(cursor, tgt_type, unobserved=True,
     unobserved : Boolean, optional
         Only consider unobserved targets (True) or all targets (False) when
         finding the relevant fields. Defaults to True.
+    assigned_only : Boolean, optional
+        Only consider targets which are assigned to a pending tile (True).
+        Defaults to True.
 
     Returns
     -------
@@ -52,25 +55,54 @@ def execute(cursor, tgt_type, unobserved=True,
     conditions = []
 
     if unobserved:
-        conditions += [('done', 'IS', 'NULL')]
+        # conditions += [
+        #     ('done', 'IS', 'NULL')
+        # ]
+        # 170518: Change to hurry=up criteria to avoid fillers being used
+        conditions += [
+            ('success', '=', False)
+        ]
 
     for t in tgt_type:
         conditions += [(t, '=', True)]
 
-    # Read out the relevant list of fields
-    if threshold_value == 1:
-        fields_affected = extract_from_left_joined(cursor, ['target_posn',
-                                                            'science_target'],
-                                                   'target_id',
-                                                   columns=['field_id'],
-                                                   conditions=conditions,
-                                                   distinct=True)
+    if assigned_only:
+        conditions += [
+            ('is_observed', '=', False)
+        ]
+
+        if threshold_value == 1:
+            fields_affected = extract_from_left_joined(cursor,
+                                                       ['tile',
+                                                        'target_field'
+                                                        'science_target', ],
+                                                       ['tile_pk', 'target_id'],
+                                                       columns=['field_id'],
+                                                       conditions=conditions,
+                                                       distinct=True)
+        else:
+            count = count_grouped_from_joined(cursor,
+                                              ['tile', 'target_field',
+                                               'science_target'],
+                                              'field_id',
+                                              conditions=conditions)
+            fields_affected = count[count['count'] >= threshold_value]
     else:
-        count = count_grouped_from_joined(cursor,
-                                          ['target_posn', 'science_target'],
-                                          'field_id',
-                                          conditions=conditions)
-        fields_affected = count[count['count'] >= threshold_value]
+        # Read out the relevant list of fields
+        if threshold_value == 1:
+            fields_affected = extract_from_left_joined(cursor,
+                                                       ['target_posn',
+                                                        'science_target', ],
+                                                       'target_id',
+                                                       columns=['field_id'],
+                                                       conditions=conditions,
+                                                       distinct=True)
+        else:
+            count = count_grouped_from_joined(cursor,
+                                              ['target_posn', 'science_target'],
+                                              'field_id',
+                                              conditions=conditions)
+            fields_affected = count[count['count'] >= threshold_value]
 
     return list(fields_affected['field_id'])
 

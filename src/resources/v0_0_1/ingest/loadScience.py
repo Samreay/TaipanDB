@@ -142,6 +142,45 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET",
                     "HAS_SDSS_ZSPEC", "SUCCESS"]
+    elif science_file.split('/')[-1] in [
+        'Taipan_mock_inputcat_v2.0_170518.fits']:
+        values_table1 = [[row['uniqid'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [[row['uniqid'],
+                          False, False, # False,
+                          row['z_obs'],
+                          row['gmag'] - row['imag'],
+                          row['Jmag_Vega'],
+                          row['Jmag_Vega'] - row['Kmag_Vega'] + 0.2,
+                          row['extBV'], row['glat'],
+                          bool(row['is_nircol_selected']),
+                          bool(row['is_optLRG_selected']),
+                          bool(row['is_iband_selected']),
+                          bool((
+                                   row['is_in_kids_region'] and
+                                   row['is_iband_selected']) or
+                               row['is_sdss_legacy_target']
+                          ),  # Compute if target is in KiDS regions
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['is_full_vpec_target']),
+                          bool(row['has_sdss_spectrum']),
+                          bool(row['has_sdss_spectrum'] and
+                               not row['is_prisci_vpec_target'])] for
+                         row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
+                    "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)
