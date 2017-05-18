@@ -192,6 +192,7 @@ def update(cursor):
 
     # Create the table indices
     generate_indices(cursor)
+    cursor.connection.commit()
 
     return
 
