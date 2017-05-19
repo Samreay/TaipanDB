@@ -71,7 +71,7 @@ TABLE_INDICES = {
 
 def generate_indices(cursor):
     logging.info('Generating table indices')
-    for tab, fields in TABLE_INDICES:
+    for tab, fields in TABLE_INDICES.items():
         for field in fields:
             logging.debug('Starting to index table %s on field %s' %
                           (tab, field, ))
