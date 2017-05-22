@@ -68,6 +68,7 @@ def execute(cursor, tile_pks=None,
     conditions = []
 
     if tile_pks is not None:
+        tile_pks = list(tile_pks)
         conditions += [
             ('tile_pk', 'IN', tile_pks),
         ]
@@ -89,7 +90,8 @@ def execute(cursor, tile_pks=None,
         logging.debug('Reading in list of science targets from DB')
         return_targets = True
         candidate_targets = rS.execute(cursor,
-                                       target_ids=fibreassigns['target_id'])
+                                       target_ids=
+                                       list(fibreassigns['target_id']))
 
     if guide_targets is None:
         # Will need to read the targets in from the database so we have

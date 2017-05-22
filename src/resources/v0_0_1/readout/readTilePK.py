@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 from ....scripts.extract import extract_from, extract_from_joined
 
 
