@@ -28,7 +28,8 @@ def index(a, x):
     raise ValueError('Value x is not in list a!')
 
 
-def execute(cursor, candidate_targets=None, guide_targets=None,
+def execute(cursor, tile_pks=None,
+            candidate_targets=None, guide_targets=None,
             standard_targets=None):
     """
     Return a list of tiles from the database.
@@ -37,6 +38,9 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
     ----------
     cursor:
         psycopg2 cursor for interacting with the database
+    tile_pks: list of ints, optional
+        List of tile PKs to return information for. Defaults to None,
+        at which point all tiles in the database will be returned.
     candidate_targets, guide_targets, standard_targets:
         Optional; lists of TaipanTargets corresponding to science targets,
         guide targets and standard targets, which are required to be
@@ -61,12 +65,31 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
 
     logging.info('Reading tiles from database')
 
+    conditions = []
+
+    if tile_pks is not None:
+        conditions += [
+            ('tile_pk', 'IN', tile_pks),
+        ]
+
+    # Get the fibre assignments
+    fibreassigns = extract_from_joined(cursor,
+                                       ['field', 'tile', 'target_field'],
+                                       conditions=conditions,
+                                       columns=['tile_pk',
+                                                'field_id',
+                                                'ra',
+                                                'dec',
+                                                'bug_id',
+                                                'target_id'])
+
     if candidate_targets is None:
         # Will need to read the targets in from the database so we have
         # something to build the tiles from
         logging.debug('Reading in list of science targets from DB')
         return_targets = True
-        candidate_targets = rS.execute(cursor)
+        candidate_targets = rS.execute(cursor,
+                                       target_ids=fibreassigns['target_id'])
 
     if guide_targets is None:
         # Will need to read the targets in from the database so we have
@@ -87,17 +110,6 @@ def execute(cursor, candidate_targets=None, guide_targets=None,
     all_targets.sort(key=lambda x: x.idn)
     logging.debug('Generating list of sorted target IDs')
     all_targets_ids = [t.idn for t in all_targets]
-
-    # Get the fibre assignments
-    fibreassigns = extract_from_joined(cursor,
-                                       ['field', 'tile', 'target_field'],
-                                       conditions=None,
-                                       columns=['tile_pk',
-                                                'field_id',
-                                                'ra',
-                                                'dec',
-                                                'bug_id',
-                                                'target_id'])
 
     tile_list = []
 
