@@ -18,6 +18,7 @@ is_lrg                      boolean     False           False               None
 is_iband                    boolean     False           False               None                False    None    None    "Is target i-band selected?"
 zspec                       float       True            0.0                 None                False    None    None    "Spectroscopic redshift"
 has_sdss_zspec              boolean     True            False               None                False    None    None    "Does target have SDSS zspec?"
+is_sdss_legacy              boolean     False           False               None                False    None    None    "Is this an SDSS legacy target?"
 visits                      integer     False           0                   None                False    None    None    "number of anticipated visits"
 repeats                     integer     False           0                   None                False    None    None    "number of repeats so far"
 observations                integer     False           0                   None                False    None    None    "number of total obs. of this target"

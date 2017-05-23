@@ -166,6 +166,7 @@ def execute(cursor, science_file=None, mark_active=True):
                                    row['is_iband_selected']) or
                                row['is_sdss_legacy_target']
                           ),  # Compute if target is in KiDS regions
+                          bool(row['is_sdss_legacy_target']),
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target']),
                           bool(row['has_sdss_spectrum']),
@@ -178,6 +179,7 @@ def execute(cursor, science_file=None, mark_active=True):
                     "EBV", "GLAT",
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
+                    "IS_SDSS_LEGACY",
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET",
                     "HAS_SDSS_ZSPEC", "SUCCESS"]
