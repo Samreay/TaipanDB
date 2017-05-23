@@ -61,9 +61,9 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
     if tile_pks is not None:
         conditions += [('tile_pk', 'IN', tile_pks), ]
     if unobserved is not None:
-        conditions += [('is_observed', '=', not(unobserved)), ]
+        conditions += [('is_observed', '=', not unobserved), ]
     if unqueued is not None:
-        conditions += [('is_queued', '=', not(unqueued)), ]
+        conditions += [('is_queued', '=', not unqueued), ]
     tile_pks = rTpk.execute(cursor, conditions=conditions)
     tiles = rT.execute(cursor, tile_pks=tile_pks)[0]
 
@@ -73,8 +73,9 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
 
     for tile in tiles:
         json_dict = tile.generate_json_dict()
-        json_dict['origin'][0]['execDate'] = ts.UKST_TIMEZONE.localize(
-            config_time).strftime(
+        json_dict['origin'][0]['execDate'] = local_tz.localize(
+            config_time
+        ).strftime(
             JSON_DTFORMAT_TZ
         )
         # json_dict['origin'][0]['execDate'] = config_time.astimezone(
@@ -89,7 +90,14 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
                 JSON_DTFORMAT_NAIVE
             )
         with open(output_dir + '/' +
-                  'tile%d_field%d_config.json' % (tile.pk, tile.field_id, ),
+                  '%s_tile%d_field%d_config.json' %
+                                  (tile.pk, tile.field_id,
+                                   local_tz.localize(
+                                       config_time
+                                   ).strftime(
+                                       JSON_DTFORMAT_NAIVE
+                                   )
+                                   ),
                   'w') as fileobj:
             logging.debug('Writing %s' % fileobj.name)
             json.dump(json_dict, fileobj, indent=2)
