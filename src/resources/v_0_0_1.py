@@ -61,10 +61,12 @@ TABLE_INDICES = {
         'field_id',
     ],
     'observability': [
-        'date',
-        'field_id',
-        'airmass',
-        'sun_alt',
+        # 'date',
+        # 'field_id',
+        # 'airmass',
+        # 'sun_alt',
+        ['field_id', 'airmass', ],
+        ['field_id', 'airmass', 'date', ],
     ]
 }
 
@@ -73,9 +75,12 @@ def generate_indices(cursor):
     logging.info('Generating table indices')
     for tab, fields in TABLE_INDICES.items():
         for field in fields:
-            logging.debug('Starting to index table %s on field %s' %
-                          (tab, field, ))
-            create.create_index(cursor, tab, [field, ], ordering=None)
+            logging.info('Starting to index table %s on field %s' %
+                         (tab, field, ))
+            create.create_index(cursor, tab,
+                                [field, ] if not isinstance(field, list)
+                                else field,
+                                ordering=None)
     logging.info('Indexing complete!')
     return
 
