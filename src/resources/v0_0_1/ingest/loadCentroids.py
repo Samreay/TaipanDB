@@ -5,6 +5,7 @@ import os
 import sys
 
 from ....scripts.create import insert_many_rows
+from ....scripts.extract import select_max_from_joined
 from taipan.core import polar2cart
 
 
@@ -31,10 +32,15 @@ def execute(cursor, fields_file=None, mark_active=True):
         logging.info("No tiling file passed - aborting loading centroids")
         return
 
+    # Get the maximal field_id in the database
+    max_field_id = select_max_from_joined(cursor, ['field'], 'field_id')
+    if max_field_id is None:
+        max_field_id = 0
+
     # Get centroids
     with open(fields_file, 'r') as fileobj:
         datatable = pd.read_csv(fileobj, delim_whitespace=True)
-    values = [[index, row['ra'], row['dec'], mark_active]
+    values = [[index + max_field_id + 1, row['ra'], row['dec'], mark_active]
               + list(polar2cart((row['ra'], row['dec'])))
               for index, row in datatable.iterrows()]
 
