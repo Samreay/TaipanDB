@@ -171,7 +171,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_full_vpec_target']),
                           bool(row['has_sdss_spectrum']),
                           bool((row['has_sdss_spectrum'] or (
-                              row['has_literature_redshift'] and
+                              row['has_literature_zspec'] and
                               row['z_obs'] > 0.1
                           )
                                 ) and
