@@ -170,7 +170,11 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_full_vpec_target']),
                           bool(row['has_sdss_spectrum']),
-                          bool(row['has_sdss_spectrum'] and
+                          bool((row['has_sdss_spectrum'] or (
+                              row['has_literature_redshift'] and
+                              row['z_obs'] > 0.1
+                          )
+                                ) and
                                not row['is_prisci_vpec_target'])] for
                          row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
