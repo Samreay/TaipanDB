@@ -50,7 +50,10 @@ def execute(cursor, target_ids=None, active_only=True):
                                               'priority',
                                               'visits', 'repeats', 'done',
                                               'difficulty', 'is_active',
-                                              'success', 'observations'])
+                                              'success', 'observations',
+                                              'is_sdss_legacy',
+                                              'has_sdss_zspec',
+                                              ])
 
     logging.info('Extracted %d targets from database' % len(targets_db))
     return targets_db
