@@ -214,7 +214,7 @@ def update(cursor):
     # 170619 - Use multiprocessing to speed this up (hopefully)
     make_almanac_n_partial = partial(make_almanac_n,
                                      sim_start=sim_start, sim_end=sim_end,
-                                     dark_alm=dark_alm, cursor=cursor)
+                                     dark_alm=dark_alm)
     pool = multiprocessing.Pool(8)
     pool.map(make_almanac_n_partial, fields)
     pool.close()
