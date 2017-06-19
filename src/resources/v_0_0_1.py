@@ -90,15 +90,16 @@ def generate_indices(cursor):
     return
 
 
-def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None,
-                   cursor=None):
-    almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
-                      minimum_airmass=2.0, populate=True, resolution=15.)
-    logging.info('Computed almanac for field %5d' % (field.field_id, ))
-    iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
-    # Commit after every Almanac due to the expense of computing
-    cursor.connection.commit()
-    logging.info('Inserted almanac for field %5d' % (field.field_id,))
+def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
+    # Multiprocessing needs a fresh cursor per instance
+    with get_connection().cursor() as cursor:
+        almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
+                          minimum_airmass=2.0, populate=True, resolution=15.)
+        logging.info('Computed almanac for field %5d' % (field.field_id, ))
+        iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+        # Commit after every Almanac due to the expense of computing
+        cursor.connection.commit()
+        logging.info('Inserted almanac for field %5d' % (field.field_id,))
 
 def update(cursor):
     # resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
