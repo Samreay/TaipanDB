@@ -191,7 +191,7 @@ def update(cursor):
 
     # Instantiate the Almanacs
     sim_start = datetime.date(2017, 4, 1)
-    sim_end = datetime.date(2027, 4, 1)
+    sim_end = datetime.date(2024, 1, 1)
     global_start = datetime.datetime.now()
 
     fields = rCexec(cursor, active_only=False)
