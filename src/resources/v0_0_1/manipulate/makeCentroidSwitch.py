@@ -1,10 +1,11 @@
 # Switch status of all fields from active to inactive, or vice versa
 
 from ..readout import readCentroids as rC
+from ..delete import deleteTiles as dT
 from ....scripts.manipulate import update_rows_all
 
 
-def execute(cursor):
+def execute(cursor, remove_inactive_tiles=True):
     """
     Flip the status of all centroids (i.e. fields) in the database from
     active to inactive, or vice versa.
@@ -18,6 +19,10 @@ def execute(cursor):
     ----------
     cursor : psycopg2.connection.cursor object
         For communication with the database
+    remove_inactive_tiles : Boolean (default: True)
+        Boolean value denoting whether unobserved and unqueued tiles assigned
+        to currently active (so about to be inactivated) fields should be
+        deleted from the database. Defaults to True.
 
     Returns
     -------
@@ -37,5 +42,9 @@ def execute(cursor):
                     conditions=[('field_id', 'IN',
                                  [f for f in all_fields if
                                   f not in active_fields]), ])
+
+    if remove_inactive_tiles:
+        dT.execute(cursor, field_list=active_fields,
+                   obs_status=False, queue_status=False)
 
     return
