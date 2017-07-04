@@ -19,7 +19,7 @@ def get_config(conf_filename="../../config.json"):
     config:
         A JSON string containing the configuration information.
     """
-    logging.info("Getting config from %s" % conf_filename)
+    logging.debug("Getting config from %s" % conf_filename)
     dir = os.path.dirname(__file__)
     if not dir:
         dir = "."
@@ -41,5 +41,5 @@ def get_connection(autocommit=True):
     connection = psycopg2.connect(**get_config())
     if autocommit:
         connection.autocommit = True
-    logging.info("Got database connection")
+    logging.debug("Got database connection")
     return connection
