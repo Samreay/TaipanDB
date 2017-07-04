@@ -1,0 +1,63 @@
+Table: ``tile``
+===============
+
+This table holds the base information for a tile
+(a specific configuration of targets in a
+particular field)
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``tile_pk``
+      - serial
+      -
+      -
+      - True
+      - Unique tile id
+      -
+      - Links to target_field, tiling_info,
+        tiling_config
+    * - ``tile_id``
+      - integer
+      - None
+      -
+      - False
+      - Tile no. for this field
+      -
+      -
+    * - ``field_id``
+      - integer
+      - None
+      -
+      - False
+      - Field id for this tile
+      -
+      - Reference to :doc:`02.field`
+    * - ``is_queued``
+      - Boolean
+      - False
+      -
+      -
+      - Is the tile currently queued up for
+        observing?
+      -
+      -
+    * - ``is_observed``
+      - Boolean
+      - False
+      -
+      -
+      - Has the tile been observed?
+      -
+      -

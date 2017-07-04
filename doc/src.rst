@@ -9,6 +9,7 @@ Subpackages
     src.resources
     src.scripts
     src.tests
+    dbschema/dbschema
 
 Module contents
 ---------------

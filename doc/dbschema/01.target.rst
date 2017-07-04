@@ -1,0 +1,101 @@
+Table: ``target``
+=================
+
+Store basic target information. Further, science-spefic target
+information is stored in :doc:`02.science_target`.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``target_id``
+      - bigint
+      - None
+      -
+      - True
+      - Unique target identifier
+      -
+      - ``science_target``, ``target_field``, ``target_posn``
+    * - ``ra``
+      - double
+      - None
+      - False
+      - False
+      - Target RA, in decimal degrees
+      -
+      -
+    * - ``dec``
+      - double
+      - None
+      - False
+      - False
+      - Target Dec, in decimal degrees (+/- 90)
+      -
+      -
+    * - ``ux``
+      - double
+      - None
+      - False
+      - False
+      - x-coord. of target position on unit sphere
+      -
+      -
+    * - ``uy``
+      - double
+      - None
+      - False
+      - False
+      - y-coord. of target position on unit sphere
+      -
+      -
+    * - ``uz``
+      - double
+      - None
+      - False
+      - False
+      - z-coord. of target position on unit sphere
+      -
+      -
+    * - ``is_science``
+      - boolean
+      - None
+      -
+      - False
+      - Is this a science target?
+      -
+      -
+    * - ``is_guide``
+      - boolean
+      - None
+      -
+      - False
+      - Is this a guide target?
+      -
+      -
+    * - ``is_standard``
+      - boolean
+      - None
+      -
+      - False
+      - Is this a standard target?
+      -
+      -
+    * - ``is_active``
+      - boolean
+      - None
+      - True
+      - False
+      - Is this target currently active, i.e. available for
+        assignment?
+      -
+      -

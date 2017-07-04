@@ -1,0 +1,231 @@
+Table: ``science_target``
+=========================
+
+This table holds additional information specific
+to science targets. It links through to the basic
+target information stored in :doc:`01.target` via
+the `target_id` foreign key.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``target_id``
+      - bigint
+      - None
+      -
+      - True
+      - Unique target identifier
+      -
+      - Points back to :doc:`01.target`
+    * - ``is_h0_target``
+      - Boolean
+      -
+      - False
+      - False
+      - Is this target used for H0 science?
+      - None, set to False
+      -
+    * - ``is_vpec_target``
+      - Boolean
+      -
+      - False
+      - False
+      - Is this target used for peculiar
+        velocity science?
+      - Is this target used for peculiar
+        velocity science *right now*?
+      -
+    * - ``is_prisci_vpec_target``
+      - Boolean
+      - False
+      - False
+      - False
+      - Is this target used for peculiar
+        velocity science *during the priority
+        science period*?
+      -
+      -
+    * - ``is_full_vpec_target``
+      - Boolean
+      - False
+      - False
+      - False
+      - Is this target used for peculiar
+        velocity science *during the full
+        survey period*?
+      -
+      -
+    * - ``is_lowz_target``
+      - Boolean
+      -
+      - False
+      - False
+      - Is this target used for low-redshift
+        science?
+      - Count this target towards the 'hurry-up'
+        criterion for any field is falls on, i.e.,
+        is this target in a KiDS region *and*
+        i-band selected?
+      -
+    * - ``col_gi``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Target :math:`(g-i)` colour
+      -
+      -
+    * - ``col_JK``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Target :math:`(J-K)` colour
+      -
+      -
+    * - ``mag_J``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Target :math:`J` magnitude
+      -
+      -
+    * - ``ebv``
+      - Float
+      - 0.0
+      - True
+      - False
+      - :math:`(B-V)` extinction
+      -
+      -
+    * - ``glat``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Galactic latitude (-90 to 90)
+      -
+      -
+    * - ``glon``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Galactic longitude (0 to 3600)
+      -
+      -
+    * - ``is_nir``
+      - Boolean
+      - False
+      - False
+      - False
+      - Is the target NIR-selected?
+      -
+      -
+    * - ``is_lrg``
+      - Boolean
+      - False
+      - False
+      - False
+      - Is the target part of the LRG sample?
+      -
+      -
+    * - ``is_iband``
+      - Boolean
+      - False
+      - False
+      - False
+      - Is the target :math:`i`-band selected?
+      -
+      -
+    * - ``zspec``
+      - Float
+      - 0.0
+      - True
+      - False
+      - Target's spectroscopic redshift, if known
+      -
+      -
+    * - ``has_sdss_zspec``
+      - Boolean
+      - False
+      - True
+      - False
+      - Does the target have a spectroscopic
+        redshift from SDSS.
+      -
+      -
+    * - ``visits``
+      - Integer
+      - 0
+      - False
+      - False
+      - Number of times the target has been
+        observed during this repeat.
+      -
+      -
+    * - ``repeats``
+      - Integer
+      - 0
+      - False
+      - False
+      - Number of complete observing campaigns
+        (repeats) performed on this target
+      -
+      -
+    * - ``observations``
+      - Integer
+      - 0
+      - False
+      - False
+      - Number of times the target has been
+        observed in total.
+      -
+      -
+    * - ``priority``
+      - Integer
+      - 1
+      - False
+      - False
+      - Target priority value
+      -
+      -
+    * - ``difficulty``
+      - Integer
+      - 1
+      - False
+      - False
+      - Target difficulty value
+      -
+      -
+    * - ``done``
+      - Timestamp
+      -
+      - True
+      - False
+      - Datetime at which this target was first
+        considered complete by the Taipan survey
+      -
+      -
+    * - ``success``
+      - Boolean
+      - False
+      - False
+      - False
+      - Has this target been successfully observed,
+        either by Taipan or beforehand?
+      -
+      -

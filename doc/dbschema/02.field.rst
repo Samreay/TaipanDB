@@ -1,0 +1,93 @@
+Table: ``field``
+================
+
+This table holds the definition of fields (the
+basic pointings of the survey).
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``field_id``
+      - serial
+      -
+      -
+      -
+      - Unique field id
+      -
+      - Links to tile, target_posn
+    * - ``ra``
+      - double
+      - None
+      - False
+      - False
+      - Target RA, in decimal degrees
+      -
+      -
+    * - ``dec``
+      - double
+      - None
+      - False
+      - False
+      - Target Dec, in decimal degrees (+/- 90)
+      -
+      -
+    * - ``ux``
+      - double
+      - None
+      - False
+      - False
+      - x-coord. of target position on unit sphere
+      -
+      -
+    * - ``uy``
+      - double
+      - None
+      - False
+      - False
+      - y-coord. of target position on unit sphere
+      -
+      -
+    * - ``uz``
+      - double
+      - None
+      - False
+      - False
+      - z-coord. of target position on unit sphere
+      -
+      -
+    * - ``num_tiles``
+      - integer
+      - 0
+      - False
+      - False
+      - Number of tiles generated in this field
+      -
+      -
+    * - ``num_visits``
+      - integer
+      - 0
+      - False
+      - False
+      - Number of tiles observed in this field
+      -
+      -
+    * - ``is_active``
+      - Boolean
+      - True
+      - False
+      - False
+      - Is the field active, i.e. is it available
+        for tiling and observing
+      -
+      -

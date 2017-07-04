@@ -1,0 +1,35 @@
+Table: ``version``
+==================
+
+Purpose: track versions of database schema
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``version``
+      - varchar(80)
+      -
+      -
+      -
+      - Version number
+      -
+      -
+    * - ``version_date``
+      - timestamp
+      - PSQL: ``CURRENT TIMESTAMP``
+      - False
+      -
+      - Date-time of upgrades
+      -
+      -

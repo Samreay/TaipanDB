@@ -1,0 +1,54 @@
+Table: ``target_field``
+=======================
+
+This table links targets to the tile they
+are assigned to.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``pk``
+      - bigserial
+      -
+      - False
+      - True
+      - Unique ID (internal use only)
+      -
+      -
+    * - ``target_id``
+      - bigint
+      -
+      -
+      - False
+      - Target ID
+      -
+      - Reference to :doc:`01.target` (and
+        associated tables)
+    * - ``tile_pk``
+      - integer
+      -
+      -
+      -
+      - Tile ID
+      -
+      - Reference to :doc:`04.tile` (and
+        associated tables)
+    * - ``bug_id``
+      - smallint
+      -
+      -
+      - False
+      - Bug ID for this assignment
+      -
+      -

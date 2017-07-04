@@ -1,0 +1,66 @@
+Table: ``observability``
+========================
+
+This table stores observability (sun altitude,
+dark status, airmass etc.) for all fields.
+
+This table should only require updating if
+extra fields are uploaded to the database;
+it does not need any manipulation at run time.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``field_id``
+      - integer
+      - None
+      -
+      - False
+      - Field id for this tile
+      -
+      - Reference to :doc:`02.field`
+    * - ``date``
+      - timestamp
+      - None
+      -
+      -
+      - Datetime for this observability
+        data
+      -
+      -
+    * - ``airmass``
+      - real
+      - None
+      -
+      -
+      - Airmass of the field
+      -
+      -
+    * - ``sun_alt``
+      - real
+      - None
+      -
+      -
+      - Sun altitude at this time (radians)
+      -
+      -
+    * - ``dark``
+      - Boolean
+      - None
+      -
+      -
+      - Is this field currently considered to
+        be dark?
+      -
+      -
