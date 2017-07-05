@@ -148,7 +148,8 @@ def update(cursor):
 
 
     logging.info('Computing target-field relationships...')
-    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True)
+    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True,
+                           active_only=False)
 
     # Commit again
     logging.info('Committing computed target information...')

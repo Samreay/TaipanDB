@@ -17,7 +17,7 @@ from functools import partial
 
 def execute(cursor, target_ids=None, field_ids=None,
             do_guides=True, do_standards=True, do_obs_targets=True,
-            parallel_workers=8):
+            parallel_workers=8, active_only=True):
     """
     Compute which field(s) the targets reside in and store this information
     to the target_posn database.
@@ -60,7 +60,7 @@ def execute(cursor, target_ids=None, field_ids=None,
         standards = rSexec(cursor)
 
     # Extract all the requested fields
-    fields = rCexec(cursor, field_ids=field_ids)
+    fields = rCexec(cursor, field_ids=field_ids, active_only=active_only)
 
     target_field_relations = []
     # Compute the relationship between the targets and the fields, and log
