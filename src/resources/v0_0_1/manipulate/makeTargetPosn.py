@@ -17,7 +17,7 @@ import psycopg2
 
 # UPDATE 170623
 # Parallelize the creation of target-field relationships
-def make_target_field_relationship(field, cursor=psycopg2.connection.cursor(),
+def make_target_field_relationship(field, cursor=None,
                                    do_guides=True, do_standards=True,
                                    targets=[], guides=[], standards=[]):
     target_field_relations = []
@@ -37,10 +37,10 @@ def make_target_field_relationship(field, cursor=psycopg2.connection.cursor(),
 
     # Because this is a separate multiprocessing function, we need to
     # duplicate the cursor
-    new_cursor = cursor.connection.cursor()
-    insert_many_rows(new_cursor, 'target_posn', target_field_relations,
-                     columns=['target_id', 'field_id'])
-    new_cursor.connection.commit()
+    with cursor.connection.cursor() as new_cursor:
+        insert_many_rows(new_cursor, 'target_posn', target_field_relations,
+                         columns=['target_id', 'field_id'])
+        new_cursor.connection.commit()
 
     return
 
