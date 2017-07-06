@@ -13,6 +13,36 @@ from ....scripts.create import insert_many_rows
 
 import multiprocessing
 from functools import partial
+import psycopg2
+
+# UPDATE 170623
+# Parallelize the creation of target-field relationships
+def make_target_field_relationship(field, cursor=psycopg2.connection.cursor(),
+                                   do_guides=True, do_standards=True,
+                                   targets=[], guides=[], standards=[]):
+    target_field_relations = []
+    logging.debug('Computing targets for field %d' % field.field_id)
+
+    target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                               field.available_targets(targets)]
+
+    if do_guides:
+        logging.debug('Adding in guides')
+        target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                   field.available_targets(guides)]
+    if do_standards:
+        logging.debug('Adding in standards')
+        target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                   field.available_targets(standards)]
+
+    # Because this is a separate multiprocessing function, we need to
+    # duplicate the cursor
+    new_cursor = cursor.connection.cursor()
+    insert_many_rows(new_cursor, 'target_posn', target_field_relations,
+                     columns=['target_id', 'field_id'])
+    new_cursor.connection.commit()
+
+    return
 
 
 def execute(cursor, target_ids=None, field_ids=None,
@@ -67,34 +97,10 @@ def execute(cursor, target_ids=None, field_ids=None,
     # them for insertion into the target_posn database
     logging.info('Computing target positions in each field')
 
-    # UPDATE 170623
-    # Parallelize the creation of target-field relationships
-    def make_target_field_relationship(field, cursor=cursor):
-        target_field_relations = []
-        logging.debug('Computing targets for field %d' % field.field_id)
-
-        target_field_relations += [(tgt.idn, field.field_id) for tgt in
-                                   field.available_targets(targets)]
-
-        if do_guides:
-            logging.debug('Adding in guides')
-            target_field_relations += [(tgt.idn, field.field_id) for tgt in
-                                       field.available_targets(guides)]
-        if do_standards:
-            logging.debug('Adding in standards')
-            target_field_relations += [(tgt.idn, field.field_id) for tgt in
-                                       field.available_targets(standards)]
-
-        # Because this is a separate multiprocessing function, we need to
-        # duplicate the cursor
-        new_cursor = cursor.connection.cursor()
-        insert_many_rows(new_cursor, 'target_posn', target_field_relations,
-                     columns=['target_id', 'field_id'])
-        new_cursor.connection.commit()
-
-        return
     partial_make_target_field_relationship = partial(
-        make_target_field_relationship, cursor=cursor)
+        make_target_field_relationship,
+        cursor=cursor, do_guides=do_guides, do_standards=do_standards,
+        targets=targets, guides=guides, standards=standards)
 
     pool = multiprocessing.Pool(parallel_workers)
     pool.map(partial_make_target_field_relationship, fields)
