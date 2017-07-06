@@ -14,6 +14,7 @@ import multiprocessing
 from functools import partial
 import sys
 import traceback
+import copy
 
 from src.scripts.connection import get_connection
 
@@ -103,8 +104,10 @@ def execute(cursor, target_ids=None, field_ids=None,
 
     partial_make_target_field_relationship = partial(
         make_target_field_relationship,
-        cursor=cursor, do_guides=do_guides, do_standards=do_standards,
-        targets=targets, guides=guides, standards=standards)
+        cursor=copy.copy(cursor), do_guides=do_guides,
+        do_standards=do_standards,
+        targets=copy.deepcopy(targets), guides=copy.deepcopy(guides),
+        standards=copy.deepcopy(standards))
 
     pool = multiprocessing.Pool(parallel_workers)
     pool.map(partial_make_target_field_relationship, fields)
