@@ -3,13 +3,12 @@
 
 import logging
 
-from ..readout.readScience import execute as rScexec
-from ..readout.readStandards import execute as rSexec
-from ..readout.readGuides import execute as rGexec
+from src.resources.v0_0_1.readout.readScience import execute as rScexec
+from src.resources.v0_0_1.readout.readStandards import execute as rSexec
+from src.resources.v0_0_1.readout.readGuides import execute as rGexec
+from src.resources.v0_0_1.readout.readCentroids import execute as rCexec
 
-from ..readout.readCentroids import execute as rCexec
-
-from ....scripts.create import insert_many_rows
+from src.scripts.create import insert_many_rows
 
 import multiprocessing
 from functools import partial
