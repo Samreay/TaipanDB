@@ -42,6 +42,8 @@ def make_target_field_relationship(field, cursor=None,
                          columns=['target_id', 'field_id'])
         new_cursor.connection.commit()
 
+    logging.info('Computed target relationships for field %d' % field.field_id)
+
     return
 
 
