@@ -1,0 +1,60 @@
+Table: ``tiling_config``
+========================
+
+This table holds information about when a tile was generated and observed.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``tile_pk``
+      - serial
+      -
+      -
+      - True
+      - Unique tile id
+      -
+      - Reference to :doc:`04.tile`, and related tables
+    * - ``date_config``
+      - timestamp
+      -
+      - True
+      -
+      - Datetime when this tile was generated
+      -
+      -
+    * - ``date_config``
+      - timestamp
+      -
+      - True
+      -
+      - Datetime when this tile was observed
+      -
+      -
+    * - ``hrs_better``
+      - float
+      -
+      - True
+      -
+      - The number of observable hours remaining for this tile when it was
+        observed
+      -
+      -
+    * - ``airmass``
+      - float
+      -
+      - True
+      -
+      - The airmass this tile was observed at
+      -
+      -

@@ -20,3 +20,7 @@ directory of the resources folder.
     04.tile
     05.target_field
     06.observability
+    07.tiling_info
+    08.tiling_config
+    09.target_posn
+    10.observing_log

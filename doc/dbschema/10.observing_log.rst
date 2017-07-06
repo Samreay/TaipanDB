@@ -1,10 +1,10 @@
-Table: ``science_target``
-=========================
+Table: ``observing_log``
+========================
 
-This table holds additional information specific
-to science targets. It links through to the basic
-target information stored in :doc:`01.target` via
-the `target_id` foreign key.
+This table stores information about each time a target was observed. It is,
+in essence, a copy of the relevant columns of :doc:`02.science_target` (to
+preserve the information against future updates to that table), along with
+some datetime and tile information.
 
 Columns
 -------
@@ -95,38 +95,6 @@ Columns
       - Target :math:`(J-K)` colour
       -
       -
-    * - ``mag_J``
-      - Float
-      - 0.0
-      - True
-      - False
-      - Target :math:`J` magnitude
-      -
-      -
-    * - ``ebv``
-      - Float
-      - 0.0
-      - True
-      - False
-      - :math:`(B-V)` extinction
-      -
-      -
-    * - ``glat``
-      - Float
-      - 0.0
-      - True
-      - False
-      - Galactic latitude (-90 to 90)
-      -
-      -
-    * - ``glon``
-      - Float
-      - 0.0
-      - True
-      - False
-      - Galactic longitude (0 to 3600)
-      -
-      -
     * - ``is_nir``
       - Boolean
       - False
@@ -159,15 +127,6 @@ Columns
       - Target's spectroscopic redshift, if known
       -
       -
-    * - ``has_sdss_zspec``
-      - Boolean
-      - False
-      - True
-      - False
-      - Does the target have a spectroscopic
-        redshift from SDSS.
-      -
-      -
     * - ``visits``
       - Integer
       - 0
@@ -184,15 +143,6 @@ Columns
       - False
       - Number of complete observing campaigns
         (repeats) performed on this target
-      -
-      -
-    * - ``observations``
-      - Integer
-      - 0
-      - False
-      - False
-      - Number of times the target has been
-        observed in total.
       -
       -
     * - ``priority``
@@ -229,55 +179,11 @@ Columns
         either by Taipan or beforehand?
       -
       -
-
-
-Table Initialization
---------------------
-
-This section daels with how fields in the input catalogue (typically a
-FITS table) are converted into the above table columns.
-
-Input Cat v2.0
-^^^^^^^^^^^^^^
-
-.. list-table::
-    :header-rows: 1
-
-    * - Table column
-      - Input catalogue fields used
-    * - ``target_id``
-      - ``uniqid``
-    * - ``is_h0_target``
-      - False
-    * - ``is_vpec_target``
-      - False
-    * - ``zspec``
-      - ``z-obs``
-    * - ``col_gi``
-      - ``gmag`` :math:`-` ``imag``
-    * - ``mag_j``
-      - ``Jmag_Vega``
-    * - ``col_jk``
-      - ``Jmag_Vega`` :math:`-` ``Kmag_vega`` :math:`+0.2`
-    * - ``ebv``
-      - ``extBV``
-    * - ``glat``
-      - ``glat``
-    * - ``is_nir``
-      - ``is_nircol_selected``
-    * - ``is_lrg``
-      - ``is_optLRG_selected``
-    * - ``is_iband``
-      - ``is_iband_selected``
-    * - ``is_lowz_target``
-      - :math:`(` ``is_in_kids_region`` & ``is_iband_selected`` :math:`)` | ``is_sdss_legacy_target``
-    * - ``is_sdss_legacy_target``
-      - ``is_sdss_legacy_target``
-    * - ``is_prisci_vpec_target``
-      - ``is_prisci_vpec_target``
-    * - ``is_full_vpec_target``
-      - ``is_full_vpec_target``
-    * - ``has_sdss_zspec``
-      - ``has_sdss_zspec``
-    * - ``success``
-      - :math:`(` ``has_literature_zspec`` & ``z_obs`` :math:`>0.1 )` | ``has_sdss_spectrum``
+    * - ``tile_pk``
+      - serial
+      -
+      -
+      -
+      - Unique tile id
+      -
+      - Reference to :doc:`04.tile`, and related tables

@@ -1,0 +1,127 @@
+Table: ``tile``
+===============
+
+This table holds ranking information for a tile (e.g. scores, target numbers,
+etc.)
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``tile_pk``
+      - serial
+      -
+      -
+      - True
+      - Unique tile id
+      -
+      - Reference to :doc:`04.tile`, and related tables
+        tiling_config
+    * - ``field_id``
+      - integer
+      - None
+      -
+      - False
+      - Field id for this tile
+      -
+      - Reference to :doc:`02.field`, and related tables
+    * - ``n_sci_rem``
+      - integer
+      -
+      -
+      -
+      - How many priority science targets remain to be completed in this field?
+      - We often change how 'priority science target' is defined, but the table
+        itself is agnostic to this information.
+      -
+    * - ``n_sci_obs``
+      - integer
+      -
+      -
+      -
+      - How many priority science targets have been completed in this field?
+      - We often change how 'priority science target' is defined, but the table
+        itself is agnostic to this information.
+      -
+    * - ``n_sci_alloc``
+      - integer
+      -
+      -
+      -
+      - How many priority science targets are assigned to any pending tile (not
+        just this one)?
+      - We often change how 'priority science target' is defined, but the table
+        itself is agnostic to this information.
+      -
+    * - ``n_done``
+      - integer
+      -
+      -
+      -
+      - How many targets of all kinds are marked done in this field?
+      -
+      -
+    * - ``diff_sum``
+      - integer
+      -
+      -
+      -
+      - The sum of the difficulties of all science targets assigned to this tile
+      -
+      -
+    * - ``diff_prod``
+      - integer
+      -
+      -
+      -
+      - The product of the difficulties of all science targets assigned to
+        this tile
+      - Currently not used - often causes bit overflows
+      -
+    * - ``prior_sum``
+      - integer
+      -
+      -
+      -
+      - The sum of the priorities of all science targets assigned to
+        this tile
+      -
+      -
+    * - ``prior_prod``
+      - integer
+      -
+      -
+      -
+      - The product of the priorities of all science targets assigned to
+        this tile
+      - Currently not used - often causes bit overflows
+      -
+    * - ``cw_sum``
+      - integer
+      -
+      -
+      -
+      - The sum of the 'combined weights' of the targets assigned to
+        this tile
+      - How 'combined weights' is defined is specified at runtime within the
+        simulator/tiling code
+      -
+    * - ``cw_sum``
+      - integer
+      -
+      -
+      -
+      - The sum of the 'combined weights' of the targets assigned to
+        this tile
+      - Currently not used - often causes bit overflows
+      -

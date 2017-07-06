@@ -1,0 +1,36 @@
+Table: ``target_posn``
+======================
+
+This table holds information on which targets are within which field. An
+entry in this table implies that such a relationship exists.
+
+Columns
+-------
+
+.. list-table::
+    :header-rows: 1
+
+    * - Name
+      - Type
+      - Default
+      - Nullable?
+      - Unique?
+      - Original purpose
+      - Current purpose
+      - Link to:
+    * - ``target_id``
+      - bigint
+      - None
+      - False
+      - False
+      - Target ID
+      -
+      - Reference to :doc:`01.target`, and related tables
+    * - ``field_id``
+      - integer
+      - None
+      - False
+      - False
+      - Field ID
+      -
+      - Reference to :doc:`02.field`, and related tables
