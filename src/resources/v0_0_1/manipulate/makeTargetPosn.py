@@ -13,7 +13,10 @@ from ....scripts.create import insert_many_rows
 
 import multiprocessing
 from functools import partial
-import psycopg2
+import sys
+import traceback
+
+from src.scripts.connection import get_connection
 
 # UPDATE 170623
 # Parallelize the creation of target-field relationships
@@ -140,4 +143,43 @@ def execute(cursor, target_ids=None, field_ids=None,
 
     return
 
+if __name__ == '__main__':
+    # Override the sys.excepthook behaviour to log any errors
+    # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
+    def excepthook_override(exctype, value, tb):
+        # logging.error(
+        #     'My Error Information\nType: %s\nValue: %s\nTraceback: %s' %
+        #     (exctype, value, traceback.print_tb(tb), ))
+        # logging.error('Uncaught error/exception detected',
+        #               exctype=(exctype, value, tb))
+        logging.critical(''.join(traceback.format_tb(tb)))
+        logging.critical('{0}: {1}'.format(exctype, value))
+        # logging.error('Type:', exctype)
+        # logging.error('Value:', value)
+        # logging.error('Traceback:', tb)
+        return
 
+
+    sys.excepthook = excepthook_override
+
+    # Set the logging to write to terminal AND file
+    logging.basicConfig(
+        level=logging.INFO,
+        filename='./prep_target_posn.log',
+        filemode='w'
+    )
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    logging.info('*** COMMENCING DATABASE PREP')
+
+    # Get a cursor
+    # TODO: Correct package imports & references
+    logging.debug('Getting connection')
+    conn = get_connection()
+    cursor = conn.cursor()
+    # Execute the simulation based on command-line arguments
+    logging.debug('Doing update function')
+    execute(cursor, do_guides=True, do_standards=True,
+            active_only=True)
