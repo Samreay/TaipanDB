@@ -102,46 +102,44 @@ def execute(cursor, target_ids=None, field_ids=None,
     # them for insertion into the target_posn database
     logging.info('Computing target positions in each field')
 
-    partial_make_target_field_relationship = partial(
-        make_target_field_relationship,
-        cursor=copy.copy(cursor), do_guides=do_guides,
-        do_standards=do_standards,
-        targets=copy.deepcopy(targets), guides=copy.deepcopy(guides),
-        standards=copy.deepcopy(standards))
-
-    pool = multiprocessing.Pool(parallel_workers)
-    pool.map(partial_make_target_field_relationship, fields)
-    pool.close()
-    pool.join()
-
-    return
+    # partial_make_target_field_relationship = partial(
+    #     make_target_field_relationship,
+    #     cursor=copy.copy(cursor), do_guides=do_guides,
+    #     do_standards=do_standards,
+    #     targets=copy.deepcopy(targets), guides=copy.deepcopy(guides),
+    #     standards=copy.deepcopy(standards))
+    #
+    # pool = multiprocessing.Pool(parallel_workers)
+    # pool.map(partial_make_target_field_relationship, fields)
+    # pool.close()
+    # pool.join()
 
     # Old single-thread implementation
 
-    # for field in fields:
-    #     logging.debug('Computing targets for field %d' % field.field_id)
-    #     # # Compute which targets are within the field
-    #     # avail_targets = field.available_targets(targets)
-    #     #
-    #     # # Append this information to the list of values to write back
-    #     # for tgt in avail_targets:
-    #     #     target_field_relations.append((tgt.idn, field.field_id))
-    #
-    #     target_field_relations += [(tgt.idn, field.field_id) for tgt in
-    #                                field.available_targets(targets)]
-    #
-    #     if do_guides:
-    #         logging.debug('Adding in guides')
-    #         target_field_relations += [(tgt.idn, field.field_id) for tgt in
-    #                                    field.available_targets(guides)]
-    #     if do_standards:
-    #         logging.debug('Adding in standards')
-    #         target_field_relations += [(tgt.idn, field.field_id) for tgt in
-    #                                    field.available_targets(standards)]
-    #
-    # # Write the information back to the DB
-    # insert_many_rows(cursor, 'target_posn', target_field_relations,
-    #                  columns=['target_id', 'field_id'])
+    for field in fields:
+        logging.debug('Computing targets for field %d' % field.field_id)
+        # # Compute which targets are within the field
+        # avail_targets = field.available_targets(targets)
+        #
+        # # Append this information to the list of values to write back
+        # for tgt in avail_targets:
+        #     target_field_relations.append((tgt.idn, field.field_id))
+
+        target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                   field.available_targets(targets)]
+
+        if do_guides:
+            logging.debug('Adding in guides')
+            target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                       field.available_targets(guides)]
+        if do_standards:
+            logging.debug('Adding in standards')
+            target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                       field.available_targets(standards)]
+
+    # Write the information back to the DB
+    insert_many_rows(cursor, 'target_posn', target_field_relations,
+                     columns=['target_id', 'field_id'])
 
     return
 
