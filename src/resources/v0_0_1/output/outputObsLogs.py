@@ -37,7 +37,7 @@ def execute(cursor, dt=datetime.datetime.now(), flag='progress',
     tile_obs_log = rTOI.execute(cursor)
     outputs = [obs_log, tile_obs_log, ]
 
-    with open('%s/results-%s%s' %
+    with open('%s/results-%s%s.pobj' %
               (output_path,
                dt.strftime('%y%m%d-%H%M'),
                '-%s' % flag if flag is not None else ''), 'w') as fileobj:
