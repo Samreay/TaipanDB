@@ -52,7 +52,7 @@ def chunks(l, n=100):
 
 
 def multithread_task(fields,
-                     cursor=get_connection(),
+                     cursor=get_connection().cursor(),
                      conds_pri_sci=[],
                      cond_combs_pri_sci=[],
                      write_conds=[]):
@@ -281,7 +281,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
             # No tile to write against - abort
             return
 
-    if fields is None:
+    if fields is None or len(fields) == len(field_tiles):
         fields = [field.field_id for field in field_tiles]
     else:
         # Check to see if all the requested fields are present
