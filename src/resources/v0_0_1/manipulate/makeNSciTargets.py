@@ -58,6 +58,8 @@ def multithread_task(fields,
     # Need it's own cursor
     cursor_internal = cursor.connection.cursor()
 
+    logging.info('Batch-computing target info for %d fields' % len(fields))
+
     # Read completed targets
     # We return the *field_id* corresponding to each applicable target, and
     # count these up to form the number written to the database
