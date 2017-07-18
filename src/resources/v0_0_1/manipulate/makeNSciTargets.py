@@ -12,6 +12,11 @@ from ..readout.readTileScores import execute as rTSexec
 from ..readout.readTilePK import execute as rTPKexec
 from ....scripts.manipulate import update_rows_temptable, update_rows
 
+from src.scripts.connection import get_connection
+
+import multiprocessing
+from functools import partial
+
 
 def targets_per_field(fields, targets):
     """
@@ -37,8 +42,157 @@ def targets_per_field(fields, targets):
     return output
 
 
+def chunks(l, n=100):
+    """
+    Yield consectuive n-sized chunks of input list l
+    """
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
+def multithread_task(fields,
+                     cursor=get_connection(),
+                     conds_pri_sci=[],
+                     cond_combs_pri_sci=[],
+                     write_conds=[]):
+    # Need it's own cursor
+    cursor_internal = cursor.connection.cursor()
+
+    # Read completed targets
+    # We return the *field_id* corresponding to each applicable target, and
+    # count these up to form the number written to the database
+    targets_complete = extract_from_joined(cursor_internal,
+                                           ['target_posn', 'science_target'],
+                                           conditions=conds_pri_sci + [
+                                               ('done', 'IS NOT', 'NULL'),
+                                               ('field_id', 'IN', fields)
+                                           ],
+                                           conditions_combine=
+                                           cond_combs_pri_sci + ['AND'],
+                                           columns=['target_id',
+                                                    'field_id'],
+                                           distinct=True)['field_id']
+    # tgt_per_field = []
+    # for field in list(set(_[1] for _ in targets_complete)):
+    logging.debug(targets_complete)
+    if len(targets_complete) > 0:
+        logging.debug('Counting targets per field')
+        tgt_per_field_comp = [[field, len(targets_complete) -
+                               np.count_nonzero(targets_complete - field)]
+                              for field in fields]
+        logging.debug(tgt_per_field_comp)
+        logging.debug('Writing completed target counts to database')
+        update_rows(cursor_internal, 'tiling_info', tgt_per_field_comp,
+                    columns=['field_id', 'n_sci_obs'],
+                    conditions=write_conds)
+        # update_rows(cursor_internal, 'tiling_info', tgt_per_field,
+        #             columns=['field_id', 'n_sci_obs'])
+
+    tgts_incomplete = extract_from_joined(cursor_internal,
+                                          ['science_target', 'target_posn'],
+                                          conditions=conds_pri_sci + [
+                                              ('done', 'IS', 'NULL'),
+                                              ('field_id', 'IN', fields)
+                                          ],
+                                          conditions_combine=
+                                          cond_combs_pri_sci + ['AND'],
+                                          columns=['target_id', 'field_id'],
+                                          distinct=True)
+
+    # Read targets that are assigned, but yet to be observed
+    # Targets must fulfil two criteria:
+    # - They can't be marked as done in science_target
+    # - The assigned tile must not be marked observed
+    # Note that we want the queued tile info from ALL tiles, because targets
+    # at the edge of the region of interest may be assigned to tiles outside
+    # the ROI
+    queued_tile_info = extract_from_joined(cursor_internal,
+                                           ['tile', 'target_field',
+                                            'science_target'],
+                                           conditions=conds_pri_sci + [
+                                               ('is_observed', '=', False),
+                                               ('is_queued', '=', False),
+                                               # ('field_id', 'IN', fields)
+                                           ],
+                                           conditions_combine=
+                                           cond_combs_pri_sci + [
+                                               'AND',
+                                               # 'AND'
+                                           ],
+                                           columns=['target_id',
+                                                    # 'field_id',
+                                                    # 'tile_pk',
+                                                    ],
+                                           distinct=True,
+                                           )
+
+    field_per_tgt = tgts_incomplete[
+        np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
+    ]['field_id']
+
+    if len(field_per_tgt) > 0:
+        logging.debug('Counting assigned targets per field')
+        tgt_per_field_ass = [[field, len(field_per_tgt) -
+                              np.count_nonzero(field_per_tgt - field)]
+                             for field in fields]
+        logging.debug('Writing assigned target counts to database')
+        update_rows(cursor_internal, 'tiling_info', tgt_per_field_ass,
+                    columns=['field_id', 'n_sci_alloc'],
+                    conditions=write_conds)
+
+    # Read targets which are not assigned to any tile yet, nor observed
+    # Note that this means we have to find any targets which either:
+    # - Have no entries in target_field;
+    # - Have entries in target_field, but all the related tiles are set to
+    #   'observed' and the target isn't marked as 'done'
+    # Can just reverse what we did above!
+
+    # field_per_tgt = tgts_incomplete[
+    #     ~np.in1d(tgts_incomplete['target_id'], queued_tile_info['target_id'])
+    # ]['field_id']
+
+    # ALGORITHM CHANGE
+    # n_sci_rem should now track *all* unobserved targets (allocated or no)
+    field_per_tgt = tgts_incomplete['field_id']
+
+    if len(field_per_tgt) > 0:
+        logging.debug('Counting remaining targets per field')
+        tgt_per_field_nil = [[field, len(field_per_tgt) -
+                              np.count_nonzero(field_per_tgt - field)]
+                             for field in fields]
+        logging.debug('Writing remaining target counts to database')
+        update_rows(cursor_internal, 'tiling_info', tgt_per_field_nil,
+                    columns=['field_id', 'n_sci_rem'],
+                    conditions=write_conds)
+
+    # Count the number of science targets marked with 'success' in the field
+    # Don't worry about what they are
+    done_target_count = count_grouped_from_joined(cursor_internal,
+                                                  ['target_posn',
+                                                   'science_target'],
+                                                  'field_id',
+                                                  conditions=[
+                                                      ('success', '=', True),
+                                                      ('field_id', 'IN',
+                                                       fields),
+                                                  ])
+    done_target_count = [[_['field_id'], _['count']] for _ in done_target_count]
+    if len(fields) < 1000:
+        update_rows(cursor_internal, 'tiling_info', done_target_count,
+                    columns=['field_id', 'n_done'],
+                    conditions=write_conds)
+    else:
+        update_rows_temptable(cursor_internal, 'tiling_info', done_target_count,
+                              columns=['field_id', 'n_done'],
+                              conditions=write_conds)
+
+    cursor_internal.close()
+    return
+
+
 def execute(cursor, fields=None, use_pri_sci=True,
-            unobserved_only=True):
+            unobserved_only=True,
+            multicores=4, chunk_size=500):
     """
     Calculate the number of targets in each field of each status type.
 
@@ -62,6 +216,12 @@ def execute(cursor, fields=None, use_pri_sci=True,
         Whether to write tile scores only against tiles where that haven't
         been observed yet (True), or against all tiles of that field (False).
         Defaults to True.
+    multicores:
+        Number of cores to use (i.e. values > 1 activate multi-threaded
+        processing). Defaults to 4.
+    chunk_size:
+        The number of fields to calculate target information for
+        simultaneously as part of multi-threading. Defaults to 500.
 
     Returns
     -------
@@ -77,6 +237,9 @@ def execute(cursor, fields=None, use_pri_sci=True,
 
     logging.info('Doing a bulk calculation of per-field target statuses '
                  'using makeNSciTargets')
+
+    if multicores < 1:
+        raise ValueError('multicores must be >= 1')
 
     # Unfortunately, we can't just use the assigned tile/field to increment
     # the target count for that tile/field - targets can and will appear in
@@ -141,6 +304,26 @@ def execute(cursor, fields=None, use_pri_sci=True,
         logging.debug('Fields to be looked at (total %d): %s' %
                       (len(fields), ', '.join(str(f) for f in fields), ))
 
+    multithread_task_partial = partial(multithread_task,
+                                       cursor=cursor,
+                                       conds_pri_sci=conds_pri_sci,
+                                       cond_combs_pri_sci=cond_combs_pri_sci,
+                                       write_conds=write_conds,
+                                       )
+
+    pool = multiprocessing.Pool(multicores)
+    pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
+                                        range(0, len(fields), chunk_size)])
+    pool.close()
+    pool.join()
+
+    return
+
+
+    # ------
+    # ORIGINAL SINGLE-THREAD IMPLEMENTATION
+    # MAINTAINED FOR SAFETY
+    # ------
     # Read completed targets
     # We return the *field_id* corresponding to each applicable target, and
     # count these up to form the number written to the database
