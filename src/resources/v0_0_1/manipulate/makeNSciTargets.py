@@ -281,6 +281,9 @@ def execute(cursor, fields=None, use_pri_sci=True,
             # No tile to write against - abort
             return
 
+    # The second part of this if test occurs when we're needing to do the
+    # computation for all fields, but have (for some reason) specified the full
+    # field list
     if fields is None or len(fields) == len(field_tiles):
         fields = [field.field_id for field in field_tiles]
     else:
