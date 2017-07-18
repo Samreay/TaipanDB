@@ -311,9 +311,9 @@ def execute(cursor, fields=None, use_pri_sci=True,
                                        write_conds=write_conds,
                                        )
 
-    pool = multiprocessing.Pool(multicores)
-    pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
-                                        range(0, len(fields), chunk_size)])
+    pool = multiprocessing.Pool(processes=multicores)
+    _ = pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
+                                            range(0, len(fields), chunk_size)])
     pool.close()
     pool.join()
 
