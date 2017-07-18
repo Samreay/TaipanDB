@@ -187,13 +187,14 @@ def multithread_task(fields,
                               columns=['field_id', 'n_done'],
                               conditions=write_conds)
 
+    cursor_internal.connection.commit()
     cursor_internal.close()
     return
 
 
 def execute(cursor, fields=None, use_pri_sci=True,
             unobserved_only=True,
-            multicores=4, chunk_size=500):
+            multicores=4, chunk_size=1000):
     """
     Calculate the number of targets in each field of each status type.
 
@@ -222,7 +223,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
         processing). Defaults to 4.
     chunk_size:
         The number of fields to calculate target information for
-        simultaneously as part of multi-threading. Defaults to 500.
+        simultaneously as part of multi-threading. Defaults to 1000.
 
     Returns
     -------
