@@ -15,9 +15,7 @@ from src.scripts.manipulate import update_rows_temptable, update_rows
 
 from src.scripts.connection import get_connection
 
-import multiprocessing
-from functools import partial
-
+from joblib import Parallel, delayed
 
 def targets_per_field(fields, targets):
     """
@@ -52,7 +50,7 @@ def chunks(l, n=100):
 
 
 def multithread_task(fields,
-                     cursor=get_connection().cursor(),
+                     cursor,
                      conds_pri_sci=[],
                      cond_combs_pri_sci=[],
                      write_conds=[]):
@@ -311,18 +309,13 @@ def execute(cursor, fields=None, use_pri_sci=True,
         logging.debug('Fields to be looked at (total %d): %s' %
                       (len(fields), ', '.join(str(f) for f in fields), ))
 
-    multithread_task_partial = partial(multithread_task,
-                                       cursor=cursor,
-                                       conds_pri_sci=conds_pri_sci,
-                                       cond_combs_pri_sci=cond_combs_pri_sci,
-                                       write_conds=write_conds,
-                                       )
-
-    pool = multiprocessing.Pool(processes=multicores)
-    _ = pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
-                                            range(0, len(fields), chunk_size)])
-    pool.close()
-    pool.join()
+    _ = Parallel(n_jobs=multicores, backend='threading')(
+        delayed(multithread_task)(fields[i:i+chunk_size], cursor,
+                                  conds_pri_sci=conds_pri_sci,
+                                  cond_combs_pri_sci=cond_combs_pri_sci,
+                                  write_conds=write_conds)
+        for i in range(0, len(fields), chunk_size)
+    )
 
     return
 
