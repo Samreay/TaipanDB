@@ -304,20 +304,20 @@ def execute(cursor, fields=None, use_pri_sci=True,
         logging.debug('Fields to be looked at (total %d): %s' %
                       (len(fields), ', '.join(str(f) for f in fields), ))
 
-    # multithread_task_partial = partial(multithread_task,
-    #                                    cursor=cursor,
-    #                                    conds_pri_sci=conds_pri_sci,
-    #                                    cond_combs_pri_sci=cond_combs_pri_sci,
-    #                                    write_conds=write_conds,
-    #                                    )
-    #
-    # pool = multiprocessing.Pool(multicores)
-    # pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
-    #                                     range(0, len(fields), chunk_size)])
-    # pool.close()
-    # pool.join()
-    #
-    # return
+    multithread_task_partial = partial(multithread_task,
+                                       cursor=cursor,
+                                       conds_pri_sci=conds_pri_sci,
+                                       cond_combs_pri_sci=cond_combs_pri_sci,
+                                       write_conds=write_conds,
+                                       )
+
+    pool = multiprocessing.Pool(multicores)
+    pool.map(multithread_task_partial, [fields[i:i+chunk_size] for i in
+                                        range(0, len(fields), chunk_size)])
+    pool.close()
+    pool.join()
+
+    return
 
 
     # ------
