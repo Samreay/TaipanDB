@@ -5,12 +5,12 @@
 import logging
 import numpy as np
 from taipan.core import TaipanTarget, dist_points, TILE_RADIUS
-from ....scripts.extract import extract_from, extract_from_joined, \
+from src.scripts.extract import extract_from, extract_from_joined, \
     extract_from_left_joined, count_grouped_from_joined
-from ..readout.readCentroids import execute as rCexec
-from ..readout.readTileScores import execute as rTSexec
-from ..readout.readTilePK import execute as rTPKexec
-from ....scripts.manipulate import update_rows_temptable, update_rows
+from src.resources.v0_0_1.readout.readCentroids import execute as rCexec
+# from src.resources.v0_0_1.readout.readTileScores import execute as rTSexec
+from src.resources.v0_0_1.readout.readTilePK import execute as rTPKexec
+from src.scripts.manipulate import update_rows_temptable, update_rows
 
 from src.scripts.connection import get_connection
 
