@@ -10,7 +10,7 @@ from ....scripts.extract import extract_from, extract_from_joined, \
 from ..readout.readCentroids import execute as rCexec
 from ..readout.readTileScores import execute as rTSexec
 from ..readout.readTilePK import execute as rTPKexec
-from ....scripts.manipulate import update_rows, update_rows
+from ....scripts.manipulate import update_rows_temptable, update_rows
 
 
 def targets_per_field(fields, targets):
@@ -260,8 +260,13 @@ def execute(cursor, fields=None, use_pri_sci=True,
                                                        fields),
                                                   ])
     done_target_count = [[_['field_id'], _['count']] for _ in done_target_count]
-    update_rows(cursor, 'tiling_info', done_target_count,
-                columns=['field_id', 'n_done'],
-                conditions=write_conds)
+    if len(fields) < 1000:
+        update_rows(cursor, 'tiling_info', done_target_count,
+                    columns=['field_id', 'n_done'],
+                    conditions=write_conds)
+    else:
+        update_rows_temptable(cursor, 'tiling_info', done_target_count,
+                              columns=['field_id', 'n_done'],
+                              conditions=write_conds)
 
     return
