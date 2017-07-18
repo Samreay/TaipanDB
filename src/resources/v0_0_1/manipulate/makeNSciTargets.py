@@ -10,6 +10,7 @@ from src.scripts.extract import extract_from, extract_from_joined, \
 from src.resources.v0_0_1.readout.readCentroids import execute as rCexec
 # from src.resources.v0_0_1.readout.readTileScores import execute as rTSexec
 from src.resources.v0_0_1.readout.readTilePK import execute as rTPKexec
+from src.resources.v0_0_1.readout.readCentroidsAffected import execute as rCAexec
 from src.scripts.manipulate import update_rows_temptable, update_rows
 
 from src.scripts.connection import get_connection
@@ -296,13 +297,14 @@ def execute(cursor, fields=None, use_pri_sci=True,
         # given as inputs
         logging.debug('Requested fields (total %d): %s' %
                       (len(fields), ', '.join(str(f) for f in fields), ))
-        fields = list(set([f.field_id for f in field_tiles if
-                           np.any([dist_points(f.ra, f.dec,
-                                               field.ra,
-                                               field.dec) < 2*TILE_RADIUS for
-                                   field in
-                                   [x for x in field_tiles if
-                                    x.field_id in fields]])]))
+        # fields = list(set([f.field_id for f in field_tiles if
+        #                    np.any([dist_points(f.ra, f.dec,
+        #                                        field.ra,
+        #                                        field.dec) < 2*TILE_RADIUS for
+        #                            field in
+        #                            [x for x in field_tiles if
+        #                             x.field_id in fields]])]))
+        fields = rCAexec(cursor, field_list=fields)
         logging.debug('Fields to be looked at (total %d): %s' %
                       (len(fields), ', '.join(str(f) for f in fields), ))
 
