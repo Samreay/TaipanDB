@@ -178,14 +178,9 @@ def multithread_task(fields,
                                                        fields),
                                                   ])
     done_target_count = [[_['field_id'], _['count']] for _ in done_target_count]
-    if len(fields) < 1000:
-        update_rows(cursor_internal, 'tiling_info', done_target_count,
-                    columns=['field_id', 'n_done'],
-                    conditions=write_conds)
-    else:
-        update_rows_temptable(cursor_internal, 'tiling_info', done_target_count,
-                              columns=['field_id', 'n_done'],
-                              conditions=write_conds)
+    update_rows(cursor_internal, 'tiling_info', done_target_count,
+                columns=['field_id', 'n_done'],
+                conditions=write_conds)
 
     cursor_internal.connection.commit()
     cursor_internal.close()
