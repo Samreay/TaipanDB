@@ -109,17 +109,27 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
         return
 
     # Read back the primary keys of the tiles we just created
-    query_result = extract_from(cursor, 'tile',
-                                conditions=[('(tile_id,field_id)',
-                                             'IN',
-                                             '(%s)' %
-                                             (','.join([str(p) for
-                                                        p in
-                                                        field_tile_id_pairs]),
-                                              ))],
-                                columns=['tile_pk', 'field_id', 'tile_id'])
-    # Re-format to something more useful
-    pk_dict = {q[1]: q[0] for q in query_result}
+    # UPDATES 20170718 - this needs to be split into chunks of 2000 to avoid
+    # overloading the max_stack_depth of the server
+    c = 0
+    bite_size = 2000
+    pk_dict = {}
+    while c < len(field_tile_id_pairs):
+        query_result = extract_from(cursor, 'tile',
+                                    conditions=[('(tile_id,field_id)',
+                                                 'IN',
+                                                 '(%s)' %
+                                                 (','.join([str(p) for
+                                                            p in
+                                                            field_tile_id_pairs[
+                                                            c:c+bite_size]]),
+                                                  ))],
+                                    columns=['tile_pk', 'field_id', 'tile_id'])
+        # Re-format to something more useful
+        pk_dict_chunk = {q[1]: q[0] for q in query_result}
+        pk_dict.update(pk_dict_chunk)
+        c += bite_size
+
     # Back-fill the tile_list with the newly-assigned PKs
     for tile in tile_list:
         tile.pk = pk_dict[tile.field_id]
