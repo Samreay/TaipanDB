@@ -4,7 +4,8 @@ from ....scripts.extract import execute_select, extract_from_joined, get_columns
 import numpy as np
 
 
-def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
+def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
+            active_only=True):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
@@ -23,6 +24,9 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
     ignore_zeros:
         Optional; Boolean value denoting whether to ignore any tiles in which
         any of the requested metrics are equal to zero. Defaults to False.
+    active_only:
+        Optional; Boolean denoting whether to only return scores for active
+        fields (True) or all fields (False). Defaults to True.
 
     Returns
     -------
@@ -65,6 +69,10 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False):
         conditions += [
             ('is_observed', '=', False),
             ('is_queued', '=', False),
+        ]
+    if active_only:
+        conditions += [
+            ('is_active', '=', True)
         ]
     if len(metrics) > 0 and ignore_zeros:
         conditions += [(metric, '>', 0.) for metric in metrics]
