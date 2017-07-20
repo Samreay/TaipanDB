@@ -1,7 +1,11 @@
+# Grab a hold of a connection to the database
+
+
+import logging
+
 import json
 import os
 import psycopg2
-import logging
 
 
 def get_config(conf_filename="../../config.json"):
