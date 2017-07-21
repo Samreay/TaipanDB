@@ -92,16 +92,6 @@ if __name__ == '__main__':
         cents = rC.execute(cursor)
         fields = [_.field_id for _ in random.sample(cents, 3200)]
 
-        # Batch-single
-        logging.warning('   Batch, single...')
-        start = datetime.datetime.now()
-        _ = [rAS.hours_observable_bulk(cursor, fields[i:i + 800], dt_f, dt_t)
-             for
-             i in range(0, 3200, 800)]
-        end = datetime.datetime.now()
-        delta = end - start
-        results_dict['batch-single'].append(delta.total_seconds())
-
         # Batch-parallel
         logging.warning('   Batch, parallel...')
         start = datetime.datetime.now()
@@ -118,6 +108,17 @@ if __name__ == '__main__':
         results_dict['batch-multi'].append(delta.total_seconds())
 
         logging.warning('...done!')
+
+        # Batch-single
+        logging.warning('   Batch, single...')
+        start = datetime.datetime.now()
+        _ = [rAS.hours_observable_bulk(cursor, fields[i:i + 800], dt_f, dt_t)
+             for
+             i in range(0, 3200, 800)]
+        end = datetime.datetime.now()
+        delta = end - start
+        results_dict['batch-single'].append(delta.total_seconds())
+
 
         # Mono-single
         logging.warning('   Mono, single...')
