@@ -23,7 +23,7 @@ def rAS_hours_obs_single(field_id,
                          **kwargs):
     with get_connection().cursor() as cursor:
         return rAS.hours_observable(cursor, field_id,
-                                    datetime_to, datetime_from,
+                                    datetime_from, datetime_to,
                                     **kwargs)
 
 
@@ -33,7 +33,7 @@ def rAS_hours_obs_bulk(field_ids,
                        **kwargs):
     with get_connection().cursor() as cursor:
         return rAS.hours_observable_bulk(cursor, field_ids,
-                                         datetime_to, datetime_from,
+                                         datetime_from, datetime_to,
                                          **kwargs)
 
 if __name__ == '__main__':
