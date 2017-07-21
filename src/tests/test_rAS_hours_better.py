@@ -17,16 +17,19 @@ from src.resources.v0_0_1.readout import readCentroids as rC
 from src.scripts.connection import get_connection
 
 
-def rAS_hours_obs_single(field_id, datetime_from=datetime.date(2018,1,1,0,0),
-                         datetime_to=datetime.date(2018,1,1,12,0),
+def rAS_hours_obs_single(field_id,
+                         datetime_from=datetime.datetime(2018,1,1,0,0),
+                         datetime_to=datetime.datetime(2018,1,1,12,0),
                          **kwargs):
     with get_connection().cursor() as cursor:
         return rAS.hours_observable(cursor, field_id,
                                     datetime_to, datetime_from,
                                     **kwargs)
 
-def rAS_hours_obs_bulk(field_ids, datetime_from=datetime.date(2018,1,1,0,0),
-                       datetime_to=datetime.date(2018,1,1,12,0),
+
+def rAS_hours_obs_bulk(field_ids,
+                       datetime_from=datetime.datetime(2018,1,1,0,0),
+                       datetime_to=datetime.datetime(2018,1,1,12,0),
                        **kwargs):
     with get_connection().cursor() as cursor:
         return rAS.hours_observable_bulk(cursor, field_ids,
