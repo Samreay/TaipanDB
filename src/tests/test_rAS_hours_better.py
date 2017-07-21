@@ -90,7 +90,7 @@ if __name__ == '__main__':
         logging.warning('Pass %d...' % (i+1, ))
 
         cents = rC.execute(cursor)
-        fields = [_.field_id for _ in random.choice(cents, 3200)]
+        fields = [_.field_id for _ in random.sample(cents, 3200)]
 
         # Batch-single
         logging.warning('   Batch, single...')
