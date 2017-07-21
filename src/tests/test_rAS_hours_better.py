@@ -87,7 +87,7 @@ if __name__ == '__main__':
     dt_t = datetime.datetime(2019, 10, 1, 0, 0)
 
     for i in range(5):
-        logging.warning('Pass %d...' % i+1)
+        logging.warning('Pass %d...' % (i+1, ))
 
         cents = rC.execute(cursor)
         fields = [_.field_id for _ in random.choice(cents, 3200)]
