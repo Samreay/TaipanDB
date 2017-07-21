@@ -105,10 +105,11 @@ if __name__ == '__main__':
         # Batch-parallel
         logging.warning('   Batch, parallel...')
         start = datetime.datetime.now()
-        rAS_hrs_obs__bulk_partial = partial(rAS_hours_obs_bulk(
-            datetime_from=dt_f, datetime_to=dt_t))
+        rAS_hrs_obs_bulk_partial = partial(rAS_hours_obs_bulk,
+                                           datetime_from=dt_f, datetime_to=dt_t,
+                                           )
         pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-        _ = pool.map(rAS_hrs_obs_partial,
+        _ = pool.map(rAS_hrs_obs_bulk_partial,
                      [fields[i:i + 800] for i in range(0, 3200, 800)])
         pool.close()
         pool.join()
@@ -129,8 +130,8 @@ if __name__ == '__main__':
         # Mono-parallel
         logging.warning('   Mono, parallel...')
         start = datetime.datetime.now()
-        rAS_hrs_obs_partial = partial(rAS_hours_obs_single(datetime_from=dt_f,
-                                                           datetime_to=dt_t))
+        rAS_hrs_obs_partial = partial(rAS_hours_obs_single, datetime_from=dt_f,
+                                      datetime_to=dt_t, )
         pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
         _ = pool.map(rAS_hrs_obs_partial, fields)
         pool.close()
