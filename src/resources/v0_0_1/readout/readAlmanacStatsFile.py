@@ -2,6 +2,7 @@ import logging
 import pickle
 import datetime
 import sys
+import traceback
 
 from src.resources.v0_0_1.readout import readCentroids as rC
 from src.scripts.connection import get_connection
@@ -22,9 +23,7 @@ def make_almanac_n(field, sim_start=datetime.datetime.now(),
                       minimum_airmass=minimum_airmass, populate=True,
                       resolution=resolution)
     logging.info('Computed almanac for field %5d' % (field.field_id, ))
-    with open(ALMANAC_FILE_LOC + 'alm_%5d.pobj' % field.field_id, 'w') as \
-            fileobj:
-        pickle.dump(almanac, fileobj)
+    almanac.save(filepath=ALMANAC_FILE_LOC)
     logging.info('Saved almanac for field %5d' % (field.field_id,))
     return
 
@@ -87,8 +86,7 @@ if __name__ == '__main__':
 
     logging.info('Generating dark almanac...')
     dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    with open(ALMANAC_FILE_LOC + 'alm_dark.pobj', 'w') as fileobj:
-        pickle.dump(dark_alm, fileobj)
+    dark_alm.save(filepath=ALMANAC_FILE_LOC)
     logging.info('Done!')
 
     cursor = get_connection().cursor()
