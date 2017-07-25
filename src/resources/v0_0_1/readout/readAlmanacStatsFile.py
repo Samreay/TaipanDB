@@ -12,7 +12,7 @@ from taipan.scheduling import Almanac, DarkAlmanac
 import multiprocessing
 from functools import partial
 
-ALMANAC_FILE_LOC = '/data/resources/0.0.1/'
+ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
 
 
 def make_almanac_n(field, sim_start=datetime.datetime.now(),
