@@ -1,8 +1,10 @@
 import logging
-import pickle
 import datetime
 import sys
+import os
 import traceback
+import re
+import numpy as np
 
 from src.resources.v0_0_1.readout import readCentroids as rC
 from src.scripts.connection import get_connection
@@ -49,6 +51,125 @@ def create_almanac_files(cursor, sim_start, sim_end,
     pool.join()
 
     return
+
+
+def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
+                           minimum_airmass=2.0, dark=True, grey=False,
+                           alm_dir=ALMANAC_FILE_LOC, resolution=15.):
+    """
+    Determine the next period when the field is observable, based on airmass
+    only (i.e. don't look at day/night, or dark status). Arguments and return
+    are the same
+    for readAlmanacStats.next_observable_period; however, this is the pure
+    Python (i.e. database-free) implementation.
+    """
+    if dark and grey:
+        raise ValueError("Can't simultaneously request dark and grey time")
+
+    if datetime_to is None:
+        raise ValueError("datetime_to can't be none for file version of "
+                         "next_observable_period")
+
+    # Read in the field information from the database
+    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)
+
+    # Read-in the almanac. If it doesn't exist, create it
+    # Load an Almanac - we'll change the dates later
+    almanac = Almanac(field.ra, field.dec, datetime.date.today(),
+                      observing_period=1,
+                      resolution=resolution, minimum_airmass=minimum_airmass,
+                      populate=False)
+    # Examine the almanancs directory for an almanac for this field
+    match = False
+    possible_matches = [_ for _ in os.listdir(alm_dir) if
+                        'R%.1f_D%.1f' % (field.ra, field.dec, ) in _]
+    if len(possible_matches) > 0:
+        i = 0
+        while i < len(possible_matches) and not match:
+            startre = re.compile(r'start[0-9]{6}')
+            endre = re.compile(r'end[0-9]{6}')
+            startmatch = startre.match(possible_matches[i])
+            endmatch = endre.match(possible_matches[i])
+            if startmatch and endmatch:
+                sd = datetime.datetime.strptime(
+                    startmatch.group(0), '%y%m%d').date()
+                ed = datetime.datetime.strptime(
+                    endmatch.group(0), '%y%m%d').date()
+                if sd <= datetime_from.date() and ed > datetime_to.date():
+                    match = True
+            if not match:
+                i += 1
+
+    if match:
+        # sd and ed will still be in memory from the match being made
+        almanac.start_date = sd
+        almanac.end_date = ed
+        check = almanac.load(filepath=alm_dir)
+
+    if not match or not check:
+        sd = datetime_from.date()
+        almanac.start_date = sd
+        ed = datetime_to.date() + datetime.timedelta(1)
+        almanac.end_date = ed
+        almanac.generate_almanac_bruteforce()
+
+    # Either grab or make the dark almanac
+    dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
+                           populate=True, alm_file_path=alm_dir)
+
+    # Perform the calculation
+    per = almanac.next_observable_period(datetime_from, datetime_to=datetime_to,
+                                         minimum_airmass=minimum_airmass,
+                                         )
+    if per[0] is None or (not dark and not grey):
+        return per
+
+    dark_datum_start = np.argwhere(np.logical_and(
+        dark_alm.data['date'] >= per[0] - datetime.timedelta(
+            minutes=resolution),
+        dark_alm.data['date'] <= per[0] + datetime.timedelta(
+            minutes=resolution)
+    ))[0]
+    if per[1] is None:
+        dark_datum_end = dark_alm.data['dark_time'][-1]
+    else:
+        dark_datum_end = np.argwhere(np.logical_and(
+            dark_alm.data['date'] >= per[0] - datetime.timedelta(
+                minutes=resolution),
+            dark_alm.data['date'] <= per[0] + datetime.timedelta(
+                minutes=resolution)
+        ))[0]
+
+    # By this point, exactly one of dark or grey must be True (and hence,
+    # the other one False)
+    if dark_alm.data['dark_time'][dark_datum_start] == dark and \
+                    dark_alm.data['dark_time'][dark_datum_end] == dark:
+        return per
+
+    if dark_alm.data['dark_time'][dark_datum_start] != dark:
+        try:
+            per[0] = dark_alm.data[np.logical_and(
+                np.logical_and(dark_alm.data['date'] > per[0],
+                               dark_alm.data['date'] < per[1]),
+                dark_alm.data['dark_time'] == dark
+            )]['date'][0]
+        except IndexError:
+            return (None, None, )
+
+    if dark_alm.data['dark_time'][dark_datum_end] != dark:
+        per[1] = dark_alm.data[np.logical_and(
+            dark_alm.data['date'] > per[0],
+            dark_alm.data['dark_time'] != dark
+        )]['date'][-1]
+        # This must exist if per[0] exists and the if test fails
+
+    return per
+
+
+
+    # Do the actual computation now
+
+
 
 
 if __name__ == '__main__':

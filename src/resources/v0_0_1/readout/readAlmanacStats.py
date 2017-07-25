@@ -31,7 +31,7 @@ def check_almanac_finish(cursor):
     return datetime_max
 
 
-def get_fields_available(cursor, datetime,
+def get_fields_available(cursor, dt,
                          minimum_airmass=2.0,
                          resolution=15.):
     """
@@ -57,9 +57,9 @@ def get_fields_available(cursor, datetime,
                           columns='field_id',
                           conditions=[
                               ('airmass', '<=', minimum_airmass),
-                              ('date', '<=', datetime + datetime.timedelta(
+                              ('date', '<=', dt + datetime.timedelta(
                                   minutes=resolution/2.0)),
-                              ('date', '>=', datetime - datetime.timedelta(
+                              ('date', '>=', dt - datetime.timedelta(
                                   minutes=resolution/2.0)),
                           ])['field_id']
     return result
