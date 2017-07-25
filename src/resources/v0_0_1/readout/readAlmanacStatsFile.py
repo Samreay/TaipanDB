@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # Set the logging to write to terminal AND file
     logging.basicConfig(
         level=logging.WARNING,
-        filename='./testlog_rAS_hours_better.log',
+        filename='./loadlog_rASF.log',
         filemode='w'
     )
     logger = logging.getLogger()
