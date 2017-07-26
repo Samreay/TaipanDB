@@ -165,11 +165,29 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     return per
 
+def hours_observable(cursor, field_id, datetime_from, datetime_to,
+                     exclude_grey_time=True, exclude_dark_time=False,
+                     minimum_airmass=2.0, hours_better=True,
+                     resolution=15., airmass_delta=0.05):
+    """
+    Determine the number of hours observable from Python-pickled Almanacs.
+    Parameters
+    ----------
+    cursor
+    field_id
+    datetime_from
+    datetime_to
+    exclude_grey_time
+    exclude_dark_time
+    minimum_airmass
+    hours_better
+    resolution
+    airmass_delta
 
+    Returns
+    -------
 
-    # Do the actual computation now
-
-
+    """
 
 
 if __name__ == '__main__':

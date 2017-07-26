@@ -294,8 +294,12 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
         logging.debug('Comparison airmass: %1.3f' % minimum_airmass)
     conditions += [('airmass', '<=', minimum_airmass)]
 
-    hours_obs = resolution * count_from(cursor, 'observability',
-                                        conditions=conditions) / 60.
+    # hours_obs = resolution * count_from(cursor, 'observability',
+    #                                     conditions=conditions) / 60.
+    # Let's try counting in Python
+    d = extract_from(cursor, 'observability', columns=['date',],
+                     conditions=conditions)
+    hours_obs = resolution * len(d['date']) / 60.
     return hours_obs
 
 
