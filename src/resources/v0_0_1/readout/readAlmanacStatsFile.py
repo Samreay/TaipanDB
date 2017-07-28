@@ -7,7 +7,9 @@ import re
 import numpy as np
 
 from src.resources.v0_0_1.readout import readCentroids as rC
+from src.resources.v0_0_1.insert import insertAlmanac as iA
 from src.scripts.connection import get_connection
+from src.scripts.create import create_child_table, create_index
 
 from taipan.scheduling import Almanac, DarkAlmanac
 
@@ -15,6 +17,76 @@ import multiprocessing
 from functools import partial
 
 ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
+
+
+def load_almanac_partition(field,
+                           cursor=get_connection().cursor(),
+                           alm_file_path=ALMANAC_FILE_LOC,
+                           resolution=15.,
+                           minimum_airmass=2.0,
+                           datetime_from=datetime.date.today(),
+                           datetime_to=datetime.date.today() +
+                                       datetime.timedelta(1)):
+    # Read the almanac in from file
+    with cursor.connection.cursor() as cursor_int:
+        # Read-in the almanac. If it doesn't exist, create it
+        # Load an Almanac - we'll change the dates later
+        almanac = Almanac(field.ra, field.dec, datetime.date.today(),
+                          observing_period=1,
+                          resolution=resolution,
+                          minimum_airmass=minimum_airmass,
+                          populate=False, alm_file_path=alm_file_path)
+        # Examine the almanancs directory for an almanac for this field
+        match = False
+        possible_matches = [_ for _ in os.listdir(alm_file_path) if
+                            'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
+        if len(possible_matches) > 0:
+            i = 0
+            while i < len(possible_matches) and not match:
+                startre = re.compile(r'start[0-9]{6}')
+                endre = re.compile(r'end[0-9]{6}')
+                startmatch = startre.match(possible_matches[i])
+                endmatch = endre.match(possible_matches[i])
+                if startmatch and endmatch:
+                    sd = datetime.datetime.strptime(
+                        startmatch.group(0), '%y%m%d').date()
+                    ed = datetime.datetime.strptime(
+                        endmatch.group(0), '%y%m%d').date()
+                    if sd <= datetime_from.date() and ed > datetime_to.date():
+                        match = True
+                if not match:
+                    i += 1
+
+        if match:
+            # sd and ed will still be in memory from the match being made
+            almanac.start_date = sd
+            almanac.end_date = ed
+            check = almanac.load(filepath=alm_file_path)
+
+        if not match or not check:
+            sd = datetime_from.date()
+            almanac.start_date = sd
+            ed = datetime_to.date() + datetime.timedelta(1)
+            almanac.end_date = ed
+            almanac.generate_almanac_bruteforce()
+
+        # Either grab or make the dark almanac
+        dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
+                               populate=True, alm_file_path=alm_file_path)
+
+        # Create the relevant child table
+        child_table_name = 'obs_%6d' % field.field_id
+        create_child_table(cursor_int, child_table_name,
+                           'observability',
+                           check_conds=[('field_id', '=', field.field_id), ])
+        # Insert the data points into the child table
+        iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
+                   update=None, target_table=child_table_name)
+        # Create the necessary indices
+        create_index(cursor_int, child_table_name, ['date', ])
+        create_index(cursor_int, child_table_name, ['date', 'airmass'])
+
+        return
 
 
 def make_almanac_n(field, sim_start=datetime.datetime.now(),
@@ -223,14 +295,33 @@ if __name__ == '__main__':
     sim_start = datetime.date(2017, 4, 1)
     sim_end = datetime.date(2024, 1, 1)
 
-    logging.info('Generating dark almanac...')
-    dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    dark_alm.save(filepath=ALMANAC_FILE_LOC)
-    logging.info('Done!')
+    cursor_master = get_connection().cursor()
 
-    cursor = get_connection().cursor()
+    # Generate file almanacs
 
-    logging.info('Generating standard almanacs...')
-    create_almanac_files(cursor, sim_start, sim_end, resolution=15.,
-                         minimum_airmass=2.0, active_only=False)
-    logging.info('...done!')
+    # logging.info('Generating dark almanac...')
+    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    # dark_alm.save(filepath=ALMANAC_FILE_LOC)
+    # logging.info('Done!')
+    #
+    # logging.info('Generating standard almanacs...')
+    # create_almanac_files(cursor_master, sim_start, sim_end, resolution=15.,
+    #                      minimum_airmass=2.0, active_only=False)
+    # logging.info('...done!')
+
+    # Insert file almanacs into partitioned database
+
+    logging.info('Loading almanacs from file to DB')
+    fields = rC.execute(cursor, active_only=False)
+
+    load_almanac_partition_partial = partial(load_almanac_partition,
+                                             cursor=cursor_master,
+                                             datetime_from=sim_start,
+                                             datetime_to=sim_end,
+                                             resolution=15.,
+                                             minimum_airmass=2.0)
+
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
+    _ = pool.map(load_almanac_partition_partial, fields)
+    pool.close()
+    pool.join()
