@@ -312,7 +312,7 @@ if __name__ == '__main__':
     # Insert file almanacs into partitioned database
 
     logging.info('Loading almanacs from file to DB')
-    fields = rC.execute(cursor, active_only=False)
+    fields = rC.execute(cursor_master, active_only=False)
 
     load_almanac_partition_partial = partial(load_almanac_partition,
                                              cursor=cursor_master,
