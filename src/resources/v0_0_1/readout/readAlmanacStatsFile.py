@@ -290,7 +290,9 @@ if __name__ == '__main__':
                                                  resolution=15.,
                                                  minimum_airmass=2.0)
 
-        pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
+        pool = multiprocessing.Pool(processes=
+                                    # multiprocessing.cpu_count() -
+                                    1)
         _ = pool.map(load_almanac_partition_partial, fields)
         pool.close()
         pool.join()
