@@ -50,6 +50,8 @@ def load_almanac_partition(field,
                 endre = re.compile(r'end(?P<ed>[0-9]{6})')
                 startmatch = startre.search(possible_matches[i])
                 endmatch = endre.search(possible_matches[i])
+                logging.info('Matches found: %s, %s' % (startmatch.group('sd'),
+                                                        endmatch.group('ed')))
                 if startmatch and endmatch:
                     sd = datetime.datetime.strptime(
                         startmatch.group('sd'), '%y%m%d').date()
