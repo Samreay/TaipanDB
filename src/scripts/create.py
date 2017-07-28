@@ -351,7 +351,7 @@ def create_child_table(cursor, table, parent_table, check_conds=[]):
     logging.info('Creating table %s, child of %s' % (table, parent_table,))
 
     # Create the query string
-    query_string = "CREATE TABLE %s (CHECK %s) INHERITS (%s)" % (
+    query_string = "CREATE TABLE %s (CHECK (%s)) INHERITS (%s)" % (
         table,
         conds_string,
         parent_table,
