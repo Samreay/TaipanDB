@@ -46,8 +46,8 @@ def load_almanac_partition(field,
         if len(possible_matches) > 0:
             i = 0
             while i < len(possible_matches) and not match:
-                startre = re.compile(r'start[0-9]{6}')
-                endre = re.compile(r'end[0-9]{6}')
+                startre = re.compile(r'.*?start[0-9]{6}.*?')
+                endre = re.compile(r'.*?end[0-9]{6}.*?')
                 startmatch = startre.match(possible_matches[i])
                 endmatch = endre.match(possible_matches[i])
                 if startmatch and endmatch:
