@@ -283,6 +283,12 @@ if __name__ == '__main__':
         logging.info('Loading almanacs from file to DB')
         fields = rC.execute(cursor, active_only=False)
 
+        for field in fields:
+            load_almanac_partition(field, datetime_from=sim_start,
+                                   datetime_to=sim_end,
+                                   resolution=15.,
+                                   minimum_airmass=2.0)
+
         load_almanac_partition_partial = partial(load_almanac_partition,
                                                  # cursor=cursor,
                                                  datetime_from=sim_start,
