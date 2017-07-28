@@ -92,7 +92,10 @@ def load_almanac_partition(field,
             logging.info('Creating table %s' % child_table_name)
             create_child_table(cursor_int, child_table_name,
                                'observability',
-                               check_conds=[('field_id', '=', field.field_id), ])
+                               check_conds=[
+                                   ('field_id', '=', field.field_id),
+                               ],
+                               primary_key=['field_id', 'date', ])
             # Insert the data points into the child table
             logging.info('Populating table %s' % child_table_name)
             iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
@@ -100,7 +103,10 @@ def load_almanac_partition(field,
             # Create the necessary indices
             logging.info('Creating indices on %s' % child_table_name)
             create_index(cursor_int, child_table_name, ['date', ])
+            create_index(cursor_int, child_table_name, ['field', ])
+            create_index(cursor_int, child_table_name, ['field_id', 'date'])
             create_index(cursor_int, child_table_name, ['date', 'airmass'])
+            create_index(cursor_int, child_table_name, ['date', 'sun_alt'])
         except (psycopg2.ProgrammingError, psycopg2.OperationalError) as e:
             # Something is wrong, undo what this cursor tried to do
             logging.info('Table already exists for field %d' % field.field_id)

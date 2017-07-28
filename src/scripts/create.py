@@ -271,7 +271,8 @@ if __name__ == "__main__":
     create_tables(conn)
 
 
-def create_index(cursor, table, columns, ordering=None):
+def create_index(cursor, table, columns, ordering=None,
+                 unique=False, ):
     """
     Create a btree index within the specified database table.
 
@@ -313,14 +314,17 @@ def create_index(cursor, table, columns, ordering=None):
             raise ValueError('ordering must be one of %s' %
                              allowed_orderings.join(', '))
 
-    string = "CREATE INDEX ON %s (%s %s)" % (table,
-                                             ','.join(columns),
-                                             ordering if ordering else '')
+    string = "CREATE %s INDEX ON %s (%s %s)" % (
+        'UNIQUE' if unique else '',
+        table,
+        ','.join(columns),
+        ordering if ordering else '')
 
     cursor.execute(string)
 
 
-def create_child_table(cursor, table, parent_table, check_conds=[]):
+def create_child_table(cursor, table, parent_table, check_conds=[],
+                       primary_key=None):
     """
     Create a table which inherits from a parent table.
 
@@ -351,9 +355,10 @@ def create_child_table(cursor, table, parent_table, check_conds=[]):
     logging.info('Creating table %s, child of %s' % (table, parent_table,))
 
     # Create the query string
-    query_string = "CREATE TABLE %s (CHECK (%s)) INHERITS (%s)" % (
+    query_string = "CREATE TABLE %s (CHECK (%s), %s) INHERITS (%s)" % (
         table,
         conds_string,
+        'PRIMARY KEY (%s)' % ','.join(primary_key) if primary_key else '',
         parent_table,
     )
 
