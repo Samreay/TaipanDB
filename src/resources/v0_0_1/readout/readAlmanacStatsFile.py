@@ -38,9 +38,11 @@ def load_almanac_partition(field,
                           populate=False, alm_file_path=alm_file_path)
         # Examine the almanancs directory for an almanac for this field
         match = False
-        logging.info('Looking for a matching almanac in %s' % alm_file_path)
+        # logging.info('Looking for a matching almanac in %s' % alm_file_path)
         possible_matches = [_ for _ in os.listdir(alm_file_path) if
                             'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
+        logging.info('Possible file matches for field %6d: %d' % (
+            field.field_id, len(possible_matches)))
         if len(possible_matches) > 0:
             i = 0
             while i < len(possible_matches) and not match:
@@ -53,6 +55,9 @@ def load_almanac_partition(field,
                         startmatch.group(0), '%y%m%d').date()
                     ed = datetime.datetime.strptime(
                         endmatch.group(0), '%y%m%d').date()
+                    logging.info('Parsed start date %s, end date %s' % (
+                        sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
+                    ))
                     if sd <= datetime_from and ed >= datetime_to:
                         match = True
                 if not match:
