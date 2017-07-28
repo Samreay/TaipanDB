@@ -46,15 +46,15 @@ def load_almanac_partition(field,
         if len(possible_matches) > 0:
             i = 0
             while i < len(possible_matches) and not match:
-                startre = re.compile(r'start[0-9]{6}')
-                endre = re.compile(r'end[0-9]{6}')
+                startre = re.compile(r'start(?P<sd>[0-9]{6})')
+                endre = re.compile(r'end(?P<ed>[0-9]{6})')
                 startmatch = startre.search(possible_matches[i])
                 endmatch = endre.search(possible_matches[i])
                 if startmatch and endmatch:
                     sd = datetime.datetime.strptime(
-                        startmatch.group(0), '%y%m%d').date()
+                        startmatch.group('sd'), '%y%m%d').date()
                     ed = datetime.datetime.strptime(
-                        endmatch.group(0), '%y%m%d').date()
+                        endmatch.group('ed'), '%y%m%d').date()
                     logging.info('Parsed start date %s, end date %s' % (
                         sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
                     ))
