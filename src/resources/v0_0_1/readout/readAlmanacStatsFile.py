@@ -270,7 +270,7 @@ if __name__ == '__main__':
         fields = rC.execute(cursor, active_only=False)
 
         load_almanac_partition_partial = partial(load_almanac_partition,
-                                                 cursor=cursor,
+                                                 # cursor=cursor,
                                                  datetime_from=sim_start,
                                                  datetime_to=sim_end,
                                                  resolution=15.,
