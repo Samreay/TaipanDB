@@ -18,8 +18,9 @@ from functools import partial
 
 ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
 
+
 def load_almanac_partition(field,
-                           cursor=get_connection().cursor(),
+                           # cursor=get_connection().cursor(),
                            alm_file_path=ALMANAC_FILE_LOC,
                            resolution=15.,
                            minimum_airmass=2.0,
@@ -27,7 +28,7 @@ def load_almanac_partition(field,
                            datetime_to=datetime.date.today() +
                                        datetime.timedelta(1)):
     # Read the almanac in from file
-    with cursor.connection.cursor() as cursor_int:
+    with get_connection().cursor() as cursor_int:
         # Read-in the almanac. If it doesn't exist, create it
         # Load an Almanac - we'll change the dates later
         almanac = Almanac(field.ra, field.dec, datetime.date.today(),
