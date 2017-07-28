@@ -5,6 +5,7 @@ import os
 import traceback
 import re
 import numpy as np
+import psycopg2
 
 from src.resources.v0_0_1.readout import readCentroids as rC
 from src.resources.v0_0_1.insert import insertAlmanac as iA
@@ -85,22 +86,26 @@ def load_almanac_partition(field,
         dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
                                populate=True, alm_file_path=alm_file_path)
 
-        # Create the relevant child table
-        child_table_name = 'obs_%06d' % field.field_id
-        logging.info('Creating table %s' % child_table_name)
-        create_child_table(cursor_int, child_table_name,
-                           'observability',
-                           check_conds=[('field_id', '=', field.field_id), ])
-        # Insert the data points into the child table
-        logging.info('Populating table %s' % child_table_name)
-        iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
-                   update=None, target_table=child_table_name)
-        # Create the necessary indices
-        logging.info('Creating indices on %s' % child_table_name)
-        create_index(cursor_int, child_table_name, ['date', ])
-        create_index(cursor_int, child_table_name, ['date', 'airmass'])
+        try:
+            # Create the relevant child table
+            child_table_name = 'obs_%06d' % field.field_id
+            logging.info('Creating table %s' % child_table_name)
+            create_child_table(cursor_int, child_table_name,
+                               'observability',
+                               check_conds=[('field_id', '=', field.field_id), ])
+            # Insert the data points into the child table
+            logging.info('Populating table %s' % child_table_name)
+            iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
+                       update=None, target_table=child_table_name)
+            # Create the necessary indices
+            logging.info('Creating indices on %s' % child_table_name)
+            create_index(cursor_int, child_table_name, ['date', ])
+            create_index(cursor_int, child_table_name, ['date', 'airmass'])
+        except (psycopg2.ProgrammingError, psycopg2.OperationalError) as e:
+            # Something is wrong, undo what this cursor tried to do
+            cursor_int.connection.rollback()
 
-        return
+    return
 
 
 def make_almanac_n(field, sim_start=datetime.datetime.now(),
