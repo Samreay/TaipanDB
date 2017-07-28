@@ -41,8 +41,8 @@ def load_almanac_partition(field,
         # logging.info('Looking for a matching almanac in %s' % alm_file_path)
         possible_matches = [_ for _ in os.listdir(alm_file_path) if
                             'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
-        logging.info('Possible file matches for field %6d: %d' % (
-            field.field_id, len(possible_matches)))
+        # logging.info('Possible file matches for field %6d: %d' % (
+        #     field.field_id, len(possible_matches)))
         if len(possible_matches) > 0:
             i = 0
             while i < len(possible_matches) and not match:
@@ -50,16 +50,16 @@ def load_almanac_partition(field,
                 endre = re.compile(r'end(?P<ed>[0-9]{6})')
                 startmatch = startre.search(possible_matches[i])
                 endmatch = endre.search(possible_matches[i])
-                logging.info('Matches found: %s, %s' % (startmatch.group('sd'),
-                                                        endmatch.group('ed')))
+                # logging.info('Matches found: %s, %s' % (startmatch.group('sd'),
+                #                                         endmatch.group('ed')))
                 if startmatch and endmatch:
                     sd = datetime.datetime.strptime(
                         startmatch.group('sd'), '%y%m%d').date()
                     ed = datetime.datetime.strptime(
                         endmatch.group('ed'), '%y%m%d').date()
-                    logging.info('Parsed start date %s, end date %s' % (
-                        sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
-                    ))
+                    # logging.info('Parsed start date %s, end date %s' % (
+                    #     sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
+                    # ))
                     if sd <= datetime_from and ed >= datetime_to:
                         match = True
                 if not match:
@@ -80,6 +80,7 @@ def load_almanac_partition(field,
             logging.info('Computing almanac for field %6d' % field.field_id)
             almanac.generate_almanac_bruteforce()
 
+        logging.info('Sourcing dark almanac')
         # Either grab or make the dark almanac
         dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
                                populate=True, alm_file_path=alm_file_path)
