@@ -89,6 +89,23 @@ def load_almanac_partition(field,
         return
 
 
+def load_almanacs_partition_all(cursor):
+    logging.info('Loading almanacs from file to DB')
+    fields = rC.execute(cursor_master, active_only=False)
+
+    load_almanac_partition_partial = partial(load_almanac_partition,
+                                             cursor=cursor,
+                                             datetime_from=sim_start,
+                                             datetime_to=sim_end,
+                                             resolution=15.,
+                                             minimum_airmass=2.0)
+
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
+    _ = pool.map(load_almanac_partition_partial, fields)
+    pool.close()
+    pool.join()
+
+
 def make_almanac_n(field, sim_start=datetime.datetime.now(),
                    sim_end=datetime.datetime.now() + datetime.timedelta(1),
                    minimum_airmass=2.0,
@@ -260,6 +277,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     -------
 
     """
+    pass
 
 
 if __name__ == '__main__':
@@ -310,18 +328,4 @@ if __name__ == '__main__':
     # logging.info('...done!')
 
     # Insert file almanacs into partitioned database
-
-    logging.info('Loading almanacs from file to DB')
-    fields = rC.execute(cursor_master, active_only=False)
-
-    load_almanac_partition_partial = partial(load_almanac_partition,
-                                             cursor=cursor_master,
-                                             datetime_from=sim_start,
-                                             datetime_to=sim_end,
-                                             resolution=15.,
-                                             minimum_airmass=2.0)
-
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
-    _ = pool.map(load_almanac_partition_partial, fields)
-    pool.close()
-    pool.join()
+    load_almanacs_partition_all(cursor_master)
