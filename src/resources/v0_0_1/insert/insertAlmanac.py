@@ -36,7 +36,8 @@ from src.resources.v0_0_1.readout import readScience as rSc
 #     query_result = rSc.execute(cursor)
 
 
-def execute(cursor, field_id, almanac, dark_almanac=None, update=None):
+def execute(cursor, field_id, almanac, dark_almanac=None, update=None,
+            target_table='observability'):
     """
     Insert the given almanac into the database.
 
@@ -63,6 +64,10 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=None):
         values into the DB. Defaults to False. Using True
         should only be necessary if, e.g. fields have changed. Using None will
         throw a ProgrammingError if an identical table row already exists.
+    target_table : str
+        Optional; the name of the table the data should be pushed into.
+        Defaults to 'observability' (i.e. the use of a monolithic table
+        structure) - change this to implement a partitioned table.
 
     Returns
     -------
@@ -102,19 +107,19 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=None):
 
     # Write the data to the db
     if update is None:
-        insert_many_rows(cursor, 'observability',
+        insert_many_rows(cursor, target_table,
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'],
                          skip_on_conflict=False)
     elif not update:
-        insert_many_rows(cursor, 'observability',
+        insert_many_rows(cursor, target_table,
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'],
                          skip_on_conflict=True)
     else:
-        upsert_many_rows(cursor, 'observability',
+        upsert_many_rows(cursor, target_table,
                          data_out,
                          columns=['field_id', 'date', 'airmass',
                                   'sun_alt', 'dark'])
