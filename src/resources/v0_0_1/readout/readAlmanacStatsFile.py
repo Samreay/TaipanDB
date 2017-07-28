@@ -18,7 +18,6 @@ from functools import partial
 
 ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
 
-
 def load_almanac_partition(field,
                            cursor=get_connection().cursor(),
                            alm_file_path=ALMANAC_FILE_LOC,
@@ -87,23 +86,6 @@ def load_almanac_partition(field,
         create_index(cursor_int, child_table_name, ['date', 'airmass'])
 
         return
-
-
-def load_almanacs_partition_all(cursor):
-    logging.info('Loading almanacs from file to DB')
-    fields = rC.execute(cursor, active_only=False)
-
-    load_almanac_partition_partial = partial(load_almanac_partition,
-                                             cursor=cursor,
-                                             datetime_from=sim_start,
-                                             datetime_to=sim_end,
-                                             resolution=15.,
-                                             minimum_airmass=2.0)
-
-    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
-    _ = pool.map(load_almanac_partition_partial, fields)
-    pool.close()
-    pool.join()
 
 
 def make_almanac_n(field, sim_start=datetime.datetime.now(),
@@ -281,6 +263,22 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
 
 
 if __name__ == '__main__':
+
+    def load_almanacs_partition_all(cursor):
+        logging.info('Loading almanacs from file to DB')
+        fields = rC.execute(cursor, active_only=False)
+
+        load_almanac_partition_partial = partial(load_almanac_partition,
+                                                 cursor=cursor,
+                                                 datetime_from=sim_start,
+                                                 datetime_to=sim_end,
+                                                 resolution=15.,
+                                                 minimum_airmass=2.0)
+
+        pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
+        _ = pool.map(load_almanac_partition_partial, fields)
+        pool.close()
+        pool.join()
 
     # Override the sys.excepthook behaviour to log any errors
     # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
