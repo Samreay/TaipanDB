@@ -3,6 +3,8 @@ import os
 import sys
 import pandas as pd
 
+from src.scripts.extract import generate_conditions_string
+
 
 # -----
 # UTILITY FUNCTIONS
@@ -316,3 +318,48 @@ def create_index(cursor, table, columns, ordering=None):
                                              ordering if ordering else '')
 
     cursor.execute(string)
+
+
+def create_child_table(cursor, table, parent_table, check_conds=[]):
+    """
+    Create a table which inherits from a parent table.
+
+    Parameters
+    ----------
+    cursor : psycopg3.connection.cursor object
+        For communication with the database
+    table : str
+        The name of the table we wish to create.
+    parent_table : str
+        The name of the parent table we wish to inherit from
+    check_conds : list of tuples
+        A list of 3-tuples, denoting the CHECK conditions we wish to apply
+        to the child table. Defaults to the empty list (i.e. no CHECK
+        conditions).
+
+    Returns
+    -------
+    Nil. Database is updated in-situ.
+    """
+    # Input checking
+    table = str(table)
+    parent_table = str(parent_table)
+
+    # Generate the conditions string
+    conds_string = generate_conditions_string(check_conds)
+
+    logging.info('Creating table %s, child of %s' % (table, parent_table,))
+
+    # Create the query string
+    query_string = "CREATE TABLE %s (CHECK %s) INHERITS (%s)" % (
+        table,
+        conds_string,
+        parent_table,
+    )
+
+    if cursor is not None:
+        cursor.execute(query_string)
+    else:
+        logging.debug('Query string would be: %s' % query_string)
+
+    return
