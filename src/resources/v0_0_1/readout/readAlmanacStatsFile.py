@@ -52,7 +52,7 @@ def load_almanac_partition(field,
                         startmatch.group(0), '%y%m%d').date()
                     ed = datetime.datetime.strptime(
                         endmatch.group(0), '%y%m%d').date()
-                    if sd <= datetime_from.date() and ed > datetime_to.date():
+                    if sd <= datetime_from and ed > datetime_to:
                         match = True
                 if not match:
                     i += 1
@@ -64,9 +64,9 @@ def load_almanac_partition(field,
             check = almanac.load(filepath=alm_file_path)
 
         if not match or not check:
-            sd = datetime_from.date()
+            sd = datetime_from
             almanac.start_date = sd
-            ed = datetime_to.date() + datetime.timedelta(1)
+            ed = datetime_to
             almanac.end_date = ed
             almanac.generate_almanac_bruteforce()
 
