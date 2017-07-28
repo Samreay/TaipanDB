@@ -103,6 +103,7 @@ def load_almanac_partition(field,
             create_index(cursor_int, child_table_name, ['date', 'airmass'])
         except (psycopg2.ProgrammingError, psycopg2.OperationalError) as e:
             # Something is wrong, undo what this cursor tried to do
+            logging.info('Table already exists for field %d' % field.field_id)
             cursor_int.connection.rollback()
 
     return
