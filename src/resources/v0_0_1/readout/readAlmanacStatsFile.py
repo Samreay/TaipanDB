@@ -303,6 +303,8 @@ if __name__ == '__main__':
         pool.close()
         pool.join()
 
+        logging.info('Loading of all Almanacs from file complete!')
+
     # Override the sys.excepthook behaviour to log any errors
     # http://stackoverflow.com/questions/6234405/logging-uncaught-exceptions-in-python
     def excepthook_override(exctype, value, tb):
