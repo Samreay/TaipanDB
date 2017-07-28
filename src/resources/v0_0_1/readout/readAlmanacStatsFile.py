@@ -86,7 +86,7 @@ def load_almanac_partition(field,
                                populate=True, alm_file_path=alm_file_path)
 
         # Create the relevant child table
-        child_table_name = 'obs_%6d' % field.field_id
+        child_table_name = 'obs_%06d' % field.field_id
         logging.info('Creating table %s' % child_table_name)
         create_child_table(cursor_int, child_table_name,
                            'observability',
