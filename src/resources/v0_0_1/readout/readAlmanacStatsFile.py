@@ -61,6 +61,7 @@ def load_almanac_partition(field,
             # sd and ed will still be in memory from the match being made
             almanac.start_date = sd
             almanac.end_date = ed
+            logging.info('Loading almanac for field %6d' % field.field_id)
             check = almanac.load(filepath=alm_file_path)
 
         if not match or not check:
@@ -68,6 +69,7 @@ def load_almanac_partition(field,
             almanac.start_date = sd
             ed = datetime_to
             almanac.end_date = ed
+            logging.info('Computing almanac for field %6d' % field.field_id)
             almanac.generate_almanac_bruteforce()
 
         # Either grab or make the dark almanac
