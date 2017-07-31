@@ -54,6 +54,25 @@ def query_yes_no(question, default="no"):
                              "(or 'y' or 'n').\n")
 
 
+def destroy_table(cursor, table_name):
+    """
+    Remove a single table from the DB schema
+
+    Parameters
+    ----------
+    cursor
+    table_name
+
+    Returns
+    -------
+
+    """
+
+    query_string = 'DROP TABLE %s' % table_name
+    cursor.execute(query_string)
+    return
+
+
 def destroy_tables(cursor):
     """
     DROP all tables owned by the database user specified in the cursor.
