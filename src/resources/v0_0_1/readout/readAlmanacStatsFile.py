@@ -375,38 +375,38 @@ if __name__ == '__main__':
     cursor_master = get_connection().cursor()
 
     # Create the child tables
-    for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
-        child_table_name = obs_child_table_name(i)
-        create_child_table(cursor_master,
-                           child_table_name, 'observability',
-                           check_conds=[
-                               ('field_id', '>', i-1),
-                               ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
-                           primary_key=['field_id', 'date', ])
-        logging.info('Created table %s' % child_table_name)
-
-
-    # Generate file almanacs
-
-    # logging.info('Generating dark almanac...')
-    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    # dark_alm.save(filepath=ALMANAC_FILE_LOC)
-    # logging.info('Done!')
+    # for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
+    #     child_table_name = obs_child_table_name(i)
+    #     create_child_table(cursor_master,
+    #                        child_table_name, 'observability',
+    #                        check_conds=[
+    #                            ('field_id', '>', i-1),
+    #                            ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
+    #                        primary_key=['field_id', 'date', ])
+    #     logging.info('Created table %s' % child_table_name)
     #
-    # logging.info('Generating standard almanacs...')
-    # create_almanac_files(cursor_master, sim_start, sim_end, resolution=15.,
-    #                      minimum_airmass=2.0, active_only=False)
-    # logging.info('...done!')
-
-    # Insert file almanacs into partitioned database
-    load_almanacs_partition_all(cursor_master)
+    #
+    # # Generate file almanacs
+    #
+    # # logging.info('Generating dark almanac...')
+    # # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    # # dark_alm.save(filepath=ALMANAC_FILE_LOC)
+    # # logging.info('Done!')
+    # #
+    # # logging.info('Generating standard almanacs...')
+    # # create_almanac_files(cursor_master, sim_start, sim_end, resolution=15.,
+    # #                      minimum_airmass=2.0, active_only=False)
+    # # logging.info('...done!')
+    #
+    # # Insert file almanacs into partitioned database
+    # load_almanacs_partition_all(cursor_master)
 
     # Create the necessary indices
     for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
         logging.info('Creating indices on %s' % child_table_name)
         create_index(cursor_master, child_table_name, ['date', ])
-        create_index(cursor_master, child_table_name, ['field', ])
+        create_index(cursor_master, child_table_name, ['field_id', ])
         # create_index(cursor_int, child_table_name, ['field_id', 'date'])
         create_index(cursor_master, child_table_name, ['date', 'airmass'])
         create_index(cursor_master, child_table_name, ['date', 'sun_alt'])
