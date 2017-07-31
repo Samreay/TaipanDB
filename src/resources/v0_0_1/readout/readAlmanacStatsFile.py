@@ -19,6 +19,15 @@ from functools import partial
 
 ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
 
+OBS_CHILD_CHUNK_SIZE = 200
+MAX_TABLES = 20000
+
+
+def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
+    low_val = (field_id % chunk_size) + 1
+    high_val = low_val + chunk_size
+    return 'obs_%06d_to_%06d' % (low_val, high_val, )
+
 
 def load_almanac_partition(field,
                            # cursor=get_connection().cursor(),
@@ -86,31 +95,46 @@ def load_almanac_partition(field,
         dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
                                populate=True, alm_file_path=alm_file_path)
 
+        # This code chunk creates a child for each field
+        # Turns out PSQL can't handle this as yet
+        # try:
+        #     # Create the relevant child table
+        #     child_table_name = 'obs_%06d' % field.field_id
+        #     logging.info('Creating table %s' % child_table_name)
+        #     create_child_table(cursor_int, child_table_name,
+        #                        'observability',
+        #                        check_conds=[
+        #                            ('field_id', '=', field.field_id),
+        #                        ],
+        #                        primary_key=['field_id', 'date', ])
+        #     # Insert the data points into the child table
+        #     logging.info('Populating table %s' % child_table_name)
+        #     iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
+        #                update=None, target_table=child_table_name)
+        #     # Create the necessary indices
+        #     logging.info('Creating indices on %s' % child_table_name)
+        #     create_index(cursor_int, child_table_name, ['date', ])
+        #     create_index(cursor_int, child_table_name, ['field', ])
+        #     create_index(cursor_int, child_table_name, ['field_id', 'date'])
+        #     create_index(cursor_int, child_table_name, ['date', 'airmass'])
+        #     create_index(cursor_int, child_table_name, ['date', 'sun_alt'])
+        # except (psycopg2.ProgrammingError, psycopg2.OperationalError) as e:
+        #     # Something is wrong, undo what this cursor tried to do
+        #     logging.info('Table already exists for field %d' % field.field_id)
+        #     cursor_int.connection.rollback()
+
+        # This code block does things based on splitting it into chunks
+        # of OBS_CHILD_CHUNK_SIZE fields
         try:
-            # Create the relevant child table
-            child_table_name = 'obs_%06d' % field.field_id
-            logging.info('Creating table %s' % child_table_name)
-            create_child_table(cursor_int, child_table_name,
-                               'observability',
-                               check_conds=[
-                                   ('field_id', '=', field.field_id),
-                               ],
-                               primary_key=['field_id', 'date', ])
-            # Insert the data points into the child table
-            logging.info('Populating table %s' % child_table_name)
-            iA.execute(cursor_int, field.field_id, almanac, dark_almanac=dark_alm,
-                       update=None, target_table=child_table_name)
-            # Create the necessary indices
-            logging.info('Creating indices on %s' % child_table_name)
-            create_index(cursor_int, child_table_name, ['date', ])
-            create_index(cursor_int, child_table_name, ['field', ])
-            create_index(cursor_int, child_table_name, ['field_id', 'date'])
-            create_index(cursor_int, child_table_name, ['date', 'airmass'])
-            create_index(cursor_int, child_table_name, ['date', 'sun_alt'])
+            child_table_name = obs_child_table_name(field.field_id)
+            iA.execute(cursor_int, field.field_id, almanac,
+                       dark_almanac=dark_alm, update=None,
+                       target_table=child_table_name)
         except (psycopg2.ProgrammingError, psycopg2.OperationalError) as e:
-            # Something is wrong, undo what this cursor tried to do
-            logging.info('Table already exists for field %d' % field.field_id)
-            cursor_int.connection.rollback()
+            logging.info('Insertion error for field %d' %
+                         field.field_id)
+
+
 
     return
 
@@ -350,6 +374,17 @@ if __name__ == '__main__':
 
     cursor_master = get_connection().cursor()
 
+    # Create the child tables
+    for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
+        create_child_table(cursor_master,
+                           obs_child_table_name(i), 'observability',
+                           check_conds=[
+                               ('field_id', '>', i-1),
+                               ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
+                           primary_key=['field_id', 'date', ])
+        logging.info('Created table %s' % obs_child_table_name(i))
+
+
     # Generate file almanacs
 
     # logging.info('Generating dark almanac...')
@@ -364,3 +399,13 @@ if __name__ == '__main__':
 
     # Insert file almanacs into partitioned database
     load_almanacs_partition_all(cursor_master)
+
+    # Create the necessary indices
+    for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
+        child_table_name = obs_child_table_name(i)
+        logging.info('Creating indices on %s' % child_table_name)
+        create_index(cursor_master, child_table_name, ['date', ])
+        create_index(cursor_master, child_table_name, ['field', ])
+        # create_index(cursor_int, child_table_name, ['field_id', 'date'])
+        create_index(cursor_master, child_table_name, ['date', 'airmass'])
+        create_index(cursor_master, child_table_name, ['date', 'sun_alt'])
