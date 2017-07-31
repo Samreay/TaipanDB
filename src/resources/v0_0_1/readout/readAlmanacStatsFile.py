@@ -24,7 +24,7 @@ MAX_TABLES = 20000
 
 
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
-    low_val = field_id - ((field_id - 1) % chunk_size) + 1
+    low_val = field_id - ((field_id - 1) % chunk_size)
     high_val = low_val + chunk_size - 1
     return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
@@ -376,13 +376,14 @@ if __name__ == '__main__':
 
     # Create the child tables
     for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
+        child_table_name = obs_child_table_name(i)
         create_child_table(cursor_master,
-                           obs_child_table_name(i), 'observability',
+                           child_table_name, 'observability',
                            check_conds=[
                                ('field_id', '>', i-1),
                                ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
                            primary_key=['field_id', 'date', ])
-        logging.info('Created table %s' % obs_child_table_name(i))
+        logging.info('Created table %s' % child_table_name)
 
 
     # Generate file almanacs
