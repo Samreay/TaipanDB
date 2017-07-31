@@ -24,7 +24,7 @@ MAX_TABLES = 20000
 
 
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
-    low_val = field_id - (field_id % chunk_size) + 1
+    low_val = field_id - ((field_id - 1) % chunk_size) + 1
     high_val = low_val + chunk_size - 1
     return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
