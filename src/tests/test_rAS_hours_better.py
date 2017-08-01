@@ -89,7 +89,7 @@ if __name__ == '__main__':
     for i in range(5):
         logging.warning('Pass %d...' % (i+1, ))
 
-        cents = rC.execute(cursor)
+        cents = rC.execute(cursor, field_ids=range(1, 6400))
         fields = [_.field_id for _ in random.sample(cents, 3200)]
 
         # # Batch-parallel
