@@ -92,7 +92,7 @@ if __name__ == '__main__':
         cents = rC.execute(cursor, field_ids=range(1, 6400))
         fields = [_.field_id for _ in random.sample(cents, 3200)]
 
-        # # Batch-parallel
+        # Batch-parallel
         # logging.warning('   Batch, parallel...')
         # start = datetime.datetime.now()
         # rAS_hrs_obs_bulk_partial = partial(rAS_hours_obs_bulk,
@@ -118,15 +118,15 @@ if __name__ == '__main__':
         # end = datetime.datetime.now()
         # delta = end - start
         # results_dict['batch-single'].append(delta.total_seconds())
-        #
-        #
-        # # Mono-single
-        # logging.warning('   Mono, single...')
-        # start = datetime.datetime.now()
-        # _ = [rAS.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
-        # end = datetime.datetime.now()
-        # delta = end - start
-        # results_dict['mono-single'].append(delta.total_seconds())
+
+
+        # Mono-single
+        logging.warning('   Mono, single...')
+        start = datetime.datetime.now()
+        _ = [rAS.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
+        end = datetime.datetime.now()
+        delta = end - start
+        results_dict['mono-single'].append(delta.total_seconds())
 
         # Mono-parallel
         logging.warning('   Mono, parallel...')
