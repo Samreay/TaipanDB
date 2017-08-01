@@ -363,7 +363,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                 # logging.info('Parsed start date %s, end date %s' % (
                 #     sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
                 # ))
-                if sd <= datetime_from and ed >= datetime_to:
+                if sd <= datetime_from.date() and ed >= datetime_to.date():
                     match = True
             if not match:
                 i += 1
