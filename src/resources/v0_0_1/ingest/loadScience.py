@@ -203,7 +203,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           row['z_obs'],
                           row['gminusi_AB'],
                           row['Jmag_Vega_2MASS'],
-                          row['JminusK_Vega_2MASS'] + 0.2,
+                          row['JminusK_Vega_2MASS'],
                           row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
                           False,
