@@ -53,6 +53,8 @@ def execute(cursor, target_ids=None, active_only=True):
                                               'success', 'observations',
                                               'is_sdss_legacy',
                                               'has_sdss_zspec',
+                                              'ancillary_flags',
+                                              'ancillary_priority',
                                               ])
 
     logging.info('Extracted %d targets from database' % len(targets_db))

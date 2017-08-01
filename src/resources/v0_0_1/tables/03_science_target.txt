@@ -23,6 +23,8 @@ visits                      integer     False           0                   None
 repeats                     integer     False           0                   None                False    None    None    "number of repeats so far"
 observations                integer     False           0                   None                False    None    None    "number of total obs. of this target"
 priority                    integer     False           1                   None                False    None    None    "priority of target"
+ancillary_flags             integer     False           0                   None                False    None    None    "Ancillary program bitmask"
+ancillary_priority          integer     False           0                   None                False    None    None    "Ancillary program priority"
 difficulty                  integer     False           1                   None                False    None    None    "difficulty of target"
 done                        timestamp   True            None                None                False    None    None    "Date when target was marked done"
 success                     boolean     False           False               None                False    None    None    "Has the target been successfully observed"

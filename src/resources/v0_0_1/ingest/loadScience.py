@@ -222,7 +222,9 @@ def execute(cursor, science_file=None, mark_active=True):
                               row['z_obs'] > 0.1
                           )
                                 ) and
-                               not row['is_prisci_vpec_target'])] for
+                               not row['is_prisci_vpec_target']),
+                          int(row['ancillary_flags']),
+                          int(row['ancillary_priority'])] for
                          row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
@@ -233,7 +235,8 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_SDSS_LEGACY",
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET",
-                    "HAS_SDSS_ZSPEC", "SUCCESS"]
+                    "HAS_SDSS_ZSPEC", "SUCCESS",
+                    "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)

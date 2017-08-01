@@ -120,7 +120,9 @@ def execute(cursor, tile_pk, target_list, success_targets,
                                'difficulty',
                                'done',
                                'success',
-                               'tile_pk']],
+                               'tile_pk',
+                               'ancillary_priority',
+                               'ancillary_flags']],
                      columns=['target_id',
                               'is_h0_target',
                               'is_vpec_target',
@@ -139,7 +141,9 @@ def execute(cursor, tile_pk, target_list, success_targets,
                               'difficulty',
                               'done',
                               'success',
-                              'tile_pk'])
+                              'tile_pk',
+                              'ancillary_priority',
+                              'ancillary_flags'])
 
     logging.debug('Observing log complete')
 
