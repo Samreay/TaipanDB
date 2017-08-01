@@ -93,7 +93,9 @@ def get_airmass(cursor, field_ids, dt, resolution=15.):
                               ('date', '<=',
                                dt + datetime.timedelta(
                                    minutes=resolution / 2.)),
-                              ('field_id', 'IN', field_ids),
+                              ('field_id', 'IN', field_ids) if
+                              len(field_ids) > 1 else
+                              ('field_id', '=', field_ids[0]),
                           ])
     return result
 
