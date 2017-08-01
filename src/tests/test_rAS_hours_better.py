@@ -131,12 +131,12 @@ if __name__ == '__main__':
         # results_dict['mono-single'].append(delta.total_seconds())
 
         # File-single
-        logging.warning('   Mono, single...')
-        start = datetime.datetime.now()
-        _ = [rASF.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
-        end = datetime.datetime.now()
-        delta = end - start
-        results_dict['file-single'].append(delta.total_seconds())
+        # logging.warning('   File, single...')
+        # start = datetime.datetime.now()
+        # _ = [rASF.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
+        # end = datetime.datetime.now()
+        # delta = end - start
+        # results_dict['file-single'].append(delta.total_seconds())
 
         # Mono-parallel
         logging.warning('   Mono, parallel...')

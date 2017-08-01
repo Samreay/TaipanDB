@@ -9,6 +9,8 @@ import traceback
 
 from src.scripts.connection import get_connection
 
+from src.resources.v0_0_1.manipulate import makeTargetPosn as mTP
+
 
 def execute(cursor, science_file=None, mark_active=True):
     """
@@ -187,6 +189,51 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_PRISCI_VPEC_TARGET",
                     "IS_FULL_VPEC_TARGET",
                     "HAS_SDSS_ZSPEC", "SUCCESS"]
+    elif science_file.split('/')[-1] in [
+        'Taipan_InputCat_v0.3_20170731.fits']:
+        values_table1 = [[row['uniqid'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [[row['uniqid'],
+                          False, False,  # False,
+                          row['z_obs'],
+                          row['gminusi_AB'],
+                          row['Jmag_Vega_2MASS'],
+                          row['JminusK_Vega_2MASS'] + 0.2,
+                          row['extBV'], row['glat'],
+                          bool(row['is_nircol_selected']),
+                          False,
+                          bool(row['is_iband_selected']),
+                          bool((
+                                   row['is_in_kids_region'] and
+                                   row['is_iband_selected']) or
+                               row['is_sdss_legacy_target']
+                               ),  # Compute if target is in KiDS regions
+                          bool(row['is_sdss_legacy_target']),
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['is_prisci_vpec_target']),
+                          row['zreference_cat'] == 1,
+                          bool((row['zreference_cat'] == 1 or (
+                              row['zreference_cat'] > 0 and
+                              row['z_obs'] > 0.1
+                          )
+                                ) and
+                               not row['is_prisci_vpec_target'])] for
+                         row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
+                    "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_SDSS_LEGACY",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)
@@ -241,7 +288,15 @@ if __name__ == '__main__':
     # Execute the simulation based on command-line arguments
     logging.debug('Doing execute function')
     execute(cursor,
-            science_file='Taipan_mock_inputcat_v1.1_170208.fits')
+            # science_file='Taipan_mock_inputcat_v1.1_170208.fits',
+            science_file='Taipan_InputCat_v0.3_20170731.fits',
+    )
+    conn.commit()
+    logging.info('Making target-position information')
+    mTP.execute(cursor, do_guides=False, do_standards=False,
+                do_obs_targets=True,
+                parallel_workers=7,
+                active_only=False)
     conn.commit()
 
     global_end = datetime.datetime.now()
