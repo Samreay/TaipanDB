@@ -201,11 +201,11 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
                       observing_period=1,
                       resolution=resolution,
                       minimum_airmass=minimum_airmass,
-                      populate=False, alm_file_path=alm_file_path)
+                      populate=False, alm_file_path=alm_dir)
     # Examine the almanancs directory for an almanac for this field
     match = False
     # logging.info('Looking for a matching almanac in %s' % alm_file_path)
-    possible_matches = [_ for _ in os.listdir(alm_file_path) if
+    possible_matches = [_ for _ in os.listdir(alm_dir) if
                         'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
     # logging.info('Possible file matches for field %6d: %d' % (
     #     field.field_id, len(possible_matches)))
@@ -338,11 +338,11 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                       observing_period=1,
                       resolution=resolution,
                       minimum_airmass=minimum_airmass,
-                      populate=False, alm_file_path=alm_file_path)
+                      populate=False, alm_file_path=alm_dir)
     # Examine the almanancs directory for an almanac for this field
     match = False
     # logging.info('Looking for a matching almanac in %s' % alm_file_path)
-    possible_matches = [_ for _ in os.listdir(alm_file_path) if
+    possible_matches = [_ for _ in os.listdir(alm_dir) if
                         'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
     # logging.info('Possible file matches for field %6d: %d' % (
     #     field.field_id, len(possible_matches)))
