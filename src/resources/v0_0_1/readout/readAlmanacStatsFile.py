@@ -199,25 +199,34 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
     # Load an Almanac - we'll change the dates later
     almanac = Almanac(field.ra, field.dec, datetime.date.today(),
                       observing_period=1,
-                      resolution=resolution, minimum_airmass=minimum_airmass,
-                      populate=False)
+                      resolution=resolution,
+                      minimum_airmass=minimum_airmass,
+                      populate=False, alm_file_path=alm_file_path)
     # Examine the almanancs directory for an almanac for this field
     match = False
-    possible_matches = [_ for _ in os.listdir(alm_dir) if
-                        'R%.1f_D%.1f' % (field.ra, field.dec, ) in _]
+    # logging.info('Looking for a matching almanac in %s' % alm_file_path)
+    possible_matches = [_ for _ in os.listdir(alm_file_path) if
+                        'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
+    # logging.info('Possible file matches for field %6d: %d' % (
+    #     field.field_id, len(possible_matches)))
     if len(possible_matches) > 0:
         i = 0
         while i < len(possible_matches) and not match:
-            startre = re.compile(r'start[0-9]{6}')
-            endre = re.compile(r'end[0-9]{6}')
-            startmatch = startre.match(possible_matches[i])
-            endmatch = endre.match(possible_matches[i])
+            startre = re.compile(r'start(?P<sd>[0-9]{6})')
+            endre = re.compile(r'end(?P<ed>[0-9]{6})')
+            startmatch = startre.search(possible_matches[i])
+            endmatch = endre.search(possible_matches[i])
+            # logging.info('Matches found: %s, %s' % (startmatch.group('sd'),
+            #                                         endmatch.group('ed')))
             if startmatch and endmatch:
                 sd = datetime.datetime.strptime(
-                    startmatch.group(0), '%y%m%d').date()
+                    startmatch.group('sd'), '%y%m%d').date()
                 ed = datetime.datetime.strptime(
-                    endmatch.group(0), '%y%m%d').date()
-                if sd <= datetime_from.date() and ed > datetime_to.date():
+                    endmatch.group('ed'), '%y%m%d').date()
+                # logging.info('Parsed start date %s, end date %s' % (
+                #     sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
+                # ))
+                if sd <= datetime_from and ed >= datetime_to:
                     match = True
             if not match:
                 i += 1
@@ -226,15 +235,18 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
         # sd and ed will still be in memory from the match being made
         almanac.start_date = sd
         almanac.end_date = ed
+        logging.info('Loading almanac for field %6d' % field.field_id)
         check = almanac.load(filepath=alm_dir)
 
     if not match or not check:
-        sd = datetime_from.date()
+        sd = datetime_from
         almanac.start_date = sd
-        ed = datetime_to.date() + datetime.timedelta(1)
+        ed = datetime_to
         almanac.end_date = ed
+        logging.info('Computing almanac for field %6d' % field.field_id)
         almanac.generate_almanac_bruteforce()
 
+    logging.info('Sourcing dark almanac')
     # Either grab or make the dark almanac
     dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
                            populate=True, alm_file_path=alm_dir)
@@ -287,10 +299,12 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     return per
 
+
 def hours_observable(cursor, field_id, datetime_from, datetime_to,
                      exclude_grey_time=True, exclude_dark_time=False,
                      minimum_airmass=2.0, hours_better=True,
-                     resolution=15., airmass_delta=0.05):
+                     resolution=15., airmass_delta=0.05,
+                     alm_dir=ALMANAC_FILE_LOC):
     """
     Determine the number of hours observable from Python-pickled Almanacs.
     Parameters
@@ -310,7 +324,80 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
     -------
 
     """
-    pass
+    if exclude_dark_time and exclude_grey_time:
+        raise ValueError("Can't exclude both dark and grey time")
+
+    if datetime_to is None:
+        raise ValueError("datetime_to can't be none for file version of "
+                         "next_observable_period")
+
+    # Read in the field information from the database
+    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)
+
+    almanac = Almanac(field.ra, field.dec, datetime.date.today(),
+                      observing_period=1,
+                      resolution=resolution,
+                      minimum_airmass=minimum_airmass,
+                      populate=False, alm_file_path=alm_file_path)
+    # Examine the almanancs directory for an almanac for this field
+    match = False
+    # logging.info('Looking for a matching almanac in %s' % alm_file_path)
+    possible_matches = [_ for _ in os.listdir(alm_file_path) if
+                        'R%.1f_D%.1f' % (field.ra, field.dec,) in _]
+    # logging.info('Possible file matches for field %6d: %d' % (
+    #     field.field_id, len(possible_matches)))
+    if len(possible_matches) > 0:
+        i = 0
+        while i < len(possible_matches) and not match:
+            startre = re.compile(r'start(?P<sd>[0-9]{6})')
+            endre = re.compile(r'end(?P<ed>[0-9]{6})')
+            startmatch = startre.search(possible_matches[i])
+            endmatch = endre.search(possible_matches[i])
+            # logging.info('Matches found: %s, %s' % (startmatch.group('sd'),
+            #                                         endmatch.group('ed')))
+            if startmatch and endmatch:
+                sd = datetime.datetime.strptime(
+                    startmatch.group('sd'), '%y%m%d').date()
+                ed = datetime.datetime.strptime(
+                    endmatch.group('ed'), '%y%m%d').date()
+                # logging.info('Parsed start date %s, end date %s' % (
+                #     sd.strftime('%y%m%d'), ed.strftime('%y%m%d')
+                # ))
+                if sd <= datetime_from and ed >= datetime_to:
+                    match = True
+            if not match:
+                i += 1
+
+    if match:
+        # sd and ed will still be in memory from the match being made
+        almanac.start_date = sd
+        almanac.end_date = ed
+        logging.info('Loading almanac for field %6d' % field.field_id)
+        check = almanac.load(filepath=alm_dir)
+
+    if not match or not check:
+        sd = datetime_from
+        almanac.start_date = sd
+        ed = datetime_to
+        almanac.end_date = ed
+        logging.info('Computing almanac for field %6d' % field.field_id)
+        almanac.generate_almanac_bruteforce()
+
+    logging.info('Sourcing dark almanac')
+    # Either grab or make the dark almanac
+    dark_alm = DarkAlmanac(sd, end_date=ed, resolution=15.,
+                           populate=True, alm_file_path=alm_dir)
+
+    # Perform the calculation
+    hours_obs = almanac.hours_observable(datetime_from,
+                                         datetime_to=datetime_to,
+                                         exclude_grey_time=exclude_grey_time,
+                                         exclude_dark_time=exclude_dark_time,
+                                         dark_almanac=dark_alm,
+                                         hours_better=hours_better,
+                                         minimum_airmass=minimum_airmass,
+                                         airmass_delta=airmass_delta)
+    return hours_obs
 
 
 if __name__ == '__main__':

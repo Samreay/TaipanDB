@@ -12,6 +12,7 @@ import random
 import numpy as np
 
 from src.resources.v0_0_1.readout import readAlmanacStats as rAS
+from src.resources.v0_0_1.readout import readAlmanacStatsFile as rASF
 from src.resources.v0_0_1.readout import readCentroids as rC
 
 from src.scripts.connection import get_connection
@@ -81,6 +82,7 @@ if __name__ == '__main__':
         'mono-single': [],
         'batch-single': [],
         'batch-multi': [],
+        'file-single': [],
     }
 
     dt_f = datetime.datetime(2017, 10, 1, 0, 0)
@@ -121,12 +123,20 @@ if __name__ == '__main__':
 
 
         # Mono-single
+        # logging.warning('   Mono, single...')
+        # start = datetime.datetime.now()
+        # _ = [rAS.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
+        # end = datetime.datetime.now()
+        # delta = end - start
+        # results_dict['mono-single'].append(delta.total_seconds())
+
+        # File-single
         logging.warning('   Mono, single...')
         start = datetime.datetime.now()
-        _ = [rAS.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
+        _ = [rASF.hours_observable(cursor, f, dt_f, dt_t) for f in fields]
         end = datetime.datetime.now()
         delta = end - start
-        results_dict['mono-single'].append(delta.total_seconds())
+        results_dict['file-single'].append(delta.total_seconds())
 
         # Mono-parallel
         logging.warning('   Mono, parallel...')
