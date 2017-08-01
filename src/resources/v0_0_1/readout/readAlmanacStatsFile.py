@@ -193,7 +193,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
                          "next_observable_period")
 
     # Read in the field information from the database
-    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)
+    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)[0]
 
     # Read-in the almanac. If it doesn't exist, create it
     # Load an Almanac - we'll change the dates later
@@ -332,7 +332,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
                          "next_observable_period")
 
     # Read in the field information from the database
-    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)
+    field = rC.execute(cursor, field_ids=[field_id, ], active_only=False)[0]
 
     almanac = Almanac(field.ra, field.dec, datetime.date.today(),
                       observing_period=1,
