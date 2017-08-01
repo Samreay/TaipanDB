@@ -409,6 +409,8 @@ if __name__ == '__main__':
         # create_index(cursor_master, child_table_name, ['field_id', ])
         # create_index(cursor_int, child_table_name, ['field_id', 'date'])
         # create_index(cursor_master, child_table_name, ['date', 'airmass'])
+        create_index(cursor_master, child_table_name, ['date', 'field_id',
+                                                       'airmass'])
         # create_index(cursor_master, child_table_name, ['date', 'sun_alt'])
-        create_index(cursor_master, child_table_name, ['field_id', 'date',
-                                                       'airmass', 'sun_alt'])
+        # create_index(cursor_master, child_table_name, ['field_id', 'date',
+        #                                                'airmass', 'sun_alt'])
