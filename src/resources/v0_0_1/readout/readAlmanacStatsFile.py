@@ -502,3 +502,4 @@ if __name__ == '__main__':
         # create_index(cursor_master, child_table_name, ['field_id', 'date',
         #                                                'airmass', 'sun_alt'])
         cursor_master.execute('CLUSTER %s USING %s_pkey' % child_table_name)
+        cursor_master.connection.commit()
