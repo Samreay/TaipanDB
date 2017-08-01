@@ -491,13 +491,14 @@ if __name__ == '__main__':
     # Create the necessary indices
     for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
-        logging.info('Creating indices on %s' % child_table_name)
+        logging.info('Creating indices & clutser on %s' % child_table_name)
         # create_index(cursor_master, child_table_name, ['date', ])
         # create_index(cursor_master, child_table_name, ['field_id', ])
         # create_index(cursor_int, child_table_name, ['field_id', 'date'])
         # create_index(cursor_master, child_table_name, ['date', 'airmass'])
-        create_index(cursor_master, child_table_name, ['date', 'field_id',
-                                                       'airmass'])
+        # create_index(cursor_master, child_table_name, ['date', 'field_id',
+        #                                                'airmass'])
         # create_index(cursor_master, child_table_name, ['date', 'sun_alt'])
         # create_index(cursor_master, child_table_name, ['field_id', 'date',
         #                                                'airmass', 'sun_alt'])
+        cursor_master.execute('%s_field_id_idx' % child_table_name)
