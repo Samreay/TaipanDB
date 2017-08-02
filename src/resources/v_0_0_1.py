@@ -42,9 +42,9 @@ TABLE_INDICES = {
         'success',
         'is_lowz_target',
     ],
-    'field': [
-        'is_active',
-    ],
+    # 'field': [
+    #     'is_active',
+    # ],
     'target_field': [
         'tile_pk',
     ],
@@ -52,27 +52,27 @@ TABLE_INDICES = {
         'target_id',
         'field_id',
     ],
-    'tile': [
-        'field_id',
-        'is_queued',
-        'is_observed',
-    ],
-    'tiling_config': [
-        'date_config',
-        'date_obs',
-    ],
-    'tiling_info': [
-        'tile_pk',
-        'field_id',
-    ],
-    'observability': [
-        'date',
-        'field_id',
-        # 'airmass',  # never ask for airmass on its own
-        'sun_alt',
-        ['field_id', 'airmass', ],
-        ['field_id', 'airmass', 'date', ],
-    ]
+    # 'tile': [
+    #     'field_id',
+    #     'is_queued',
+    #     'is_observed',
+    # ],
+    # 'tiling_config': [
+    #     'date_config',
+    #     'date_obs',
+    # ],
+    # 'tiling_info': [
+    #     'tile_pk',
+    #     'field_id',
+    # ],
+    # 'observability': [
+    #     'date',
+    #     'field_id',
+    #     # 'airmass',  # never ask for airmass on its own
+    #     'sun_alt',
+    #     ['field_id', 'airmass', ],
+    #     ['field_id', 'airmass', 'date', ],
+    # ]
 }
 
 
@@ -105,8 +105,8 @@ def update(cursor):
     resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
     data_dir = "/data/resources/0.0.1/"
     # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
-    table_dir = resource_dir + os.sep + "tables"
-    # table_dir = '/data/resources/tables_to_replace'
+    # table_dir = resource_dir + os.sep + "tables"
+    table_dir = '/data/resources/tables_to_replace'
 
     # # Clear out the targets table
     # logging.info('Removing existing target catalogues')
@@ -117,11 +117,11 @@ def update(cursor):
 
     create.create_tables(cursor, table_dir)
 
-    fields_file = data_dir + "pointing_centers.radec"
-    loadCentroids.execute(cursor, fields_file=fields_file)
-    fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
-    loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
-                          mark_active=False)
+    # fields_file = data_dir + "pointing_centers.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file)
+    # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
+    #                       mark_active=False)
 
     # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
                              # "reduced.guides_nodups.fits"
@@ -138,7 +138,8 @@ def update(cursor):
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
-    science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
+    science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
     loadScience.execute(cursor, science_file=science_file)
     #
     # # Commit here in case something further along fails
@@ -149,7 +150,8 @@ def update(cursor):
 
     logging.info('Computing target-field relationships...')
     makeTargetPosn.execute(cursor, do_guides=True, do_standards=True,
-                           active_only=False)
+                           active_only=False,
+                           parallel_workers=7)
 
     # Commit again
     logging.info('Committing computed target information...')
@@ -190,39 +192,39 @@ def update(cursor):
     cursor.connection.commit()
     logging.info('...done!')
 
-    # Instantiate the Almanacs
-    sim_start = datetime.date(2017, 4, 1)
-    sim_end = datetime.date(2024, 1, 1)
-    global_start = datetime.datetime.now()
-
-    fields = rCexec(cursor, active_only=False)
-
-    logging.info('Generating dark almanac...')
-    dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    logging.info('Done!')
-
-    # i = 1
-    # for field in fields:
-    #     almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
-    #                       minimum_airmass=2.0, populate=True, resolution=15.)
-    #     logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
-    #     iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
-    #     # Commit after every Almanac due to the expense of computing
-    #     cursor.connection.commit()
-    #     logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
-    #     i += 1
-
-    # 170619 - Use multiprocessing to speed this up (hopefully)
-    make_almanac_n_partial = partial(make_almanac_n,
-                                     sim_start=sim_start, sim_end=sim_end,
-                                     dark_alm=dark_alm)
-    pool = multiprocessing.Pool(8)
-    pool.map(make_almanac_n_partial, fields)
-    pool.close()
-    pool.join()
-
-
-    cursor.connection.commit()
+    # # Instantiate the Almanacs
+    # sim_start = datetime.date(2017, 4, 1)
+    # sim_end = datetime.date(2024, 1, 1)
+    # global_start = datetime.datetime.now()
+    #
+    # fields = rCexec(cursor, active_only=False)
+    #
+    # logging.info('Generating dark almanac...')
+    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    # logging.info('Done!')
+    #
+    # # i = 1
+    # # for field in fields:
+    # #     almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
+    # #                       minimum_airmass=2.0, populate=True, resolution=15.)
+    # #     logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
+    # #     iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+    # #     # Commit after every Almanac due to the expense of computing
+    # #     cursor.connection.commit()
+    # #     logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
+    # #     i += 1
+    #
+    # # 170619 - Use multiprocessing to speed this up (hopefully)
+    # make_almanac_n_partial = partial(make_almanac_n,
+    #                                  sim_start=sim_start, sim_end=sim_end,
+    #                                  dark_alm=dark_alm)
+    # pool = multiprocessing.Pool(8)
+    # pool.map(make_almanac_n_partial, fields)
+    # pool.close()
+    # pool.join()
+    #
+    #
+    # cursor.connection.commit()
 
     # Create the table indices
     generate_indices(cursor)
