@@ -216,7 +216,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           bool(row['is_sdss_legacy_target']),
                           bool(row['is_prisci_vpec_target']),
                           bool(row['is_prisci_vpec_target']),
-                          row['zreference_cat'] == 1,
+                          bool(row['zreference_cat'] == 1),
                           bool((row['zreference_cat'] == 1 or (
                               row['zreference_cat'] > 0 and
                               row['z_obs'] > 0.1
