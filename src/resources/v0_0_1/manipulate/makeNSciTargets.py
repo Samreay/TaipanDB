@@ -189,7 +189,7 @@ def multithread_task(fields,
 
 def execute(cursor, fields=None, use_pri_sci=True,
             unobserved_only=True,
-            multicores=4, chunk_size=1000):
+            multicores=7, chunk_size=1000):
     """
     Calculate the number of targets in each field of each status type.
 
