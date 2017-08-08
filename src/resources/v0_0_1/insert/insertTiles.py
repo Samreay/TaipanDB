@@ -2,7 +2,7 @@
 
 import logging
 from taipan.core import TaipanTile
-from ....scripts.create import insert_many_rows
+from ....scripts.create import insert_many_rows, create_index
 from ....scripts.extract import extract_from, extract_from_joined
 from ..manipulate.makeNSciTargets import execute as mNScTexec
 from ...v0_0_1 import SKY_TARGET_ID
@@ -152,8 +152,10 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     # Write the target assignments to DB
     logging.info('--- Writing to "target_field" table...')
+    cursor.execute('DROP INDEX IF EXISTS target_field_tile_pk_idx')
     insert_many_rows(cursor, "target_field", target_assigns,
                      columns=columns_to_target_field)
+    create_index(cursor, 'target_field', ['tile_pk', ])
 
     logging.debug('Adding tile score info to tiling_info table')
     logging.debug('Computing tile scores')
