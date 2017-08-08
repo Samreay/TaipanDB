@@ -98,7 +98,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     # Write to the tile table
     if cursor is not None:
-        logging.debug('Writing to "tile" table...')
+        logging.info('--- Writing to "tile" table...')
         insert_many_rows(cursor, "tile", write_to_tile,
                          columns=columns_to_tile)
 
@@ -151,7 +151,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
     columns_to_target_field = ['target_id', 'bug_id', 'tile_pk']
 
     # Write the target assignments to DB
-    logging.debug('Writing to "target_field" table...')
+    logging.info('--- Writing to "target_field" table...')
     insert_many_rows(cursor, "target_field", target_assigns,
                      columns=columns_to_target_field)
 
@@ -197,7 +197,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
         raise RuntimeError('There is a programming error in insertTiles, '
                            'where tiling scores are computed - please check')
 
-    logging.debug('Writing tile scores to DB')
+    logging.info('--- Writing tile scores to DB')
     insert_many_rows(cursor, 'tiling_info', tiling_scores,
                      columns=columns_scores)
 
