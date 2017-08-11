@@ -97,6 +97,8 @@ def execute(cursor, tile_pk, target_list, success_targets,
         # print tgt_this_pk
         tgt_info['tile_pk'][np.in1d(tgt_info['target_id'], tgt_this_pk)] = pk
     # success
+    tgt_info = append_fields(tgt_info, 'success_before', tgt_info['success'],
+                             dtypes=bool, usemask=False)
     tgt_info['success'] = success_targets
 
     logging.debug('Writing')
@@ -120,6 +122,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
                                'difficulty',
                                'done',
                                'success',
+                               'success_before',
                                'tile_pk',
                                'ancillary_priority',
                                'ancillary_flags']],
@@ -141,6 +144,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
                               'difficulty',
                               'done',
                               'success',
+                              'success_before',
                               'tile_pk',
                               'ancillary_priority',
                               'ancillary_flags'])
