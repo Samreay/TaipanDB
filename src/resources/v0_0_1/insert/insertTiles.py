@@ -31,7 +31,8 @@ from ..readout import readScience as rSc
 
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False,
-            config_time=datetime.datetime.now(), disqualify_below_min=True):
+            config_time=datetime.datetime.now(), disqualify_below_min=True,
+            remove_index=True):
     """
     Insert the given tiles into the database.
 
@@ -55,6 +56,11 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
         TaipanTile.calculate_tile_score(). Sets tile scores to 0 if tiles do
         not meet minimum numbers of guides and/or standards assigned. Defaults
         to True.
+    remove_index: Boolean (default: True)
+        Boolean value denoting whether to strip the tile_pk index off
+        the target_field table before data insertion, and regenerate
+        it afterwards. Provides a performance boost when inserting a large-ish
+        number of tiles. Defaults to True.
 
     Returns
     -------
@@ -152,10 +158,12 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     # Write the target assignments to DB
     logging.info('--- Writing to "target_field" table...')
-    cursor.execute('DROP INDEX IF EXISTS target_field_tile_pk_idx')
+    if remove_index:
+        cursor.execute('DROP INDEX IF EXISTS target_field_tile_pk_idx')
     insert_many_rows(cursor, "target_field", target_assigns,
                      columns=columns_to_target_field)
-    create_index(cursor, 'target_field', ['tile_pk', ])
+    if remove_index:
+        create_index(cursor, 'target_field', ['tile_pk', ])
 
     logging.debug('Adding tile score info to tiling_info table')
     logging.debug('Computing tile scores')
