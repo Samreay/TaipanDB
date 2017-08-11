@@ -61,7 +61,11 @@ if __name__ == '__main__':
 
     logging.warning('Starting test...')
     logger.setLevel(logging.INFO)
-    for n in [1, 10, 100, 200]:
+    for n in [1,
+              # 10,
+              # 100,
+              # 200,
+              ]:
         start = datetime.datetime.now()
         iT.execute(cursor, tile_list[:n], remove_index=False)
         end = datetime.datetime.now()
