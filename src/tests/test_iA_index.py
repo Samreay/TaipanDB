@@ -56,16 +56,8 @@ if __name__ == '__main__':
         with open('tiles.pobj', 'r') as fileobj:
             tile_list = pickle.load(fileobj)
     except IOError:
-        tile_list = rT.execute(cursor)
+        tile_list = rT.execute(cursor,)
     logging.warning('...done!')
-
-    results_dict = {
-        'mono-multi': [],
-        'mono-single': [],
-        'batch-single': [],
-        'batch-multi': [],
-        'file-single': [],
-    }
 
     logging.warning('Starting test...')
     for n in [1, 10, 100, 200]:
@@ -76,7 +68,7 @@ if __name__ == '__main__':
         logging.warning('   Inserted %04d tiles in %5.1fs' % (n, delta, ))
 
         start = datetime.datetime.now()
-        iT.execute(cursor, tile_list[:n], remove_index=False)
+        iT.execute(cursor, tile_list[:n], remove_index=True)
         end = datetime.datetime.now()
         delta = (end - start).total_seconds()
         logging.warning('   Inserted %04d tiles in %5.1fs with index removal' %
