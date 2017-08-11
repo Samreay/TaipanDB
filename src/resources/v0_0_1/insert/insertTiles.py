@@ -33,7 +33,7 @@ from ..readout import readScience as rSc
 
 def execute(cursor, tile_list, is_queued=False, is_observed=False,
             config_time=datetime.datetime.now(), disqualify_below_min=True,
-            remove_index=True):
+            remove_index=False):
     """
     Insert the given tiles into the database.
 
@@ -57,11 +57,12 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
         TaipanTile.calculate_tile_score(). Sets tile scores to 0 if tiles do
         not meet minimum numbers of guides and/or standards assigned. Defaults
         to True.
-    remove_index: Boolean (default: True)
+    remove_index: Boolean (default: False)
         Boolean value denoting whether to strip the tile_pk index off
         the target_field table before data insertion, and regenerate
-        it afterwards. Provides a performance boost when inserting a large-ish
-        number of tiles. Defaults to True.
+        it afterwards. Provides a performance boost when inserting a very large
+        (or initial) batch of tiles. Defaults to False (only really useful for
+        really large inserts).
 
     Returns
     -------
