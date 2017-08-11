@@ -28,7 +28,7 @@ def index(a, x):
     raise ValueError('Value x is not in list a!')
 
 
-def execute(cursor, tile_pks=None,
+def execute(cursor, tile_pks=None, field_ids=None,
             candidate_targets=None, guide_targets=None,
             standard_targets=None):
     """
@@ -63,6 +63,9 @@ def execute(cursor, tile_pks=None,
         raise RuntimeError('If using readTiles without a cursor, '
                            'you must provide all three target lists')
 
+    if tile_pks and field_ids:
+        raise ValueError('Can only specify one of tile_pks and field_ids')
+
     logging.info('Reading tiles from database')
 
     conditions = []
@@ -71,6 +74,11 @@ def execute(cursor, tile_pks=None,
         tile_pks = list(tile_pks)
         conditions += [
             ('tile_pk', 'IN', tile_pks),
+        ]
+    if field_ids is not None:
+        field_ids = list(field_ids)
+        conditions += [
+            ('field_id', 'IN', field_ids)
         ]
 
     # Get the fibre assignments
