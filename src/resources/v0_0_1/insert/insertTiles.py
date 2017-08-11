@@ -6,6 +6,7 @@ from ....scripts.create import insert_many_rows, create_index
 from ....scripts.extract import extract_from, extract_from_joined
 from ..manipulate.makeNSciTargets import execute as mNScTexec
 from ...v0_0_1 import SKY_TARGET_ID
+import numpy as np
 
 import datetime
 
@@ -84,8 +85,11 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
     logging.info('  --- Forming field set...')
     fields = list(set([t['field_id'] for t in tile_ids]))
     logging.info('  --- Determine max existing tile id...')
-    tile_id_max = {field: max([t['tile_id'] for t in tile_ids if
-                               t['field_id'] == field]) | 0 for
+    fields = np.asarray(fields)
+    # tile_id_max = {field: max([t['tile_id'] for t in tile_ids if
+    #                            t['field_id'] == field]) | 0 for
+    #                field in fields}
+    tile_id_max = {field: np.max(t[t['field_id'] == field]) | 0 for
                    field in fields}
     # Now, include fields into the mix that don't have DB entries yet
     logging.info('  --- Include missing fields...')
