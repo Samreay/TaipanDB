@@ -56,15 +56,15 @@ if __name__ == '__main__':
         with open('tiles.pobj', 'r') as fileobj:
             tile_list = pickle.load(fileobj)
     except IOError:
-        tile_list, _, _, _ = rT.execute(cursor, field_ids=range(3000, 3201))
+        tile_list, _, _, _ = rT.execute(cursor, field_ids=range(4000, 4201))
     logging.warning('...done!')
 
     logging.warning('Starting test...')
     logger.setLevel(logging.INFO)
     for n in [1,
-              # 10,
-              # 100,
-              # 200,
+              10,
+              100,
+              200,
               ]:
         start = datetime.datetime.now()
         iT.execute(cursor, tile_list[:n], remove_index=False)
