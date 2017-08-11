@@ -42,7 +42,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.WARNING)
     console = logging.StreamHandler()
     console.setLevel(logging.WARNING)
-    logging.warning('TESTING PARALLEL SCORING')
+    logging.warning('TESTING TILE INSERTION WITH INDEX REMOVAL/REGEN.')
 
     # Get a cursor
     # TODO: Correct package imports & references
