@@ -56,7 +56,7 @@ if __name__ == '__main__':
         with open('tiles.pobj', 'r') as fileobj:
             tile_list = pickle.load(fileobj)
     except IOError:
-        tile_list, _, _, _ = rT.execute(cursor, field_ids=range(2000, 2201))
+        tile_list, _, _, _ = rT.execute(cursor, field_ids=range(3000, 3201))
     logging.warning('...done!')
 
     logging.warning('Starting test...')

@@ -77,6 +77,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
     #                  for t in tile_list]
 
     # Read out the already existing tile_id
+    logging.info('--- Fetching existing tile IDs...')
     tile_ids = extract_from(cursor, 'tile',
                             columns=['field_id', 'tile_id'])
     fields = list(set([t['field_id'] for t in tile_ids]))
@@ -91,6 +92,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
             tile_id_max[field] = 0
 
     # Create the data to write to the DB
+    logging.info('--- Forming data to write to DB...')
     write_to_tile = []
     field_tile_id_pairs = []
     for t in tile_list:
