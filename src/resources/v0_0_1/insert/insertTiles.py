@@ -78,13 +78,17 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     # Read out the already existing tile_id
     logging.info('--- Fetching existing tile IDs...')
+    logging.info('  --- Read in...')
     tile_ids = extract_from(cursor, 'tile',
                             columns=['field_id', 'tile_id'])
+    logging.info('  --- Forming field set...')
     fields = list(set([t['field_id'] for t in tile_ids]))
+    logging.info('  --- Determine max existing tile id...')
     tile_id_max = {field: max([t['tile_id'] for t in tile_ids if
                                t['field_id'] == field]) | 0 for
                    field in fields}
     # Now, include fields into the mix that don't have DB entries yet
+    logging.info('  --- Include missing fields...')
     for field in [t.field_id for t in tile_list]:
         try:
             _ = tile_id_max[field]
