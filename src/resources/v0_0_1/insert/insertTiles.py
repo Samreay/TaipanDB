@@ -89,7 +89,7 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
     # tile_id_max = {field: max([t['tile_id'] for t in tile_ids if
     #                            t['field_id'] == field]) | 0 for
     #                field in fields}
-    tile_id_max = {field: np.max(t[t['field_id'] == field]) | 0 for
+    tile_id_max = {field: np.max(t[t['field_id'] == field]['tile_id']) | 0 for
                    field in fields}
     # Now, include fields into the mix that don't have DB entries yet
     logging.info('  --- Include missing fields...')
