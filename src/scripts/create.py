@@ -407,5 +407,6 @@ def vacuum_analyze(cursor, table=None):
     -------
     Nil. Database updates are made in-situ by the database server
     """
-
+    logging.info('Running VACUUM ANALYZE on %s' % 'table %s' % table if
+                 table is not None else 'database')
     cursor.execute('VACUUM ANALYZE %s' % table if table is not None else '')
