@@ -454,16 +454,16 @@ if __name__ == '__main__':
 
     cursor_master = get_connection().cursor()
 
-    # Create the child tables
-    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
-        child_table_name = obs_child_table_name(i)
-        create_child_table(cursor_master,
-                           child_table_name, 'observability',
-                           check_conds=[
-                               ('field_id', '>', i-1),
-                               ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
-                           primary_key=['field_id', 'date', ])
-        logging.info('Created table %s' % child_table_name)
+    # # Create the child tables
+    # for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+    #     child_table_name = obs_child_table_name(i)
+    #     create_child_table(cursor_master,
+    #                        child_table_name, 'observability',
+    #                        check_conds=[
+    #                            ('field_id', '>', i-1),
+    #                            ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
+    #                        primary_key=['field_id', 'date', ])
+    #     logging.info('Created table %s' % child_table_name)
 
 
     # Generate file almanacs
@@ -479,22 +479,24 @@ if __name__ == '__main__':
     # logging.info('...done!')
 
     # Insert file almanacs into partitioned database
-    load_almanacs_partition_all(cursor_master)
+    # load_almanacs_partition_all(cursor_master)
 
     # Create the necessary indices
-    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+    for i in range(0, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
         logging.info('Creating indices & clutser on %s' % child_table_name)
-        create_index(cursor_master, child_table_name, ['date', ])
-        create_index(cursor_master, child_table_name, ['field_id', ])
-        create_index(cursor_master, child_table_name, ['date', 'airmass'])
-        create_index(cursor_master, child_table_name, ['field_id', 'date',
-                                                       'airmass'])
+        # create_index(cursor_master, child_table_name, ['date', ])
+        # create_index(cursor_master, child_table_name, ['field_id', ])
+        # create_index(cursor_master, child_table_name, ['date', 'airmass'])
+        # create_index(cursor_master, child_table_name, ['field_id', 'date',
+        #                                                'airmass'],
+        #              unique=True)
         create_index(cursor_master, child_table_name, ['field_id', 'dark',
                                                        'airmass', 'sun_alt',
-                                                       'date'])
-        cursor_master.execute('CLUSTER %s USING %s_pkey' % (child_table_name,
-                                                            child_table_name, ))
+                                                       'date'],
+                     unique=True)
+        # cursor_master.execute('CLUSTER %s USING %s_pkey' % (child_table_name,
+        #                                                     child_table_name, ))
         vacuum_analyze(cursor_master, table=child_table_name)
 
         cursor_master.connection.commit()
