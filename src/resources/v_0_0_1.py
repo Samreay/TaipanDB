@@ -222,6 +222,7 @@ def update(cursor):
     # global_start = datetime.datetime.now()
 
     # Create the child tables
+    logging.info('Creating observability child tables')
     for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
         create.create_child_table(cursor,
@@ -231,7 +232,7 @@ def update(cursor):
                                       ('field_id', '<',
                                        i + OBS_CHILD_CHUNK_SIZE)],
                                   primary_key=['field_id', 'date', ])
-        logging.info('Created table %s' % child_table_name)
+        logging.debug('Created table %s' % child_table_name)
 
     #
     # fields = rCexec(cursor, active_only=False)
