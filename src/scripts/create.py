@@ -387,3 +387,25 @@ def create_child_table(cursor, table, parent_table, check_conds=[],
         logging.debug('Query string would be: %s' % query_string)
 
     return
+
+
+def vacuum_analyze(cursor, table=None):
+    """
+    Run the handy VACUUM ANALYZE command on the specified table. Allows for
+    vastly-improved readout times for large tables of (relatively) static data!
+
+    Parameters
+    ----------
+    cursor : psycopg2.connection.cursor object
+        Cursor for database communication
+    table : str, default None
+        String specifying the table name. Defaults to None, at which point
+        VACUUM ANALYZE will be run over the whole database (which is quite
+        an expensive option!)
+
+    Returns
+    -------
+    Nil. Database updates are made in-situ by the database server
+    """
+
+    cursor.execute('VACUUM ANALYZE %s' % table if table is not None else '')
