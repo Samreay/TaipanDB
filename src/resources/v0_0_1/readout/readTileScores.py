@@ -5,7 +5,7 @@ import numpy as np
 
 
 def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
-            active_only=True):
+            active_only=True, safety_check=False):
     """
     Read in the tile 'scores' for tiles awaiting observation
 
@@ -27,6 +27,10 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
     active_only:
         Optional; Boolean denoting whether to only return scores for active
         fields (True) or all fields (False). Defaults to True.
+    safety_check: Boolean, optional (default: False)
+        Boolean denoting whether to make sure that the requested metrics aren't
+        None for all tiles. Defaults to False (i.e. assumes you will only
+        query the correct, populated metric values).
 
     Returns
     -------
@@ -52,16 +56,17 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
 
     # Check each of the metrics in turn
     # If the metric is None everywhere, exclude it from being returned
-    to_pop = []
-    for i in range(len(metrics)):
-        col_vals = execute_select(cursor.connection,
-                                  'SELECT %s FROM tiling_info' %
-                                  (metrics[i], ))
-        if np.all([c[0] is None for c in col_vals]):
-            to_pop.append(i)
+    if safety_check:
+        to_pop = []
+        for i in range(len(metrics)):
+            col_vals = execute_select(cursor.connection,
+                                      'SELECT %s FROM tiling_info' %
+                                      (metrics[i], ))
+            if np.all([c[0] is None for c in col_vals]):
+                to_pop.append(i)
 
-    for i in to_pop[::-1]:
-        burn = metrics.pop(i)
+        for i in to_pop[::-1]:
+            burn = metrics.pop(i)
 
     # Form conditions
     conditions = []
