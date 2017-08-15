@@ -333,6 +333,9 @@ def create_index(cursor, table, columns, ordering=None,
             raise ValueError('ordering must be one of %s' %
                              allowed_orderings.join(', '))
 
+    logging.info('Creating index on %s using (%s)' % (table,
+                                                      ', '.join(columns)))
+
     string = "CREATE %s INDEX ON %s (%s %s)" % (
         'UNIQUE' if unique else '',
         table,
