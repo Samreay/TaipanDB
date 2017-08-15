@@ -482,7 +482,7 @@ if __name__ == '__main__':
     # load_almanacs_partition_all(cursor_master)
 
     # Create the necessary indices
-    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+    for i in range(5801, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
         logging.info('Creating indices & clutser on %s' % child_table_name)
         # create_index(cursor_master, child_table_name, ['date', ])
