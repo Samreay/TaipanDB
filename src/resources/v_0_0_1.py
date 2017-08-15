@@ -28,6 +28,8 @@ import traceback
 import multiprocessing
 from functools import partial
 
+OBS_CHILD_CHUNK_SIZE = 200
+MAX_FIELDS = 20000
 
 # Define the fields we want to make indices for
 TABLE_INDICES = {
@@ -68,24 +70,45 @@ TABLE_INDICES = {
     # 'observability': [
     #     'date',
     #     'field_id',
-    #     # 'airmass',  # never ask for airmass on its own
-    #     'sun_alt',
-    #     ['field_id', 'airmass', ],
-    #     ['field_id', 'airmass', 'date', ],
+    #     ['date', 'airmass', ],
+    #     ['field_id', 'date', 'airmass', ],
+    #     ['field_id', 'dark', 'airmass', 'sun_alt', 'date', ],
     # ]
 }
+
+
+def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
+    low_val = field_id - ((field_id - 1) % chunk_size)
+    high_val = low_val + chunk_size - 1
+    return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
 
 def generate_indices(cursor):
     logging.info('Generating table indices')
     for tab, fields in TABLE_INDICES.items():
-        for field in fields:
-            logging.info('Starting to index table %s on field %s' %
-                         (tab, field, ))
-            create.create_index(cursor, tab,
-                                [field, ] if not isinstance(field, list)
-                                else field,
-                                ordering=None)
+        if tab != 'observability':
+            for field in fields:
+                logging.info('Starting to index table %s on field %s' %
+                             (tab, field, ))
+                create.create_index(cursor, tab,
+                                    [field, ] if not isinstance(field, list)
+                                    else field,
+                                    ordering=None)
+        else:
+            for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+                child_table_name = obs_child_table_name(i)
+                for field in fields:
+                    logging.info('Starting to index table %s on field %s' %
+                                 (child_table_name, field,))
+                    create.create_index(cursor, child_table_name,
+                                        [field, ] if not isinstance(field, list)
+                                        else field,
+                                        ordering=None)
+                cursor.execute(
+                    'CLUSTER %s USING %s_pkey' % (child_table_name,
+                                                  child_table_name,))
+                create.vacuum_analyze(cursor, table=child_table_name)
+
     logging.info('Indexing complete!')
     return
 
@@ -96,7 +119,8 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
         almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
                           minimum_airmass=2.0, populate=True, resolution=15.)
         logging.info('Computed almanac for field %5d' % (field.field_id, ))
-        iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+        iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm,
+               target_table=obs_child_table_name(field.field_id))
         # Commit after every Almanac due to the expense of computing
         cursor.connection.commit()
         logging.info('Inserted almanac for field %5d' % (field.field_id,))
@@ -196,6 +220,19 @@ def update(cursor):
     # sim_start = datetime.date(2017, 4, 1)
     # sim_end = datetime.date(2024, 1, 1)
     # global_start = datetime.datetime.now()
+
+    # Create the child tables
+    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+        child_table_name = obs_child_table_name(i)
+        create.create_child_table(cursor,
+                                  child_table_name, 'observability',
+                                  check_conds=[
+                                      ('field_id', '>', i - 1),
+                                      ('field_id', '<',
+                                       i + OBS_CHILD_CHUNK_SIZE)],
+                                  primary_key=['field_id', 'date', ])
+        logging.info('Created table %s' % child_table_name)
+
     #
     # fields = rCexec(cursor, active_only=False)
     #

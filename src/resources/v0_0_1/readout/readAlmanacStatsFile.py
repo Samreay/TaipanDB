@@ -10,7 +10,9 @@ import psycopg2
 from src.resources.v0_0_1.readout import readCentroids as rC
 from src.resources.v0_0_1.insert import insertAlmanac as iA
 from src.scripts.connection import get_connection
-from src.scripts.create import create_child_table, create_index
+from src.scripts.create import create_child_table, create_index, vacuum_analyze
+from src.resources.v_0_0_1 import OBS_CHILD_CHUNK_SIZE, MAX_FIELDS, \
+    obs_child_table_name
 
 from taipan.scheduling import Almanac, DarkAlmanac
 
@@ -18,15 +20,6 @@ import multiprocessing
 from functools import partial
 
 ALMANAC_FILE_LOC = '/data/resources/0.0.1/alms/'
-
-OBS_CHILD_CHUNK_SIZE = 200
-MAX_TABLES = 20000
-
-
-def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
-    low_val = field_id - ((field_id - 1) % chunk_size)
-    high_val = low_val + chunk_size - 1
-    return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
 
 def load_almanac_partition(field,
@@ -462,45 +455,46 @@ if __name__ == '__main__':
     cursor_master = get_connection().cursor()
 
     # Create the child tables
-    # for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
-    #     child_table_name = obs_child_table_name(i)
-    #     create_child_table(cursor_master,
-    #                        child_table_name, 'observability',
-    #                        check_conds=[
-    #                            ('field_id', '>', i-1),
-    #                            ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
-    #                        primary_key=['field_id', 'date', ])
-    #     logging.info('Created table %s' % child_table_name)
+    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+        child_table_name = obs_child_table_name(i)
+        create_child_table(cursor_master,
+                           child_table_name, 'observability',
+                           check_conds=[
+                               ('field_id', '>', i-1),
+                               ('field_id', '<', i+OBS_CHILD_CHUNK_SIZE)],
+                           primary_key=['field_id', 'date', ])
+        logging.info('Created table %s' % child_table_name)
+
+
+    # Generate file almanacs
+
+    # logging.info('Generating dark almanac...')
+    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    # dark_alm.save(filepath=ALMANAC_FILE_LOC)
+    # logging.info('Done!')
     #
-    #
-    # # Generate file almanacs
-    #
-    # # logging.info('Generating dark almanac...')
-    # # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    # # dark_alm.save(filepath=ALMANAC_FILE_LOC)
-    # # logging.info('Done!')
-    # #
-    # # logging.info('Generating standard almanacs...')
-    # # create_almanac_files(cursor_master, sim_start, sim_end, resolution=15.,
-    # #                      minimum_airmass=2.0, active_only=False)
-    # # logging.info('...done!')
-    #
-    # # Insert file almanacs into partitioned database
-    # load_almanacs_partition_all(cursor_master)
+    # logging.info('Generating standard almanacs...')
+    # create_almanac_files(cursor_master, sim_start, sim_end, resolution=15.,
+    #                      minimum_airmass=2.0, active_only=False)
+    # logging.info('...done!')
+
+    # Insert file almanacs into partitioned database
+    load_almanacs_partition_all(cursor_master)
 
     # Create the necessary indices
-    for i in range(1, MAX_TABLES, OBS_CHILD_CHUNK_SIZE):
+    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
         child_table_name = obs_child_table_name(i)
         logging.info('Creating indices & clutser on %s' % child_table_name)
-        # create_index(cursor_master, child_table_name, ['date', ])
-        # create_index(cursor_master, child_table_name, ['field_id', ])
-        # create_index(cursor_int, child_table_name, ['field_id', 'date'])
-        # create_index(cursor_master, child_table_name, ['date', 'airmass'])
-        # create_index(cursor_master, child_table_name, ['date', 'field_id',
-        #                                                'airmass'])
-        # create_index(cursor_master, child_table_name, ['date', 'sun_alt'])
-        # create_index(cursor_master, child_table_name, ['field_id', 'date',
-        #                                                'airmass', 'sun_alt'])
+        create_index(cursor_master, child_table_name, ['date', ])
+        create_index(cursor_master, child_table_name, ['field_id', ])
+        create_index(cursor_master, child_table_name, ['date', 'airmass'])
+        create_index(cursor_master, child_table_name, ['field_id', 'date',
+                                                       'airmass'])
+        create_index(cursor_master, child_table_name, ['field_id', 'dark',
+                                                       'airmass', 'sun_alt',
+                                                       'date'])
         cursor_master.execute('CLUSTER %s USING %s_pkey' % (child_table_name,
                                                             child_table_name, ))
+        vacuum_analyze(cursor_master, table=child_table_name)
+
         cursor_master.connection.commit()
