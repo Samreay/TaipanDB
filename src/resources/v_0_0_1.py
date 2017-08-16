@@ -72,6 +72,7 @@ TABLE_INDICES = {
     #     'field_id',
     #     ['date', 'airmass', ],
     #     ['field_id', 'date', 'airmass', ],
+    #     ['field_id', 'dark', 'airmass', 'date', ],
     #     ['field_id', 'dark', 'airmass', 'sun_alt', 'date', ],
     # ]
 }

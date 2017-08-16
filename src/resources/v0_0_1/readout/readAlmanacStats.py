@@ -173,7 +173,7 @@ def find_fields_available(cursor, datetime_from, datetime_to=None,
         query_res = extract_from(cursor, 'observability', columns=['field_id',],
                                  conditions=conditions, distinct=True)
     else:
-        query_res = extract_from_joined(cursor, ['observability', 'field_id'],
+        query_res = extract_from_joined(cursor, ['observability', 'field'],
                                         columns=['field_id'],
                                         conditions=conditions+[
                                             ('is_active', '=', active),
