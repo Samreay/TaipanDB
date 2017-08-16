@@ -4,7 +4,7 @@
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
     select_max_from_joined, count_from, select_agg_from_joined, \
-    count_grouped_from_joined
+    count_grouped_from_joined, extract_from_joined
 import taipan.scheduling as ts
 import numpy as np
 import copy
@@ -98,6 +98,88 @@ def get_airmass(cursor, field_ids, dt, resolution=15.):
                               ('field_id', '=', field_ids[0]),
                           ])
     return result
+
+
+def find_fields_available(cursor, datetime_from, datetime_to=None,
+                          field_list=None,
+                          minimum_airmass=2.0, dark=True, grey=False,
+                          resolution=15., active=True):
+    """
+    Get a list of all field_ids which will be available at some point during
+    the specified period. Arguments are as for next_observable_period.
+
+    Parameters
+    ----------
+    Parameters
+    ----------
+    datetime_from:
+        Datetime which to consider from. Must be within the bounds of the
+        Almanac.
+    datetime_to:
+        Datetime which to consider to. Defaults to None, in which case all
+        available data points are used for the calculation.
+    minimum_airmass:
+        Minimum airmass which will allow observing. Defaults to 2.0.
+    dark, grey:
+        Boolean values denoting whether to return the next observable period
+        of grey time, dark time, or all night time (which corresponds to both
+        dark and grey being False). Trying to pass dark=True and grey=True will
+        raise a ValueError.
+    active: Boolean, optional
+        Denotes which field is_active flag should be applied. Valid options are
+        True, False and None (which returns all fields regardless of active
+        status.
+
+    Returns
+    -------
+    field_ids:
+        A numpy structured array with a single column 'field_id'.
+    """
+
+    # Input checking
+    if datetime_to is None:
+        datetime_to = select_max_from_joined(cursor, ['observability'],
+                                             'date')
+    if datetime_to < datetime_from:
+        raise ValueError('datetime_from must occur before datetime_to')
+    if dark and grey:
+        raise ValueError('Only one of dark or grey may be True (or both may '
+                         'be False to get all night time back)')
+    if field_list is not None:
+        if not isinstance(field_list, list):
+            field_list = [field_list, ]
+
+    # Read in the obs_start and obs_end times. It does this as follows:
+    # - obs_start is the first time in the database after datetime_from and
+    #   before datetime_to where the airmass is <= the limiting value
+    # - obs_end is the first time in the database after obs_start and before
+    #   dateimt_to where the airmass goes back above the limiting value
+
+    conditions = [
+        ('date', '>=', datetime_from - datetime.timedelta(minutes=resolution)),
+        ('date', '<=', datetime_to + datetime.timedelta(minutes=resolution)),
+        ('airmass', '<=', minimum_airmass),
+    ]
+    if datetime_to:
+        conditions += [('date', '<=', datetime_to)]
+    if dark:
+        conditions += [('dark', '=', True)]
+    if grey:
+        conditions += [('dark', '=', False)]
+    if field_list is not None:
+        field_list += [('field_id', 'IN', field_list)]
+
+    if active is None:
+        query_res = extract_from(cursor, 'observability', columns=['field_id',],
+                                 conditions=conditions, distinct=True)
+    else:
+        query_res = extract_from_joined(cursor, ['observability', 'field_id'],
+                                        columns=['field_id'],
+                                        conditions=conditions+[
+                                            ('is_active', '=', active),
+                                        ], distinct=True)
+
+    return query_res
 
 
 def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
