@@ -492,9 +492,12 @@ if __name__ == '__main__':
         #                                                'airmass'],
         #              unique=True)
         create_index(cursor_master, child_table_name, ['field_id', 'dark',
-                                                       'airmass', 'sun_alt',
-                                                       'date'],
+                                                       'airmass', 'date'],
                      unique=True)
+        # create_index(cursor_master, child_table_name, ['field_id', 'dark',
+        #                                                'airmass', 'sun_alt',
+        #                                                'date'],
+        #              unique=True)
         # cursor_master.execute('CLUSTER %s USING %s_pkey' % (child_table_name,
         #                                                     child_table_name, ))
         vacuum_analyze(cursor_master, table=child_table_name)
