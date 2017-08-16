@@ -544,7 +544,7 @@ def next_night_period(cursor, dt, limiting_dt=None,
     if dark_start is None:
         return None, None
 
-    conditions = []
+    conditions = [('field_id', '=', field_id)]
     conditions_combine = []
     if limiting_dt is not None:
         conditions += [('date', '<', limiting_dt)]
