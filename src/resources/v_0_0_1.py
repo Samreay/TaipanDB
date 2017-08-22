@@ -209,8 +209,8 @@ def update(cursor):
         mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
         i += batch_size
 
-    # logging.info('Computing target difficulties...')
-    # makeScienceDiff.execute(cursor)
+    logging.info('Computing target difficulties...')
+    makeScienceDiff.execute(cursor)
 
     # Commit again
     logging.info('Committing target type/priority information...')
