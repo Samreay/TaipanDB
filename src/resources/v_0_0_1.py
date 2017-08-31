@@ -168,21 +168,21 @@ def update(cursor):
     science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
     loadScience.execute(cursor, science_file=science_file)
     #
-    # # Commit here in case something further along fails
-    # logging.info('Committing raw target information...')
-    # cursor.connection.commit()
-    # logging.info('...done!')
+    # Commit here in case something further along fails
+    logging.info('Committing raw target information...')
+    cursor.connection.commit()
+    logging.info('...done!')
     #
     #
-    # logging.info('Computing target-field relationships...')
-    # makeTargetPosn.execute(cursor, do_guides=True, do_standards=True,
-    #                        active_only=False,
-    #                        parallel_workers=7)
+    logging.info('Computing target-field relationships...')
+    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True,
+                           active_only=False,
+                           parallel_workers=7)
     #
-    # # Commit again
-    # logging.info('Committing computed target information...')
-    # cursor.connection.commit()
-    # logging.info('...done!')
+    # Commit again
+    logging.info('Committing computed target information...')
+    cursor.connection.commit()
+    logging.info('...done!')
 
     # Compute target priorities and types
     target_types_init = rScTyexec(cursor)
