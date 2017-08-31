@@ -239,6 +239,51 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_FULL_VPEC_TARGET",
                     "HAS_SDSS_ZSPEC", "SUCCESS",
                     "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
+    elif science_file.split('/')[-1] in [
+        'Taipan_InputCat_v0.35_20170831.fits']:
+        values_table1 = [[row['uniqid'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "UX", "UY", "UZ"]
+        values_table2 = [[row['uniqid'],
+                          False, False,  # False,
+                          row['z_obs'],
+                          row['gminusi_AB'],
+                          row['Jmag_Vega_2MASS'],
+                          row['JminusK_Vega_2MASS'] if not
+                          math.isnan(row['JminusK_Vega_2MASS']) else -99.,
+                          row['extBV'], row['glat'],
+                          bool(row['is_nircol_selected']),
+                          False,
+                          bool(row['is_iband_selected']),
+                          bool(row['hurry']),  # New hurry-up flag
+                          bool(row['is_sdss_legacy_target']),
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['is_prisci_vpec_target']),
+                          bool(row['zreference_cat'] == 1),
+                          bool((row['zreference_cat'] == 1 or (
+                              row['zreference_cat'] > 0 and
+                              row['z_obs'] > 0.1
+                          )
+                                ) and
+                               not row['is_prisci_vpec_target']),
+                          int(row['ancillary_flags']),
+                          int(row['ancillary_priority'])] for
+                         row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
+                    "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_SDSS_LEGACY",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS",
+                    "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)

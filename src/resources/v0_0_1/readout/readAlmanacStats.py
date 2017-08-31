@@ -110,8 +110,6 @@ def find_fields_available(cursor, datetime_from, datetime_to=None,
 
     Parameters
     ----------
-    Parameters
-    ----------
     datetime_from:
         Datetime which to consider from. Must be within the bounds of the
         Almanac.
