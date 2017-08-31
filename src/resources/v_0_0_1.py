@@ -44,9 +44,9 @@ TABLE_INDICES = {
         'success',
         'is_lowz_target',
     ],
-    # 'field': [
-    #     'is_active',
-    # ],
+    'field': [
+        'is_active',
+    ],
     'target_field': [
         'tile_pk',
     ],
@@ -54,19 +54,19 @@ TABLE_INDICES = {
         'target_id',
         'field_id',
     ],
-    # 'tile': [
-    #     'field_id',
-    #     'is_queued',
-    #     'is_observed',
-    # ],
-    # 'tiling_config': [
-    #     'date_config',
-    #     'date_obs',
-    # ],
-    # 'tiling_info': [
-    #     'tile_pk',
-    #     'field_id',
-    # ],
+    'tile': [
+        'field_id',
+        'is_queued',
+        'is_observed',
+    ],
+    'tiling_config': [
+        'date_config',
+        'date_obs',
+    ],
+    'tiling_info': [
+        'tile_pk',
+        'field_id',
+    ],
     # 'observability': [
     #     'date',
     #     'field_id',
@@ -127,50 +127,51 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
         logging.info('Inserted almanac for field %5d' % (field.field_id,))
 
 def update(cursor):
-    # resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
-    # data_dir = "/data/resources/0.0.1/"
-    # # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
-    # # table_dir = resource_dir + os.sep + "tables"
-    # table_dir = '/data/resources/tables_to_replace'
-    #
-    # # # Clear out the targets table
-    # # logging.info('Removing existing target catalogues')
-    # # cursor.execute('DELETE FROM target')
-    # # # Destroy the existing science_targets table
-    # # logging.info('Removing science table')
-    # # cursor.execute('DROP TABLE science_target')
-    #
-    # create.create_tables(cursor, table_dir)
-    #
-    # # fields_file = data_dir + "pointing_centers.radec"
-    # # loadCentroids.execute(cursor, fields_file=fields_file)
-    # # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
-    # # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
-    # #                       mark_active=False)
-    #
-    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-    #                          # "reduced.guides_nodups.fits"
-    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    # guides_file = data_dir + 'random_mock_guides_160930.fits'
-    # loadGuides.execute(cursor, guides_file=guides_file)
-    #
-    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    # #                             'reduced.standards_nodups.fits'
-    # standards_file = data_dir + 'random_mock_standards_160928.fits'
-    # loadStandards.execute(cursor, standards_file=standards_file)
-    #
-    # # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
+    resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
+    data_dir = "/data/resources/0.0.1/"
+    # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
+    # table_dir = resource_dir + os.sep + "tables"
+    table_dir = '/data/resources/tables_to_replace'
+
+    # # Clear out the targets table
+    # logging.info('Removing existing target catalogues')
+    # cursor.execute('DELETE FROM target')
+    # # Destroy the existing science_targets table
+    # logging.info('Removing science table')
+    # cursor.execute('DROP TABLE science_target')
+
+    create.create_tables(cursor, table_dir)
+
+    # fields_file = data_dir + "pointing_centers.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file)
+    # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
+    #                       mark_active=False)
+
+    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             # "reduced.guides_nodups.fits"
+    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    guides_file = data_dir + 'random_mock_guides_160930.fits'
+    loadGuides.execute(cursor, guides_file=guides_file)
+
+    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    #                             'reduced.standards_nodups.fits'
+    standards_file = data_dir + 'random_mock_standards_160928.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
+
+    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
+    # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
     # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
-    # loadScience.execute(cursor, science_file=science_file)
-    # #
-    # # # Commit here in case something further along fails
-    # # logging.info('Committing raw target information...')
-    # # cursor.connection.commit()
-    # # logging.info('...done!')
+    science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
+    loadScience.execute(cursor, science_file=science_file)
+    #
+    # # Commit here in case something further along fails
+    # logging.info('Committing raw target information...')
+    # cursor.connection.commit()
+    # logging.info('...done!')
     #
     #
     # logging.info('Computing target-field relationships...')
@@ -266,8 +267,8 @@ def update(cursor):
     # cursor.connection.commit()
 
     # Create the table indices
-    # generate_indices(cursor)
-    # cursor.connection.commit()
+    generate_indices(cursor)
+    cursor.connection.commit()
 
     return
 
