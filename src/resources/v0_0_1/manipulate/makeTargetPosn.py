@@ -125,8 +125,8 @@ def execute(cursor, target_ids=None, field_ids=None,
         # for tgt in avail_targets:
         #     target_field_relations.append((tgt.idn, field.field_id))
 
-        target_field_relations += [(tgt.idn, field.field_id) for tgt in
-                                   field.available_targets(targets)]
+        target_field_relations = [(tgt.idn, field.field_id) for tgt in
+                                  field.available_targets(targets)]
 
         if do_guides:
             logging.debug('Adding in guides')
@@ -137,9 +137,9 @@ def execute(cursor, target_ids=None, field_ids=None,
             target_field_relations += [(tgt.idn, field.field_id) for tgt in
                                        field.available_targets(standards)]
 
-    # Write the information back to the DB
-    insert_many_rows(cursor, 'target_posn', target_field_relations,
-                     columns=['target_id', 'field_id'])
+        # Write the information back to the DB
+        insert_many_rows(cursor, 'target_posn', target_field_relations,
+                         columns=['target_id', 'field_id'])
 
     return
 
