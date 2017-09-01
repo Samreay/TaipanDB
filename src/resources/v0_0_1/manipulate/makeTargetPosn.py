@@ -97,7 +97,7 @@ def execute(cursor, target_ids=None, field_ids=None,
     # Extract all the requested fields
     fields = rCexec(cursor, field_ids=field_ids, active_only=active_only)
 
-    target_field_relations = []
+    # target_field_relations = []
     # Compute the relationship between the targets and the fields, and log
     # them for insertion into the target_posn database
     logging.info('Computing target positions in each field')
