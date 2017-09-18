@@ -4,7 +4,7 @@
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
     select_max_from_joined, count_from, select_agg_from_joined, \
-    count_grouped_from_joined, extract_from_joined
+    count_grouped_from_joined, extract_from_joined, select_having
 import taipan.scheduling as ts
 import numpy as np
 import copy
@@ -29,6 +29,84 @@ def check_almanac_finish(cursor):
     datetime_max = select_max_from_joined(cursor,
                                           ['observability'], 'date')
     return datetime_max
+
+
+def get_fields_available_pointing(cursor, dt,
+                                  minimum_airmass=2.0,
+                                  resolution=15.,
+                                  pointing_time=ts.POINTING_TIME):
+    """
+    Get the fields available for observation from now until the end of a
+    complete pointing time
+
+    Parameters
+    ----------
+    cursor : :obj:`psycopg2.connection.cursor`
+        For communication with the observing database
+    dt : :obj:`datetime.datetime`, UTC
+        Time of interest
+    minimum_airmass : :obj:`float`
+        Airmass above which the field centre must be to be considered
+        observable. Defaults to 2.0.
+    resolution : :obj:`float`, minutes
+        The resolution of the Almanacs in the database. Defaults to 15.
+    pointing_time : :obj:`float`, days
+        The length of a complete pointing (slew, reconfigure, observe) in
+        days. Defaults to :any:`taipan.scheduling.POINTING_TIME`.
+
+    Returns
+    -------
+    field_ids : :obj:`np.array` of :obj:`int`
+        Array of field IDs that are currently available to observe
+    """
+
+    # Run the query
+    result = select_having(cursor, 'observability', 'field_id',
+                           conditions=[
+                               ('date', '>=', dt -
+                                datetime.timedelta(minutes=resolution/2.)),
+                               ('date', '<=', dt +
+                                datetime.timedelta(minutes=resolution / 2.) +
+                                datetime.timedelta(days=pointing_time)),
+                           ],
+                           having=[('airmass', '<=', minimum_airmass)])
+    return result['field_id']
+
+
+def next_time_available(cursor, dt,
+                        minimum_airmass=2.0,
+                        resolution=15.):
+    """
+    Return the next time that at least one field will be available to observe
+
+    Parameters
+    ----------
+    cursor : :obj:`psycopg2.connection.cursor`
+        For communication with the observing database
+    dt : :obj:`datetime.datetime`, UTC
+        Time of interest
+    minimum_airmass : :obj:`float`
+        Airmass above which the field centre must be to be considered
+        observable. Defaults to 2.0.
+    resolution : :obj:`float`, minutes
+        The resolution of the Almanacs in the database. Defaults to 15.
+
+    Returns
+    -------
+    next_time : :obj:`datetime.datetime`, UTC
+        The next time that a field will be available for observation
+    """
+
+    next_time = select_min_from_joined(cursor, ['observability'],
+                                       'date',
+                                       conditions=[
+                                           ('date', '>', dt -
+                                            datetime.timedelta(
+                                                minutes=resolution)),
+                                           ('airmass', '<=',
+                                            minimum_airmass),
+                                       ])
+    return next_time
 
 
 def get_fields_available(cursor, dt,

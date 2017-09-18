@@ -13,17 +13,21 @@ def execute(cursor, fields_file=None, mark_active=True):
     """
     Load field pointings from file to database
 
-    Inputs
-    ------
-    cursor:
+    Parameters
+    ----------
+    cursor: :any:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    fields_file:
+    fields_file: :obj:`str`
         Path and name of the file holding the field information. Defaults to
         None, at which point the function will abort.
+    mark_active: :obj:`bool`
+        Denotes whether these targets should be marked as active in the
+        database. Defaults to True.
 
     Returns
     -------
-    Nil. Fields are loaded into the database.
+    :obj:`None`
+        Fields are loaded into the database.
     """
 
     logging.info("Loading Centroids")

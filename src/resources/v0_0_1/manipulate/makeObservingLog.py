@@ -13,38 +13,52 @@ from numpy.lib.recfunctions import append_fields
 import logging
 
 from psycopg2.extensions import register_adapter, AsIs
+
+
 def adapt_numpy_bool(numpy_bool):
-  return AsIs(numpy_bool)
+    """
+    Provides support for :any:`psycopg2` to handle :any:`numpy.bool_` objects
+    """
+    return AsIs(numpy_bool)
+
+
 register_adapter(np.bool_, adapt_numpy_bool)
+
 
 def execute(cursor, tile_pk, target_list, success_targets,
             datetime_at=datetime.datetime.now()):
     """
-    Add data in to the observing_log table.
+    Add data in to the ``observing_log`` table.
+
+    The ``observing_log`` table is designed to preserve certain target
+    and tile information that is changed after an observation. This is useful
+    for debugging purposes, as well as providing a proper log of target
+    observations.
 
     Parameters
     ----------
-    cursor : psycopg2 connection.cursor object
+    cursor : :obj:`psycopg2 connection.cursor`
         Required for communicating with the database
-    tile_pk : list of ints
+    tile_pk : :obj:`list` of :obj:`int`
         The primary keys of the tile we're adding to the observing log.
-    target_list : list of ints
+    target_list : :obj:`list` of `int`
         The list of science targets that were observed on this tile.
         This list needs to be provided
         separately, as opposed to just generated from the database, so it can
         be matched against success_targets.
-    success_targets : list of Booleans
+    success_targets : :obj:`list` of :obj:`bool`
         List of Booleans, denoting whether this observation led to 'success'
         for each target in target_list. There is a one-to-one correspondence
         between the lists.
-    datetime_at : List of datetime.datetime objects
+    datetime_at : :obj:`list` of :obj:`datetime.datetime`
         List of datetime.datetime objects, corresponding to to when each tile
         was observed. The datetime should be
         expressed in UTC; the datetime object itself should be timezone-naive.
 
     Returns
     -------
-    Nil. Rows are written into the observing_log database table.
+    :obj:`None`
+        Rows are written into the observing_log database table.
     """
 
     logging.info('Writing to observing log table')

@@ -19,20 +19,21 @@ from joblib import Parallel, delayed
 
 def targets_per_field(fields, targets):
     """
-    INTERNAL HELPER FUNCTION
+    .. note:: Internal helper function
+
     Take a list of TaipanTiles, a list of TaipanTargets, and work out the
     number of targets on each tile. No exclusion checking.
 
     Parameters
     ----------
-    fields:
+    fields: :obj:`list` of :obj:`taipan.core.TaipanTile`
         List of TaipanTiles to consider. Should only be one tile per field.
-    targets:
+    targets: :obj:`list` of :obj:`taipan.core.TaipanTarget`
         List of TaipanTargets to consider.
 
     Returns
     -------
-    output:
+    output: :obj:`list` of (:obj:`int`, :obj:`int`) tuples
         A list of (field, no_of_targets) tuples.
     """
 
@@ -54,6 +55,12 @@ def multithread_task(fields,
                      conds_pri_sci=[],
                      cond_combs_pri_sci=[],
                      write_conds=[]):
+    """
+    .. note:: Internal helper function
+
+    This function is used to parallelise the action of
+    :any:`makeNSciTargets.execute`.
+    """
     # Need it's own cursor
     cursor_internal = cursor.connection.cursor()
 
@@ -195,41 +202,45 @@ def execute(cursor, fields=None, use_pri_sci=True,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    fields:
+    fields: :obj:`list` of :obj:`int`
         A list of IDs of the fields that need updating. An error will be thrown
         if the fields listed here cannot be found in the database. Defaults to
         None, at which point all fields will be updated.
         Note that this should be a list of the fields where you know changes
         have occurred. The function will automatically add adjacent, overlapping
         fields to the query.
-    use_pri_sci:
+    use_pri_sci: :obj:`bool`
         Optional Boolean, determining whether target numbers should be computed
         from all targets in the database (False), or only those attached to
         a primary science case (i.e. have at least one of is_h0_target,
         is_vpec_target or is_lowz_target set to True). Defaults to True.
-    unobserved_only : Boolean, optional
+    unobserved_only : :obj:`bool`
         Whether to write tile scores only against tiles where that haven't
         been observed yet (True), or against all tiles of that field (False).
         Defaults to True.
-    multicores:
+    multicores: :obj:`int`
         Number of cores to use (i.e. values > 1 activate multi-threaded
         processing). Defaults to 4.
-    chunk_size:
+    chunk_size: :obj:`int`
         The number of fields to calculate target information for
         simultaneously as part of multi-threading. Defaults to 1000.
 
     Returns
     -------
-    Nil - the database is updated in place. The function looks at the
-    contents of the science_target table, and places targets into three
-    categories:
-    - Remaining (i.e observing is not complete)
-    - Allocated (i.e. assigned to a tile, but observing isn't complete)
-    - Observed (i.e. observing that target is done)
-    It then writes these values to the relevant columns (n_sci_rem, n_sci_alloc,
-    n_sci_obs) of the tiling_info table.
+    :obj:`None`
+        The database is updated in place. The function looks at the
+        contents of the ``science_target`` table, and places targets into three
+        categories:
+
+        - Remaining (i.e observing is not complete)
+        - Allocated (i.e. assigned to a tile, but observing isn't complete)
+        - Observed (i.e. observing that target is done)
+
+        It then writes these values to the relevant columns
+        (``n_sci_rem``, ``n_sci_alloc``,
+        ``n_sci_obs``) of the ``tiling_info`` table.
     """
 
     logging.info('Doing a bulk calculation of per-field target statuses '

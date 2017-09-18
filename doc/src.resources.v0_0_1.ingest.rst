@@ -1,10 +1,12 @@
-src.resources.v0_0_1.ingest package
-===================================
+:any:`src.resources.v0_0_1.ingest`
+==================================
 
-Submodules
-----------
+.. automodule:: src.resources.v0_0_1.ingest
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-src.resources.v0_0_1.ingest.loadCentroids module
+:any:`src.resources.v0_0_1.ingest.loadCentroids`
 ------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.ingest.loadCentroids
@@ -12,7 +14,7 @@ src.resources.v0_0_1.ingest.loadCentroids module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.ingest.loadGuides module
+:any:`src.resources.v0_0_1.ingest.loadGuides`
 ---------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.ingest.loadGuides
@@ -20,7 +22,7 @@ src.resources.v0_0_1.ingest.loadGuides module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.ingest.loadScience module
+:any:`src.resources.v0_0_1.ingest.loadScience`
 ----------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.ingest.loadScience
@@ -28,19 +30,10 @@ src.resources.v0_0_1.ingest.loadScience module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.ingest.loadStandards module
+:any:`src.resources.v0_0_1.ingest.loadStandards`
 ------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.ingest.loadStandards
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: src.resources.v0_0_1.ingest
     :members:
     :undoc-members:
     :show-inheritance:

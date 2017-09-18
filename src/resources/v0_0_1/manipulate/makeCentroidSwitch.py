@@ -17,16 +17,12 @@ def execute(cursor, remove_inactive_tiles=True):
 
     Parameters
     ----------
-    cursor : psycopg2.connection.cursor object
+    cursor : :obj:`psycopg2.connection.cursor`
         For communication with the database
-    remove_inactive_tiles : Boolean (default: True)
+    remove_inactive_tiles : :obj:`bool`
         Boolean value denoting whether unobserved and unqueued tiles assigned
         to currently active (so about to be inactivated) fields should be
         deleted from the database. Defaults to True.
-
-    Returns
-    -------
-    Nil. Database updated in-situ.
     """
 
     # Get all fields, and those fields which are currently active

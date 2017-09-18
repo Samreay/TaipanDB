@@ -31,6 +31,7 @@
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
@@ -427,3 +428,12 @@ epub_exclude_files = ['search.html']
 # If false, no index is generated.
 #
 # epub_use_index = True
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {'https://docs.python.org/': None}
+
+# -----
+# AUTODOC CONFIG
+# -----
+autodoc_member_order = 'groupwise'
+

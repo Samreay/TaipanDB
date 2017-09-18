@@ -100,6 +100,58 @@ def generate_conditions_string(conditions, combine='AND'):
     return conditions_string
 
 
+def generate_having_string(having, having_combine):
+    """
+    Generate a HAVING clause string for a PSQL query
+
+    Parameters
+    ----------
+    having :
+    having_combine
+
+    Returns
+    -------
+
+    """
+    allowed_combine = ['AND', 'OR']
+
+    if not isinstance(having_combine, list):
+        having_combine = [having_combine] * (len(having) - 1)
+
+    if len(having) > 0 and (len(having_combine) != (len(having) - 1)):
+        raise ValueError('combine must have length of conditions minus 1')
+
+    if np.any([_.upper() not in allowed_combine for _ in having_combine]):
+        raise ValueError('combine values must be any one of: %s' %
+                         ', '.join(allowed_combine))
+
+    altered_conditions = []
+    for i in range(len(having)):
+        x = having[i]
+        if len(x) != 3 and len(x) != 5:
+            raise ValueError('Each conditions entry must either be a 3-tuple '
+                             '(column, condition, value) or a 5-tuple, where '
+                             'the above is wrapped with two strings holding '
+                             'either a single bracket, or an empty string for '
+                             'no bracket at that position')
+        if len(x) == 3:
+            x = ('', x[0], x[1], x[2], '')
+        altered_conditions.append((x[0],
+                                   'bool_and(',
+                                   str(x[1]), str(x[2]),
+                                   str_psql(x[3]),
+                                   x[4],
+                                   ')'))
+
+    conditions_string = ' '.join(altered_conditions[0])
+    for i in range(1, len(altered_conditions)):
+        conditions_string += ' %s %s' % (having_combine[i - 1],
+                                         ' '.join(altered_conditions[i]))
+    # conditions_string = combine.join([' '.join(x)
+    #                                   for x in conditions])
+    return conditions_string
+
+
 def generate_case_string(case):
     """
     UTILITY FUNCTION - generate a single CASE PSQL string

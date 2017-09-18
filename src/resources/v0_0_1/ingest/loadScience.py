@@ -19,15 +19,19 @@ def execute(cursor, science_file=None, mark_active=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :any:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    science_file:
+    science_file: :obj:`str`
         File to load the science targets from. Defaults to None, at which point
         the function will abort.
+    mark_active: :obj:`bool`
+        Denotes whether these targets should be marked as active in the
+        database. Defaults to True.
 
     Returns
     -------
-    Nil. Science targets are loaded into the database.
+    :obj:`None`
+        Science targets are loaded into the database.
     """
     logging.info("Loading Science")
 

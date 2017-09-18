@@ -15,28 +15,27 @@ def execute(cursor, use_only_notdone=True,
             priority_cut=True, target_list=None,
             active_only=True):
     """
-    Compute the difficulties of TaipanTargets and write them back to the
-    database.
+    Compute and storethe difficulties of :any:`taipan.core.TaipanTarget`.
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    use_only_notdone:
+    use_only_notdone: :obj:`bool`
         Optional Boolean, denoting whether to only use un-done targets in
         the calculation (True), or not (False). Defaults to True.
-    priority_cut:
+    priority_cut: :obj:`bool`
         Optional Boolean, denoting whether each target's difficulty should
         be calculated using only targets with the same or lower priority
         (True), or all targets (False). Defaults to True.
-    target_list : list of ints, optional
+    target_list : :obj:`list` of :obj:`int`
         Optional list of target IDs for which we wish to compute
         difficulties.
 
     Returns
     -------
-    Nil. Difficulties are computed, and written back to the database.
-
+    :obj:`None`
+        Difficulties are computed, and written back to the database.
     """
 
     logging.info('Reading science targets from database')

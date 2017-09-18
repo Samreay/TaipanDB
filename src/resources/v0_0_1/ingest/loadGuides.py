@@ -10,15 +10,19 @@ def execute(cursor, guides_file=None, mark_active=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :any:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    guides_file:
+    guides_file: :obj:`str`
         The file from which to load guides. Defaults to None, at which point
         the function will abort.
+    mark_active: :obj:`bool`
+        Denotes whether these targets should be marked as active in the
+        database. Defaults to True.
 
     Returns
     -------
-    Nil. Guide targets are inserted into the database.
+    :obj:`None`
+        Guide targets are inserted into the database.
     """
     logging.info("Loading Guides")
 

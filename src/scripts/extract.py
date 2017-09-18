@@ -3,7 +3,7 @@ import numpy as np
 import re
 import psycopg2
 from .utils import generate_conditions_string, \
-    generate_case_conditions_string
+    generate_case_conditions_string, generate_having_string
 import datetime
 
 
@@ -1049,6 +1049,70 @@ def select_max_from_joined(cursor, tables, max_column,
             return None
 
     return None
+
+
+def select_having(cursor, table, column,
+                  conditions=None,
+                  conditions_combine='AND',
+                  having=None,
+                  having_combine='AND'):
+    """
+    Run a SELECT query which returns grouped results via the HAVING clause.
+
+    Parameters
+    ----------
+    cursor : :obj:`psycopg2.connection.cursor`
+        For communicating with the database
+    table : :obj:`str`
+        The table to query
+    column : :obj:`str`
+        The column containing the data we are interested in
+    conditions : :obj:`list` of 3-tuples, or :obj:`None`
+        A list of three-tuples defining conditions, e.g.:
+        [(column, condition, value), ...]
+        Column must be a table column name. Condition must be a *string* of a
+        valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
+        the correct Python form relevant to the table column. The exception is
+        looking for columns with value NULL, which should be denoted using the
+        string 'NULL'. Defaults to None, so all rows will be returned.
+    conditions_combine : :obj:`list` of `str`, or :obj:`str`, or :obj:`None`
+    having : :obj:`list` of 3-tuples, or :obj:`None`
+        As for ``conditions``, but these requirements will instead be
+        used in the HAVING clause of the database query. It is assumed
+        that these require a bool_and aggregate, so, e.g. ('a', '>', 3) will
+        become ``HAVING bool_and(a > 3)`` in the query.
+    having_combine :
+        As for conditions_combine, but used for the HAVING clause of the query.
+
+    Returns
+    -------
+    column_values : :obj:`list`
+        The matching values of the requested column.
+    """
+    logging.debug('Running select_having query')
+
+    # Construct the query string
+    query_string = 'SELECT DISTINCT %s FROM %s ' % (column, table, )
+
+    # Build the conditions
+    if conditions:
+        conditions_string = generate_conditions_string(
+            conditions, combine=conditions_combine)
+        query_string = '%s WHERE %s' % (query_string, conditions_string, )
+
+    # Add the GROUP BY clause
+    query_string += ' GROUP BY %s' % column
+
+    if having:
+        having_string = generate_having_string(having, having_combine)
+        query_string = '%s HAVING %s' % (query_string, having_string, )
+
+    if cursor is not None:
+        logging.debug('Running query: %s' % query_string)
+        column_values = cursor.execute(query_string)
+        return column_values[column]
+
+    return query_string
 
 
 def execute_select(connection, statement):

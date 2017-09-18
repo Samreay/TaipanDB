@@ -11,15 +11,19 @@ def execute(cursor, standards_file=None, mark_active=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :any:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    standards_file:
+    standards_file: :obj:`str`
         File to load the standard targets from. Defaults to None, at which point
         the function will abort.
+    mark_active: :obj:`bool`
+        Denotes whether these targets should be marked as active in the
+        database. Defaults to True.
 
     Returns
     -------
-    Nil. Standard targets are loaded into the database.
+    :obj:`None`
+        Standard targets are loaded into the database.
     """
     logging.info("Loading Standards")
 

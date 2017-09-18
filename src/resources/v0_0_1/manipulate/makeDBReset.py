@@ -10,6 +10,9 @@ from taipan.simulate.utils.updatesci import update_science_targets
 
 
 def execute(cursor):
+    """
+    .. warning:: DEPRECATED - DO NOT USE
+    """
     # Remove the tiles
     logging.info('Deleting tiles...')
     cursor.execute('DELETE FROM tile')

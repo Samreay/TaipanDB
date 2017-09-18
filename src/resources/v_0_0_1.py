@@ -29,7 +29,9 @@ import multiprocessing
 from functools import partial
 
 OBS_CHILD_CHUNK_SIZE = 200
+"""Number of fields per child table of ``observability``"""
 MAX_FIELDS = 20000
+"""The maximum expected number of fields in the database"""
 
 # Define the fields we want to make indices for
 TABLE_INDICES = {
@@ -76,15 +78,50 @@ TABLE_INDICES = {
     #     ['field_id', 'dark', 'airmass', 'sun_alt', 'date', ],
     # ]
 }
+"""Dictionary of indices to be created on tables
+
+For each table (key), an index will be created based on the column(s) in 
+each element of the index list (value)."""
 
 
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
+    """
+    Auto-generate the name of a child table of ``observability``
+
+    This functions takes a field ID and the chunk size of the current
+    database setup, and returns the name of the child table of
+    the ``observability`` table that this field's Almanac data may be found in.
+
+    Parameters
+    ----------
+    field_id : :obj:`int`
+        Field ID
+    chunk_size : :obj:`int`
+        The field ID range of each child table of ``observability``. Defaults
+        to :any:'OBS_CHILD_CHUNK_SIZE`.
+
+    Returns
+    -------
+    :obj:`str`
+        The name of the relevant child table.
+    """
     low_val = field_id - ((field_id - 1) % chunk_size)
     high_val = low_val + chunk_size - 1
     return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
 
 def generate_indices(cursor):
+    """
+    Generate indices on each table, based on :any:`TABLE_INDICES`
+
+    For each table name referenced by a key of :any:`TABLE_INDICES`, and index
+    will be created on each element of the matching dictionary value.
+
+    Parameters
+    ----------
+    cursor : :obj:`psycopg2.connection.cursor`
+        Cursor for communicating with the database
+    """
     logging.info('Generating table indices')
     for tab, fields in TABLE_INDICES.items():
         if tab != 'observability':
@@ -115,6 +152,20 @@ def generate_indices(cursor):
 
 
 def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
+    """
+    Helper function for multithreaded entry of Almanac/``observability`` data
+
+    Parameters
+    ----------
+    field : :obj:`taipan.core.TaipanTile`
+        Representation of field to enter data for
+    sim_start : :obj:`datetime.date`
+        Earliest date for data generation
+    sim_end : :obj:`datetime.date`
+        Latest date for data generation
+    dark_alm : :obj:`taipan.scheduling.DarkAlmanac`
+        Associated :any:`DarkAlmanac` object
+    """
     # Multiprocessing needs a fresh cursor per instance
     with get_connection().cursor() as cursor:
         almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
@@ -127,6 +178,31 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
         logging.info('Inserted almanac for field %5d' % (field.field_id,))
 
 def update(cursor):
+    """
+    Initialize the database for a run.
+
+    .. note::
+        This function will typically take about 24-36 hours to run. We
+        strongly recommend you run the source code file as a script.
+
+    This function takes a *clean* database instance, and does the following
+    steps:
+
+    - Create the tables
+    - Load all target types into the database
+    - Compute target-field relationships for all targets, and insert into
+      the database
+    - Compute initial target priorities and types for science targets, and
+      insert this information into the database
+    - Generate (or load from file) Almanacs for each field, and write to the
+      database
+    - Create indices for tables, as per :any:`TABLE_INDICES`
+
+    Parameters
+    ----------
+    cursor : :obj:`psycopg2.connection.cursor`
+        Cursor for communicating with the database.
+    """
     resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
     data_dir = "/data/resources/0.0.1/"
     # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"

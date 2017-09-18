@@ -1,10 +1,12 @@
-src.resources.v0_0_1.manipulate package
-=======================================
+:any:`src.resources.v0_0_1.manipulate`
+======================================
 
-Submodules
-----------
+.. automodule:: src.resources.v0_0_1.manipulate
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeCentroidSwitch module
+:any:`src.resources.v0_0_1.manipulate.makeCentroidSwitch`
 ---------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeCentroidSwitch
@@ -12,7 +14,7 @@ src.resources.v0_0_1.manipulate.makeCentroidSwitch module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeDBReset module
+:any:`src.resources.v0_0_1.manipulate.makeDBReset`
 --------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeDBReset
@@ -20,7 +22,7 @@ src.resources.v0_0_1.manipulate.makeDBReset module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeNSciTargets module
+:any:`src.resources.v0_0_1.manipulate.makeNSciTargets`
 ------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeNSciTargets
@@ -28,7 +30,7 @@ src.resources.v0_0_1.manipulate.makeNSciTargets module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeObservingLog module
+:any:`src.resources.v0_0_1.manipulate.makeObservingLog`
 -------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeObservingLog
@@ -36,7 +38,7 @@ src.resources.v0_0_1.manipulate.makeObservingLog module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeScienceDiff module
+:any:`src.resources.v0_0_1.manipulate.makeScienceDiff`
 ------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeScienceDiff
@@ -44,7 +46,7 @@ src.resources.v0_0_1.manipulate.makeScienceDiff module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeSciencePriorities module
+:any:`src.resources.v0_0_1.manipulate.makeSciencePriorities`
 ------------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeSciencePriorities
@@ -52,7 +54,7 @@ src.resources.v0_0_1.manipulate.makeSciencePriorities module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeScienceRepeatInc module
+:any:`src.resources.v0_0_1.manipulate.makeScienceRepeatInc`
 -----------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeScienceRepeatInc
@@ -60,7 +62,7 @@ src.resources.v0_0_1.manipulate.makeScienceRepeatInc module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeScienceTypes module
+:any:`src.resources.v0_0_1.manipulate.makeScienceTypes`
 -------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeScienceTypes
@@ -68,7 +70,7 @@ src.resources.v0_0_1.manipulate.makeScienceTypes module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeScienceUpdate module
+:any:`src.resources.v0_0_1.manipulate.makeScienceUpdate`
 --------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeScienceUpdate
@@ -76,7 +78,7 @@ src.resources.v0_0_1.manipulate.makeScienceUpdate module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeScienceVisitInc module
+:any:`src.resources.v0_0_1.manipulate.makeScienceVisitInc`
 ----------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeScienceVisitInc
@@ -84,7 +86,7 @@ src.resources.v0_0_1.manipulate.makeScienceVisitInc module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeTargetPosn module
+:any:`src.resources.v0_0_1.manipulate.makeTargetPosn`
 -----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeTargetPosn
@@ -92,7 +94,7 @@ src.resources.v0_0_1.manipulate.makeTargetPosn module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeTilesObserved module
+:any:`src.resources.v0_0_1.manipulate.makeTilesObserved`
 --------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeTilesObserved
@@ -100,7 +102,7 @@ src.resources.v0_0_1.manipulate.makeTilesObserved module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeTilesQueued module
+:any:`src.resources.v0_0_1.manipulate.makeTilesQueued`
 ------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeTilesQueued
@@ -108,19 +110,10 @@ src.resources.v0_0_1.manipulate.makeTilesQueued module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.manipulate.makeTilesReset module
+:any:`src.resources.v0_0_1.manipulate.makeTilesReset`
 -----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.manipulate.makeTilesReset
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: src.resources.v0_0_1.manipulate
     :members:
     :undoc-members:
     :show-inheritance:

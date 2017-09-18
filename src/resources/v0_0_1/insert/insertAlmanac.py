@@ -43,35 +43,36 @@ def execute(cursor, field_id, almanac, dark_almanac=None, update=None,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    field_id:
+    field_id: :obj:`int`
         The field_id for the almanac to be written. This field must already
         exist in the field table.
-    almanac:
-        The taipan.scheduling.Almanac object to write to the database.
-    dark_almanac:
+    almanac: :obj:`taipan.scheduling.Almanac`
+        The Almanac object to write to the database.
+    dark_almanac: :obj:`taipan.scheduling.DarkAlmanac`
         Optional; the dark_almanac corresponding to the almanac passed. Needed
         to put in sun_alt, is_dark etc. values. Defaults to None, at which
         point a new corresponding DarkAlmanac will be generated. Note that a
         fresh DarkAlmanac will also be generated if the passed DarkAlmanac does
         not exactly match the almanac in terms of start_date, end_date and
         resolution.
-    update:
+    update: :obj:`bool`
         Optional; Boolean value denoting whether to update any almanac data
         points already existing in the database (True) or simply not write
         new values talmo those points (False), or try to blindly insert the
         values into the DB. Defaults to False. Using True
         should only be necessary if, e.g. fields have changed. Using None will
         throw a ProgrammingError if an identical table row already exists.
-    target_table : str
+    target_table : :obj:`str`
         Optional; the name of the table the data should be pushed into.
         Defaults to 'observability' (i.e. the use of a monolithic table
         structure) - change this to implement a partitioned table.
 
     Returns
     -------
-    Nil. Almanacs are written directly into the database.
+    :obj:`None`
+        Almanacs are written directly into the database.
     """
     logging.info('Inserting almanacs into database...')
 

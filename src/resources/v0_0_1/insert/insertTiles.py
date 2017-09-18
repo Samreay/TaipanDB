@@ -39,25 +39,25 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    tile_list:
+    tile_list: :obj:`list` of :obj:`taipan.core.TaipanTile`
         A list of TaipanTile objects to write into the database
-    is_queued:
+    is_queued: :obj:`bool`
         Optional; whether the passed tiles should be considered queued or not.
         Defaults to False.
-    is_observed:
+    is_observed: :obj:`bool`
         Optional; whether the passed tiles should be considered observed.
         Defaults to False.
-    config_time:
+    config_time: :obj:`datetime.datetime`
         Optional; the datetime (timestamp) when the tile was configured.
         Defaults to datetime.datetime.now().
-    disqualify_below_min:
+    disqualify_below_min: :obj:`bool`
         Optional Boolean, passed on through to
         TaipanTile.calculate_tile_score(). Sets tile scores to 0 if tiles do
         not meet minimum numbers of guides and/or standards assigned. Defaults
         to True.
-    remove_index: Boolean (default: False)
+    remove_index: :obj:`bool`
         Boolean value denoting whether to strip the tile_pk index off
         the target_field table before data insertion, and regenerate
         it afterwards. Provides a performance boost when inserting a very large
@@ -66,7 +66,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     Returns
     -------
-    Nil. Tiles are pushed into the database.
+    :obj:`None`
+        Tiles are pushed into the database.
     """
     logging.info('Inserting tiles into database...')
 

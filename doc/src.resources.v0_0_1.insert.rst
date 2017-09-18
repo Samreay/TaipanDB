@@ -1,10 +1,12 @@
-src.resources.v0_0_1.insert package
-===================================
+:any:`src.resources.v0_0_1.insert`
+==================================
 
-Submodules
-----------
+.. automodule:: src.resources.v0_0_1.insert
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-src.resources.v0_0_1.insert.insertAlmanac module
+:any:`src.resources.v0_0_1.insert.insertAlmanac`
 ------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.insert.insertAlmanac
@@ -12,19 +14,10 @@ src.resources.v0_0_1.insert.insertAlmanac module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.insert.insertTiles module
+:any:`src.resources.v0_0_1.insert.insertTiles`
 ----------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.insert.insertTiles
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: src.resources.v0_0_1.insert
     :members:
     :undoc-members:
     :show-inheritance:

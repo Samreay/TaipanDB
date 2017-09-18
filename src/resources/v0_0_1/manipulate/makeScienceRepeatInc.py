@@ -11,22 +11,22 @@ def execute(cursor, target_ids, set_done=True,
             done_at=datetime.datetime.now(),
             inc=1):
     """
-    Increment the visit number of the passed targets
+    Increment the repeat number of the passed targets.
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         The list of target IDs to update the visit number for.
-    set_done:
+    set_done: :obj:`bool`
         Optional; Boolean value denoting whether to mark the target as 'done'
         or not. Defaults to True (targets will be marked as done).
 
     Returns
     -------
-    Nil. Difficulties are computed, and written back to the database.
-
+    :obj:`None`
+        Difficulties are computed, and written back to the database.
     """
 
     logging.info('Incrementing number of visits in database')

@@ -12,20 +12,20 @@ def execute(cursor, tile_list=None, field_list=None,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psyopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    tile_list:
+    tile_list: :obj:`list` of :obj:`taipan.core.TaipanTile`
         Optional; list of tile PKs to delete. Defaults to None, such that
         tile_pk does not appear as a filtering condition.
-    field_list:
+    field_list: :obj:`list` of :obj:`int`
         Optional; list of field IDs to delete all tiles for. Defaults to None,
         at which point tiles will be removed regardless of field.
-    obs_status:
+    obs_status: :obj:`bool`
         Optional; observation status of tiles to be removed. False correlates
         to is_observed=False, True correlates to is_observed=True. Defaults to
         None, at which point tiles will be removed irrespective of observing
         status.
-    queue_status:
+    queue_status: :obj:`bool`
         Optional; queue status of tiles to be removed. False correlates
         to is_queued=False, True correlates to is_queued=True. Defaults to
         None, at which point tiles will be removed irrespective of queue
@@ -33,7 +33,8 @@ def execute(cursor, tile_list=None, field_list=None,
 
     Returns
     -------
-    Nil. Rows are dropped from the 'tile' database table.
+    :obj:`None`
+        Rows are dropped from the 'tile' database table.
     """
     # Input checking
     if obs_status is not None:
