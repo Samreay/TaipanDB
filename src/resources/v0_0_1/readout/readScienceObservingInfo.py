@@ -13,14 +13,17 @@ def execute(cursor, target_ids=None, field_list=None):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional; list of target_ids corresponding to the targets to extract
         from the database. Defaults to None, at which point all targets present
-        will be extracted. WARNING: Providing a large list of target_ids will
-        make the database query very slow!
-    field_list:
+        will be extracted.
+
+        .. warning::
+            Providing a large list of target_ids will make the database query
+            very slow!
+    field_list: :obj:`list` of :obj:`int`
         Optional; list of field IDs for which targets should be returned.
         Membership of fields is determined by joining against the target_posn
         database table. Note that, if used in conjunction with target_ids, only
@@ -28,11 +31,14 @@ def execute(cursor, target_ids=None, field_list=None):
 
     Returns
     -------
-    target_info, targets_tiles, targets_completed:
+    target_info, targets_tiles, targets_completed: :obj:`numpy.array`
         Numpy structured arrays that contain the following information:
-        - target_info: Basic target info, including type, visit/repeat, position
-        - target_tiles: Listing of tile_pks against target_ids with obs date
-        - targets_completed: The dates at which completed targets were last seen
+
+        - ``target_info``: Basic target info, including type, visit/repeat,
+          position
+        - ``target_tiles``: Listing of tile_pks against target_ids with obs date
+        - ``targets_completed``: The dates at which completed targets were last
+          seen
     """
     logging.info('Reading science target observing info from database')
 

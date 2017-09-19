@@ -14,21 +14,28 @@ def execute(cursor, target_ids=None, field_list=None,
     """
     Generate an observing log from the database.
 
+    .. note:: Deprecated.
+        A dedicated ``observing_log`` table is now maintained within the
+        database structure.
+
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional; list of target_ids corresponding to the targets to extract
         from the database. Defaults to None, at which point all targets present
-        will be extracted. WARNING: Providing a large list of target_ids will
-        make the database query very slow!
-    field_list:
+        will be extracted.
+
+        .. warning::
+            Providing a large list of target_ids will make the database query
+            very slow!
+    field_list: :obj:`list` of :obj:`int`
         Optional; list of field IDs for which targets should be returned.
         Membership of fields is determined by joining against the target_posn
         database table. Note that, if used in conjunction with target_ids, only
         targets satisfying *both* criteria will be returned.
-    date_start, date_end: datetime.date, optional
+    date_start, date_end: :obj:`datetime.date`
         Start and end dates of the period to be extracted from the database.
         Both default to None, at which point all data points from the database
         will be returned.
@@ -36,7 +43,7 @@ def execute(cursor, target_ids=None, field_list=None,
 
     Returns
     -------
-    obs_log: numpy structured array
+    obs_log: :obj:`numpy.array`
         Numpy structured arrays that contains one row for each time a science
         target has been observed.
     """

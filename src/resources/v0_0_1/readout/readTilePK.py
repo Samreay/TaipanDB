@@ -6,24 +6,25 @@ from ....scripts.extract import extract_from, extract_from_joined
 def execute(cursor, conditions, tables_to_join=None):
     """
     Read out a simple list of tile PKs according to certain conditions
+
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    conditions:
+    conditions: :obj:`list` of 3-tuples
         A list of three-tuples defining conditions, e.g.:
         [(column, condition, value), ...]
         Column must be a table column name. Condition must be a *string* of a
         valid PSQL comparison (e.g. '=', '<=', 'LIKE' etc.). Value should be in
         the correct Python form relevant to the table column. Defaults to None,
         so all rows will be returned.
-    tables_to_join:
+    tables_to_join: :obj:`list` of :obj:`str`
         Optional. List of other tables required to join to the tile table
         in order to evaluate conditions. Defaults to None.
 
     Returns
     -------
-    tile_pks:
+    tile_pks: :obj:`list` of :obj:`int`
         List of tile primary keys matching the conditions passed.
     """
     # Input checking

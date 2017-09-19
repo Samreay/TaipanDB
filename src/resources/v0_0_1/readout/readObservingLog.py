@@ -20,20 +20,35 @@ def execute(cursor, date_start=None, date_end=None,
     The post-observation target status can be determined using the success
     column of the returned array. If True, repeats will be incremented and
     done would be set (if not already). If False, visits will be incremented.
-    observations would be incremented in all cases.
+    Observations would be incremented in all cases.
 
     Parameters
     ----------
-    cursor
-    date_start
-    date_end
-    target_ids
-    field_list
+    cursor : :obj:`psycopg2.connection.cursor`
+        For communication with the database
+    date_start : :obj:`datetime.datetime`, optional
+        Earliest date to consider
+    date_end : :obj:`datetime.datetime`, optional
+        Latest date to consider
+    target_ids : :obj:`list` of :obj:`int`, optional
+        Limit the returned log to matching targets only
+
+        .. warning::
+            Providing a large list of target_ids will make the database query
+            very slow!
+    field_list : :obj:`list` of :obj:`int`, optional
+        Limit the returned log to matching fields only
 
     Returns
     -------
-    obs_log : numpy structured array
-        The observing log.
+    obs_log : :obj:`numpy.array`
+        The observing log. All columns from the following tables will be
+        included in the output:
+
+        - ``observing_log``
+        - ``target``
+        - ``tile``
+        - ``tiling_config``
     """
 
     midday = datetime.time(12, 0, 0)

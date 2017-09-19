@@ -11,18 +11,18 @@ def execute(cursor, target_ids=None):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional list of target_ids to return. Defaults to None, at which point
         all targets in the database are returned.
 
     Returns
     -------
-    targets_db:
+    targets_db: :obj:`numpy.array`
         A numpy structured array of data from the science_target table in the
-        database. Each row is of the format [target_id, visits, repeats].
-
+        database. Each row is of the format [``target_id``, ``visits``,
+        ``repeats``].
     """
     logging.info('Reading science targets (visits & repeats) from database')
 

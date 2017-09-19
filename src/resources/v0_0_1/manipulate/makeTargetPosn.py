@@ -23,6 +23,12 @@ from src.scripts.connection import get_connection
 def make_target_field_relationship(field, cursor=None,
                                    do_guides=True, do_standards=True,
                                    targets=[], guides=[], standards=[]):
+    """
+    .. note:: Internal helper function
+
+    This function is used by :any:`execute` for parallelising the calculation
+    of target-field relationships.
+    """
     target_field_relations = []
     logging.debug('Computing targets for field %d' % field.field_id)
 
@@ -54,22 +60,28 @@ def execute(cursor, target_ids=None, field_ids=None,
             do_guides=True, do_standards=True, do_obs_targets=True,
             parallel_workers=8, active_only=True):
     """
-    Compute which field(s) the targets reside in and store this information
-    to the target_posn database.
+    Compute and store target-field relationships
+
+    For each target on each field, one row containing (`target_id`, `field_id`)
+    will be written to the `target_posn` table.
+
+    If doing a calculation for all fields, this function can easily take
+    several hours; consider running the source code as a script, or call this
+    function in another script (e.g. :any:`v_0_0_1.py`).
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional list of target_ids to compute fields for. Defaults to None,
         at which point all targets will be extracted from the database and
         investigated.
-    field_ids:
+    field_ids: :obj:`list` of :obj:`int`
         Optional list of field_ids to compute against the target list.
         Defaults to None, at which point all fields in the database will be
         involved in the calculation.
-    do_guides, do_standards, do_obs_targets:
+    do_guides, do_standards, do_obs_targets: :obj:`list` of :obj:`bool`
         Optional Booleans, denoting whether position information for guides,
         standards and observed (i.e. is_done=True) targets should be calculated.
         All three default to True. These will only need to be switched to False
@@ -78,7 +90,8 @@ def execute(cursor, target_ids=None, field_ids=None,
 
     Returns
     -------
-    Nil. target_posn table is updated in place.
+    :obj:`None`
+        target_posn table is updated in place.
     """
 
     if do_obs_targets:

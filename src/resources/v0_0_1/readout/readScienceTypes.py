@@ -7,23 +7,28 @@ from taipan.core import TaipanTarget
 
 def execute(cursor, target_ids=None, active_only=True):
     """
-    Retrieve an array of target IDs and associated types.
+    Retrieve an array of target IDs and associated information.
+
+    Originally designed to only read target types, this function has been
+    expanded to become the 'go-to' function for getting an array of
+    relevant information for targets. Whereever a function or code block
+    needs a variable called ``target_info_array``, that array has generally
+    been returned by a call to this function.
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional list of target_ids to return. Defaults to None, at which point
         all targets in the database are returned.
 
     Returns
     -------
-    targets_db:
+    targets_db: :obj:`numpy.array`
         A numpy structured array of data from the science_target table in the
-        database. Each row is of the format [target_id, is_vpec_target,
-        is_HO_target, is_lowz_target].
-
+        database. Check the code to see exactly which data are currently
+        returned.
     """
     logging.info('Reading science targets (types) from database')
 

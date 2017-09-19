@@ -1,3 +1,9 @@
+"""
+.. warning:: INTERNAL TEST USE ONLY
+    This submodule is designed for internal test use only. It should *not*
+    be used in production.
+"""
+
 import logging
 import datetime
 import sys

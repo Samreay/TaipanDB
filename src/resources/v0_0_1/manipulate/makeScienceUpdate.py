@@ -21,17 +21,24 @@ def execute(cursor, target_info_array,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    target_info_array : numpy structure array
+    target_info_array : :obj:`numpy.array`
         NumPy structured array holding the target information. Can really
         be any structured array, so long as it has the following columns
-        (extra columns will have no effect): target_id, priority,
-        difficulty, is_h0_target, is_vpec_target, is_lowz_target
+        (extra columns will have no effect):
+
+        - `target_id`
+        - `priority`
+        - `difficulty`
+        - `is_h0_target`
+        - `is_vpec_target`
+        - `is_lowz_target`
 
     Returns
     -------
-    Nil. Types are written into the database
+    :obj:`None`
+        Types are written into the database
 
     """
 

@@ -10,28 +10,31 @@ from taipan.core import TaipanTarget
 def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
             target_ids=None, field_list=None, active_only=True):
     """
-    Extract science targets from the database
+    Extract science targets from the database.
 
     Parameters
     ----------
-    cursor:
+    cursor : :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    unobserved:
+    unobserved: :obj:`bool`, optional
         Optional; Boolean value denoting whether to only return targets
         not marked as done (True) or all targets (False). Defaults to False.
-    unassigned:
+    unassigned: :obj:`bool`, optional
         Optional; Boolean value denoting whether to only return targets
         not marked as assigned (True) or all targets (False). Defaults to False.
-    unqueued:
+    unqueued: :obj:`bool`, optional
         Optional; Boolean value denoting whether to only return targets
         not marked as queued up (True) or all targets (False). Defaults to
         False.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         Optional; list of target_ids corresponding to the targets to extract
         from the database. Defaults to None, at which point all targets present
-        will be extracted. WARNING: Providing a large list of target_ids will
-        make the database query very slow!
-    field_list:
+        will be extracted.
+
+        .. warning::
+            Providing a large list of target_ids will make the database query
+            very slow!
+    field_list: :obj:`list` of :obj:`int`
         Optional; list of field IDs for which targets should be returned.
         Membership of fields is determined by joining against the target_posn
         database table. Note that, if used in conjunction with target_ids, only
@@ -39,7 +42,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
 
     Returns
     -------
-    return_objects:
+    return_objects: :obj:`list` of :obj:`taipan.core.TaipanTarget`
         A list of TaipanTargets corresponding to the requested targets.
     """
     logging.info('Reading science targets from database')

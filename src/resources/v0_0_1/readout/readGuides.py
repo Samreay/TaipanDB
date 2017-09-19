@@ -11,16 +11,16 @@ def execute(cursor, field_list=None, active_only=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    field_list:
+    field_list: :obj:`list` of :obj:`int`
         Optional, list of field IDs to compare guides against. Guide targets
         will only be returned if they appear in one of the fields specified.
         Defaults to None, at which point all guides will be returned.
 
     Returns
     -------
-    return_objects:
+    return_objects: :obj:`list` of :obj:`taipan.core.TaipanTarget`
         A list of TaipanTarget objects corresponding to the guide targets in
         the database.
     """

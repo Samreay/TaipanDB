@@ -12,16 +12,16 @@ def execute(cursor, tile_pk):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database
-    tile_pk:
+    tile_pk: :obj:`int`, or :obj:`list` of :obj:`int`
         The primary key of the tile to be investigated, OR a list of tile_pks.
         If this tile(s) does/do not exist, the function will return an empty
         list of target_ids.
 
     Returns
     -------
-    targets:
+    targets: :obj:`list` of :obj:`int`
         A list of target_ids which sit on this tile. Note that only *science*
         targets will be returned (this is guaranteed by joining the tile_pk
         table against the science_target table).

@@ -22,6 +22,11 @@ def execute(cursor, target_ids, set_done=True,
     set_done: :obj:`bool`
         Optional; Boolean value denoting whether to mark the target as 'done'
         or not. Defaults to True (targets will be marked as done).
+    done_at: :obj:`datetime.datetime`
+        Specifies the datetime at which the targets should be marked as
+        complete (i.e. this value is inserted as the ``done`` value for this
+        target in the database). Defaults to
+        :any:`datetime.datetime.now`.
 
     Returns
     -------

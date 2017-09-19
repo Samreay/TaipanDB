@@ -13,14 +13,18 @@ from bisect import bisect_left
 def index(a, x):
     """
     Bisect based method for efficient searching in ordered lists
+
     Parameters
     ----------
-    a - Input list
-    x - Value to search for
+    a : :obj:`list`
+        Input list
+    x
+        Value to search for
 
     Returns
     -------
-    i - The index of the left-most value in a exactly equal to x
+    i : :obj:`int`
+        The index of the left-most value in a exactly equal to x
     """
     i = bisect_left(a, x)
     if i != len(a) and a[i] == x:
@@ -36,12 +40,12 @@ def execute(cursor, tile_pks=None, field_ids=None,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    tile_pks: list of ints, optional
+    tile_pks: :obj:`list` of :obj:`int`, optional
         List of tile PKs to return information for. Defaults to None,
         at which point all tiles in the database will be returned.
-    candidate_targets, guide_targets, standard_targets:
+    candidate_targets, guide_targets, standard_targets: :obj:`list` of :obj:`taipan.core.TaipanTarget`
         Optional; lists of TaipanTargets corresponding to science targets,
         guide targets and standard targets, which are required to be
         assigned to the TaipanTiles being returned. Defaults to None, at
@@ -49,7 +53,7 @@ def execute(cursor, tile_pks=None, field_ids=None,
 
     Returns
     -------
-    tile_list, candidate_targets, guide_targets, standard_targets]:
+    tile_list, candidate_targets, guide_targets, standard_targets: :obj:`list` of :obj:`taipan.core.TaipanTarget`
         A list of TaipanTile objects corresponding to the tiles in the
         database. If target lists are not passed into the function, the
         function will return the target lists it generates (so that repeat

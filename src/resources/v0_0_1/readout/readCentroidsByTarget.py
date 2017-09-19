@@ -18,21 +18,20 @@ def execute(cursor, tgt_type, unobserved=True,
 
     Parameters
     ----------
-    cursor:
+    cursor : :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    tgt_type : {'is_H0_target', 'is_lowz_target', 'is_vpec_target'}, or a
-               list of any combination of these
+    tgt_type : {'is_H0_target', 'is_lowz_target', 'is_vpec_target'}, or a :obj:`list` of any combination of these
         The target type(s) to search against.
-    unobserved : Boolean, optional
+    unobserved : :obj:`bool`, optional
         Only consider unobserved targets (True) or all targets (False) when
         finding the relevant fields. Defaults to True.
-    assigned_only : Boolean, optional
+    assigned_only : :obj:`bool`, optional
         Only consider targets which are assigned to a pending tile (True).
         Defaults to True.
 
     Returns
     -------
-    field_ids:
+    field_ids: :obj:`list` of :obj:`int`
         A list of fields that contain targets of the specified type(s).
     """
     threshold_value = int(threshold_value)

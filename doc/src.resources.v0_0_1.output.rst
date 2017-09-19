@@ -1,10 +1,12 @@
-src.resources.v0_0_1.output package
-===================================
+:any:`src.resources.v0_0_1.output`
+==================================
 
-Submodules
-----------
+.. automodule:: src.resources.v0_0_1.output
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-src.resources.v0_0_1.output.outputObsDefFile module
+:any:`src.resources.v0_0_1.output.outputObsDefFile`
 ---------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.output.outputObsDefFile
@@ -12,7 +14,7 @@ src.resources.v0_0_1.output.outputObsDefFile module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.output.outputObsLogs module
+:any:`src.resources.v0_0_1.output.outputObsLogs`
 ------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.output.outputObsLogs
@@ -20,11 +22,3 @@ src.resources.v0_0_1.output.outputObsLogs module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: src.resources.v0_0_1.output
-    :members:
-    :undoc-members:
-    :show-inheritance:

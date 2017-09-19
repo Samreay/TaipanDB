@@ -11,16 +11,17 @@ def execute(cursor, tile_pks=None):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    tile_pks:
+    tile_pks: :obj:`list` of :obj:`int`, optional
         Optional; list of tile primary keys to set as unqueued. Defaults to
         None, at which point all tiles will be unqueued (a useful end-of-night
         cleanup task).
 
     Returns
     -------
-    Nil. Updates are written to the database.
+    :obj:`None`
+        Updates are written to the database.
     """
 
     logging.info('Setting tiles as un-queued')

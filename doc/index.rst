@@ -3,13 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to src's documentation!
-===============================
+Welcome to TaipanDB documentation!
+==================================
 
-Contents:
+.. automodule:: TaipanDB
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
+
+   overview
+   setup
+
+API
+---
+.. toctree::
+   :maxdepth: 2
 
    src
 

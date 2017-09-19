@@ -1,6 +1,10 @@
-# Collection of functions for reading Almanacs which have been
-# inserted into the database
-# This should be faster than using in-memory Almanacs
+"""
+Read various Almanac (i.e. observability) statistics
+
+This sub-module differs from most other in :any:`src.resources` by containing
+multiple public methods (whereas most other submodules define a single
+`execute` method).
+"""
 
 from src.scripts.extract import extract_from, select_min_from_joined, \
     select_max_from_joined, count_from, select_agg_from_joined, \
@@ -18,12 +22,12 @@ def check_almanac_finish(cursor):
 
     Parameters
     ----------
-    cursor : psycopg2 cursor object
+    cursor : :obj:`psycopg2.connection.cursor`
         For communication with the database
 
     Returns
     -------
-    datetime_max : datetime.datetime instance
+    datetime_max : :obj:`datetime.datetime`
         The final date found in the observability database table
     """
     datetime_max = select_max_from_joined(cursor,
@@ -38,6 +42,9 @@ def get_fields_available_pointing(cursor, dt,
     """
     Get the fields available for observation from now until the end of a
     complete pointing time
+
+    This function does not consider dark/grey time, but simply whether a
+    field is above the `minimum_airmass` or not.
 
     Parameters
     ----------
@@ -116,19 +123,19 @@ def get_fields_available(cursor, dt,
     Get the field_ids available for observation at a specified datetime.
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    datetime:
+    datetime: :obj:`datetime.datetime`
         datetime.datetime denoting the UTC time that we wish to investigate.
-    minimum_airmass:
+    minimum_airmass: :obj:`float`
         The airmass above which fields are unobservable. Defaults to 2.0.
-    resolution:
+    resolution: :obj:`float`, minutes
         The resolution to assume the almanac data points are stored in the DB
         with. Defaults to 15 (minutes).
 
     Returns
     -------
-    field_ids:
+    field_ids: :obj:`list` of :obj:`int`
         A simple list of field_ids that are available at this time.
     """
     result = extract_from(cursor, 'observability',
@@ -149,13 +156,14 @@ def get_airmass(cursor, field_ids, dt, resolution=15.):
 
     Parameters
     ----------
-    cursor
-    field_id
-    dt
+    cursor: :obj:`psycopg2.connection.cursor`
+    field_id : :obj:`int`
+    dt : :obj:`datetime.datetime`
 
     Returns
     -------
-    The airmass at that field and datetime.
+    :obj:`float`
+        The airmass at that field and datetime.
     """
     if not isinstance(field_ids, list):
         field_ids = [field_ids, ]
@@ -188,27 +196,29 @@ def find_fields_available(cursor, datetime_from, datetime_to=None,
 
     Parameters
     ----------
-    datetime_from:
+    cursor: :obj:`psycopg2.connection.cursor`
+        For interacting with the database
+    datetime_from: :obj:`datetime.datetime`
         Datetime which to consider from. Must be within the bounds of the
         Almanac.
-    datetime_to:
+    datetime_to: :obj:`datetime.datetime`
         Datetime which to consider to. Defaults to None, in which case all
         available data points are used for the calculation.
-    minimum_airmass:
+    minimum_airmass: :obj:`float`
         Minimum airmass which will allow observing. Defaults to 2.0.
-    dark, grey:
+    dark, grey: :obj:`bool`
         Boolean values denoting whether to return the next observable period
         of grey time, dark time, or all night time (which corresponds to both
         dark and grey being False). Trying to pass dark=True and grey=True will
         raise a ValueError.
-    active: Boolean, optional
+    active: :obj:`bool`
         Denotes which field is_active flag should be applied. Valid options are
         True, False and None (which returns all fields regardless of active
         status.
 
     Returns
     -------
-    field_ids:
+    field_ids: :obj:`numpy.array`
         A numpy structured array with a single column 'field_id'.
     """
 
@@ -271,15 +281,16 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     Parameters
     ----------
-    datetime_from:
+    cursor: :obj:`psycopg2.connection.cursor`
+    datetime_from: :obj:`datetime.datetime`
         Datetime which to consider from. Must be within the bounds of the
         Almanac.
-    datetime_to:
+    datetime_to: :obj:`datetime.datetime`
         Datetime which to consider to. Defaults to None, in which case all
         available data points are used for the calculation.
-    minimum_airmass:
+    minimum_airmass: :obj:`float`
         Minimum airmass which will allow observing. Defaults to 2.0.
-    dark, grey:
+    dark, grey: :obj:`bool`
         Boolean values denoting whether to return the next observable period
         of grey time, dark time, or all night time (which corresponds to both
         dark and grey being False). Trying to pass dark=True and grey=True will
@@ -287,7 +298,7 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     Returns
     -------
-    obs_start, obs_end:
+    obs_start, obs_end: :obj:`float`
         The start and end times when this field is observable. Note that
         datetimes are returned in pyephem format - this is for backwards-
         compatibility with the function in ts.scheduling.Almanac objects.
@@ -378,37 +389,38 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
 
     Parameters
     ----------
-    datetime_from, datetime_to: datetime.datetime objects
+    cursor: :obj:`psycopg2.connection.cursor`
+    datetime_from, datetime_to: :obj:`datetime.datetime`
         The datetimes between which we should calculate the number of
         observable hours remaining. These datetimes must be between the
         start and end dates of the almanac, or an error will be returned.
         datetime_to will default to None, such that the remainder of the
         almanac will be used.
-    field_id: integer
+    field_id: :obj:`int`
         The ID of the field to consider
-    exclude_grey_time, exclude_dark_time:
+    exclude_grey_time, exclude_dark_time: :obj:`bool`
         Boolean value denoting whether to exclude grey time or dark time
-        from the calculation. Defaults to exclude_grey_time=True,
-        exclude_dark_time=False (so only dark time will be counted as
+        from the calculation. Defaults to `exclude_grey_time=True`,
+        `exclude_dark_time=False` (so only dark time will be counted as
         'observable'.) The legal combinations are:
         False, False (all night time is counted)
         False, True (grey time only)
         True, False (dark time only)
         Attempting to set both value to True will raise a ValueError, as
         this would result in no available observing time.
-    minimum_airmass: float
+    minimum_airmass: :obj:`float`
         Something of a misnomer; this is actually the *maximum* airmass at which
         a field should be considered visible (a.k.a. the minimum altitude).
         Defaults to 2.0 (i.e. an altitude of 30 degrees). If hours_better
         is used, the comparison airmass will be the minimum of the airmass at
         datetime_from and minimum_airmass.
-    hours_better:
+    hours_better: :obj:`bool`
         Optional Boolean, denoting whether to return only
         hours_observable which have airmasses superior to the airmass
         at datetime_from (True) or not (False). Defaults to False.
-    resolution : float
+    resolution : :obj:`float`
         Resolution of the Almanac in minutes. Defaults to 15.
-    airmass_delta : float
+    airmass_delta : :obj:`float`
         Denotes the delta airmass that should be used to compute 
         hours_observable if hours_better=True. The hours_observable will be
         computed against a threshold airmass value of 
@@ -419,7 +431,7 @@ def hours_observable(cursor, field_id, datetime_from, datetime_to,
 
     Returns
     -------
-    hours_obs:
+    hours_obs : :obj:`float`
         The number of observable hours for this field between datetime_from
         and datetime_to.
 
@@ -479,13 +491,14 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
 
     Parameters
     ----------
-    datetime_from, datetime_to:
+    cursor : :obj:`psycopg2.connection.cursor`
+    datetime_from, datetime_to : :obj:`datetime.datetime`
         The datetimes between which we should calculate the number of
         observable hours remaining. These datetimes must be between the
         start and end dates of the almanac, or an error will be returned.
         datetime_to will default to None, such that the remainder of the
         almanac will be used.
-    exclude_grey_time, exclude_dark_time:
+    exclude_grey_time, exclude_dark_time: :obj:`bool`
         Boolean value denoting whether to exclude grey time or dark time
         from the calculation. Defaults to exclude_grey_time=True,
         exclude_dark_time=False (so only dark time will be counted as
@@ -495,14 +508,14 @@ def hours_observable_bulk(cursor, field_ids, datetime_from, datetime_to,
         True, False (dark time only)
         Attempting to set both value to True will raise a ValueError, as
         this would result in no available observing time.
-    hours_better:
+    hours_better: :obj:`bool`
         Optional Boolean, denoting whether to return only
         hours_observable which have airmasses superior to the airmass
         at datetime_now (True) or not (False). Defaults to False.
 
     Returns
     -------
-    hours_obs:
+    hours_obs: :obj:`float`
         The number of observable hours for this field between datetime_from
         and datetime_to.
 
@@ -577,18 +590,18 @@ def next_night_period(cursor, dt, limiting_dt=None,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    dt:
+    dt: :obj:`datetime.datetime`
         Datetime to consider. Should be in UTC (but naive).
-    dark, grey:
+    dark, grey: :obj:`bool`
         Booleans denoting whether to consider only dark or grey time. Setting
         both to False will simply return 'night' time. Setting both to True
         will raise a ValueError.
 
     Returns
     -------
-    night_start, night_end:
+    night_start, night_end: :obj:`datetime.datetime`
         The start and end of the next 'night' period as naive datetime.datetime
         objects. These will be in UTC.
     """

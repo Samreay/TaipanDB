@@ -7,9 +7,6 @@
     :undoc-members:
     :show-inheritance:
 
-Subpackages
-===========
-
 .. toctree::
 
     src.resources.v0_0_1

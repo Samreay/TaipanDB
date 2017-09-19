@@ -1,8 +1,10 @@
-src package
-===========
+:any:`src`
+==========
 
-Subpackages
------------
+.. automodule:: src
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 .. toctree::
 
@@ -10,11 +12,3 @@ Subpackages
     src.scripts
     src.tests
     dbschema/dbschema
-
-Module contents
----------------
-
-.. automodule:: src
-    :members:
-    :undoc-members:
-    :show-inheritance:

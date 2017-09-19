@@ -11,30 +11,30 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    metrics:
+    metrics: :obj:`list` of :obj:`str`, optional
         A list of metrics to return, corresponding to the columns of
         the tiling_info table to send back.
         Defaults to None, at which point all metrics will be sent back.
-    unobserved_only:
+    unobserved_only: :obj:`bool`, optional
         Optional; Boolean value denoting whether to only return tiles
         not marked as done/queued (True) or all tiles (False). Defaults to
         True.
-    ignore_zeros:
+    ignore_zeros: :obj:`bool`, optional
         Optional; Boolean value denoting whether to ignore any tiles in which
         any of the requested metrics are equal to zero. Defaults to False.
-    active_only:
+    active_only: :obj:`bool`, optional
         Optional; Boolean denoting whether to only return scores for active
         fields (True) or all fields (False). Defaults to True.
-    safety_check: Boolean, optional (default: False)
+    safety_check: :obj:`bool`, optional (default: False)
         Boolean denoting whether to make sure that the requested metrics aren't
         None for all tiles. Defaults to False (i.e. assumes you will only
         query the correct, populated metric values).
 
     Returns
     -------
-    tile_scores:
+    tile_scores: :obj:`numpy.array`
         A structure numpy array containing the requested tile ID and
         score metrics.
     """

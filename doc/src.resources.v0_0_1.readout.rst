@@ -1,10 +1,13 @@
-src.resources.v0_0_1.readout package
-====================================
+:any:`src.resources.v0_0_1.readout`
+===================================
 
-Submodules
-----------
+.. automodule:: src.resources.v0_0_1.readout
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-src.resources.v0_0_1.readout.readAlmanacStats module
+
+:any:`src.resources.v0_0_1.readout.readAlmanacStats`
 ----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readAlmanacStats
@@ -12,7 +15,7 @@ src.resources.v0_0_1.readout.readAlmanacStats module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readCentroids module
+:any:`src.resources.v0_0_1.readout.readCentroids`
 -------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readCentroids
@@ -20,7 +23,7 @@ src.resources.v0_0_1.readout.readCentroids module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readCentroidsAffected module
+:any:`src.resources.v0_0_1.readout.readCentroidsAffected`
 ---------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readCentroidsAffected
@@ -28,7 +31,7 @@ src.resources.v0_0_1.readout.readCentroidsAffected module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readCentroidsByTarget module
+:any:`src.resources.v0_0_1.readout.readCentroidsByTarget`
 ---------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readCentroidsByTarget
@@ -36,7 +39,7 @@ src.resources.v0_0_1.readout.readCentroidsByTarget module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readFibrePosns module
+:any:`src.resources.v0_0_1.readout.readFibrePosns`
 --------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readFibrePosns
@@ -44,7 +47,7 @@ src.resources.v0_0_1.readout.readFibrePosns module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readGuides module
+:any:`src.resources.v0_0_1.readout.readGuides`
 ----------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readGuides
@@ -52,7 +55,7 @@ src.resources.v0_0_1.readout.readGuides module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readObservingLog module
+:any:`src.resources.v0_0_1.readout.readObservingLog`
 ----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readObservingLog
@@ -60,7 +63,7 @@ src.resources.v0_0_1.readout.readObservingLog module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readObservingLogManual module
+:any:`src.resources.v0_0_1.readout.readObservingLogManual`
 ----------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readObservingLogManual
@@ -68,7 +71,7 @@ src.resources.v0_0_1.readout.readObservingLogManual module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScience module
+:any:`src.resources.v0_0_1.readout.readScience`
 -----------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScience
@@ -76,7 +79,7 @@ src.resources.v0_0_1.readout.readScience module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScienceDates module
+:any:`src.resources.v0_0_1.readout.readScienceDates`
 ----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScienceDates
@@ -84,7 +87,7 @@ src.resources.v0_0_1.readout.readScienceDates module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScienceObservingInfo module
+:any:`src.resources.v0_0_1.readout.readScienceObservingInfo`
 ------------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScienceObservingInfo
@@ -92,7 +95,7 @@ src.resources.v0_0_1.readout.readScienceObservingInfo module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readSciencePosn module
+:any:`src.resources.v0_0_1.readout.readSciencePosn`
 ---------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readSciencePosn
@@ -100,7 +103,7 @@ src.resources.v0_0_1.readout.readSciencePosn module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScienceTile module
+:any:`src.resources.v0_0_1.readout.readScienceTile`
 ---------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScienceTile
@@ -108,7 +111,7 @@ src.resources.v0_0_1.readout.readScienceTile module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScienceTypes module
+:any:`src.resources.v0_0_1.readout.readScienceTypes`
 ----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScienceTypes
@@ -116,7 +119,7 @@ src.resources.v0_0_1.readout.readScienceTypes module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readScienceVisits module
+:any:`src.resources.v0_0_1.readout.readScienceVisits`
 -----------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readScienceVisits
@@ -124,7 +127,7 @@ src.resources.v0_0_1.readout.readScienceVisits module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readStandards module
+:any:`src.resources.v0_0_1.readout.readStandards`
 -------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readStandards
@@ -132,7 +135,7 @@ src.resources.v0_0_1.readout.readStandards module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readTileObservingInfo module
+:any:`src.resources.v0_0_1.readout.readTileObservingInfo`
 ---------------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readTileObservingInfo
@@ -140,7 +143,7 @@ src.resources.v0_0_1.readout.readTileObservingInfo module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readTilePK module
+:any:`src.resources.v0_0_1.readout.readTilePK`
 ----------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readTilePK
@@ -148,7 +151,7 @@ src.resources.v0_0_1.readout.readTilePK module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readTileScores module
+:any:`src.resources.v0_0_1.readout.readTileScores`
 --------------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readTileScores
@@ -156,19 +159,10 @@ src.resources.v0_0_1.readout.readTileScores module
     :undoc-members:
     :show-inheritance:
 
-src.resources.v0_0_1.readout.readTiles module
+:any:`src.resources.v0_0_1.readout.readTiles`
 ---------------------------------------------
 
 .. automodule:: src.resources.v0_0_1.readout.readTiles
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: src.resources.v0_0_1.readout
     :members:
     :undoc-members:
     :show-inheritance:

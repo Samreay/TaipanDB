@@ -20,18 +20,18 @@ def execute(cursor, field_list=None, tile_list=None, active_only=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    field_list:
+    field_list: :obj:`list` of :obj:`int`, optional
         Optional, list of field_id values (ints) corresponding to the fields
         that may change. Note that this will override tile_list if passed.
-    tile_list:
+    tile_list: :obj:`list` of :obj:`int`, optional
         Optional, list of tile_pk values (ints) corresponding to the tiles
         that may have changed.
 
     Returns
     -------
-    field_ids:
+    field_ids: :obj:`list` of :obj:`int`
         A list of fields that may be affected
         by changes to the fields/tiles in the input lists (i.e. the fields
         that overlap the fields/tiles passed in).

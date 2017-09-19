@@ -15,12 +15,12 @@ def execute(cursor, field_ids=None):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
 
     Returns
     -------
-    obs_tile_info:
+    obs_tile_info: :obj:`numpy.array`
         A structured numpy array with all the information you could want about
         which tile was observed when.
     """

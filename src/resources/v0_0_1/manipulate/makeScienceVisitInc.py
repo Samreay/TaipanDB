@@ -7,20 +7,21 @@ from ....scripts.manipulate import increment_rows
 
 def execute(cursor, target_ids, inc=1):
     """
-    Increment the visit number of the passed targets
+    Increment the visit number of the passed targets.
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         The list of target IDs to update the visit number for.
-    inc:
+    inc: :obj:`int`, optional
         The increment value. Defaults to 1.
 
     Returns
     -------
-    Nil. Difficulties are computed, and written back to the database.
+    :obj:`None`
+        Difficulties are computed, and written back to the database.
 
     """
 

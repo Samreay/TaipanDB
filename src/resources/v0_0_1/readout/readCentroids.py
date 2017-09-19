@@ -11,12 +11,12 @@ def execute(cursor, field_ids=None, tile_list=None, active_only=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database.
-    field_ids:
+    field_ids: :obj:`list` of :obj:`int`, optional
         Optional; list of field IDs to return from the database. Defaults to
         None, at which point all field centroids are returned.
-    tile_list : optional, list of ints
+    tile_list : :obj:`list` of :obj:`int`
         List of tile PKs that we wish to get the field information for.
         Defaults to None, at which point all fields are returned. If both
         field_ids and tile_list are provided, field_ids takes precendence to
@@ -24,7 +24,7 @@ def execute(cursor, field_ids=None, tile_list=None, active_only=True):
 
     Returns
     -------
-    return_objects:
+    return_objects: :obj:`list` of :obj:`taipan.core.TaipanTile`
         A list of (empty) TaipanTile objects. One TaipanTile is returned for
         each field requested, or for all fields in the database if no
         list of requested fields was passed.

@@ -19,38 +19,40 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             output_dir='.',
             local_tz=ts.UKST_TIMEZONE):
     """
-    For all tiles matching the input parameters, export an
-    observing definition file.
+    For all tiles matching the input parameters, export an observing definition file.
     
     Parameters
     ----------
-    cursor : psycopg2.connection.cursor object
+    cursor : :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for interacting with the database
-    tile_pks : list of ints, optional
+    tile_pks : :obj:`list` of :obj:`int`, optional
         List of tile_pks we are interested in. Defaults to None, at which
         point all tiles matching any other criteria will have observing
         files returned.
-    unobserved : Boolean, optional. Defaults to None
+    unobserved : :obj:`bool`, optional
         Whether to return only unobserved tiles (True), observed tiles (False),
         or ignore the observed status. Defaults to None.
-    unqueued : Boolean, optional. Defaults to None
+    unqueued : :obj:`bool`, optional
         As for unobserved, but considers the queued status.
-    config_time: datetime.datetime object, timezone-aware, optional
+    config_time: :obj:`datetime.datetime`, timezone-aware, optional
         The time of generation for this file. Defaults to 
         datetime.datetime.now(), and a timezone from the core Taipan config.
-    obs_time: datetime.datetime.object, timezone-aware, optional
+    obs_time: :obj:`datetime.datetime`, timezone-aware, optional
         As for config_time, but denotes when the tile is planned to be/is
         observed. If a tile has been observed, the noted observation time
         from the database will be used instead. This value will be broadcast
         across all tiles returned which do not have an observing time 
         defined in the database.
-    output_dir: str, optional
+    output_dir: :obj:`str`, optional
         The file path where the output JSON files should be written. Defaults
         to '.' (i.e. the current working directory).
+    local_tz: :obj:`pytz.timezone`, optional
+        Timezone used to make generate `config_time` and `obs_time` if not
+        passed. Defaults to :any:`taipan.scheduling.UKST_TIMEZONE`.
 
     Returns
     -------
-    file_names: list of str
+    file_names: :obj:`list` of :obj:`str`
         A list of absolute paths to the output files.
     """
 

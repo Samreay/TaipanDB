@@ -11,11 +11,11 @@ def execute(cursor, tile_pks, time_obs=None):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    tile_pks:
+    tile_pks: :obj:`list` of :obj:`int`
         The list of tile primary keys to set as queued.
-    time_obs:
+    time_obs: :obj:`datetime.datetime` or :obj:`list` of :obj:`datetime.datetime`
         Optional; time of observation of the tile(s). Can either be a single
         datetime.datetime instance which will be applied to all tiles, or a list
         of datetime.datetime instances corresponding one-to-one with each tile
@@ -23,7 +23,8 @@ def execute(cursor, tile_pks, time_obs=None):
 
     Returns
     -------
-    Nil. Updates are written to the database.
+    :obj:`None`
+        Updates are written to the database.
     """
 
     logging.info('Setting tiles as observed')

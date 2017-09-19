@@ -18,19 +18,19 @@ def execute(cursor, target_ids, is_h0_target, is_vpec_target,
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database.
-    target_ids:
+    target_ids: :obj:`list` of :obj:`int`
         The list of target_ids to do priority updates for.
-    is_h0_target, is_vpec_target, is_lowz_target:
+    is_h0_target, is_vpec_target, is_lowz_target : :obj:`list` of :obj:`bool`
         Lists of Booleans, denoting whether the corresponding target is of
         that type. Lists must have the same length as target_ids, and must
         have a one-to-one correspondence with that list.
 
     Returns
     -------
-    Nil. Types are written into the database
-
+    :obj:`None`
+        Types are written into the database
     """
 
     logging.info('Writing science types to database')

@@ -12,21 +12,21 @@ def execute(cursor, field_list=None, target_list=None, active_only=True):
 
     Parameters
     ----------
-    cursor:
+    cursor: :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for communicating with the database
-    field_list: list of ints, optional
+    field_list: :obj:`list` of :obj:`int`, optional
         List of fields to consider. Defaults to None, at which point
         information fo all fields will be returned. WARNING: Using a large
         field_list will seriously affect performance!
-    target_list: list of ints, optional
+    target_list: :obj:`list` of :obj:`int`, optional
         List of target_ids to consider. Defaults to None, at which point
         information fo all targets will be returned. WARNING: Using a large
         field_list will seriously affect performance!
 
     Returns
     -------
-    db_return: np.array
-        A numpy structured array, with elements ['target_id', 'field_id'].
+    db_return: :obj:`numpy.array`
+        A numpy structured array, with columns (``target_id``, ``field_id``).
     """
     logging.info('Reading science positions from database')
 

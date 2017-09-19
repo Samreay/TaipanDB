@@ -14,21 +14,21 @@ def execute(cursor, dt=datetime.datetime.now(), flag='progress',
     
     Parameters
     ----------
-    cursor : psycopg2.connection.cursor object
+    cursor : :obj:`psycopg2.connection.cursor`
         psycopg2 cursor for database connections
-    dt : datetime.datetime object, optional
+    dt : :obj:`datetime.datetime`, optional
         Datetime at which to mark the output file. Defaults to 
         datetime.datetime.now().
-    flag : str, optional
+    flag : :obj:`str`, optional
         Flag to add to the end of the filename (e.g. 'progress', 'abort', 
         'final', etc.). Defaults to 'progress'. Set to None to not have a flag.
-    output_path: str, optional
+    output_path: :obj:`str`, optional
         Relative or absolute path to place the file in. Defaults to '.' (i.e.
         the present working directory).
 
     Returns
     -------
-    file_path : str 
+    file_path : :obj:`str`
         The file path to the output file. Will be relative if output_path was
         defined in a relative fashion.
     """
