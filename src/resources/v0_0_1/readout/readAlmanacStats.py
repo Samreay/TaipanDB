@@ -80,7 +80,7 @@ def get_fields_available_pointing(cursor, dt,
     return result['field_id']
 
 
-def next_time_available(cursor, dt,
+def next_time_available(cursor, dt, end_dt=None,
                         minimum_airmass=2.0,
                         resolution=15.):
     """
@@ -92,6 +92,9 @@ def next_time_available(cursor, dt,
         For communication with the observing database
     dt : :obj:`datetime.datetime`, UTC
         Time of interest
+    end_dt: :obj:`datetime.datetime`, UTC
+        The end of the observing period that we are interested in. Defaults
+        to None, in which case this criterion will not be applied
     minimum_airmass : :obj:`float`
         Airmass above which the field centre must be to be considered
         observable. Defaults to 2.0.
@@ -100,19 +103,29 @@ def next_time_available(cursor, dt,
 
     Returns
     -------
-    next_time : :obj:`datetime.datetime`, UTC
-        The next time that a field will be available for observation
+    next_time : :obj:`datetime.datetime`, UTC, OR :obj:`None`
+        The next time that a field will be available for observation. If no
+        fields will be available before ``end_dt``, :obj:`None` will be
+        returned.
     """
 
-    next_time = select_min_from_joined(cursor, ['observability'],
-                                       'date',
-                                       conditions=[
-                                           ('date', '>', dt -
-                                            datetime.timedelta(
-                                                minutes=resolution)),
-                                           ('airmass', '<=',
-                                            minimum_airmass),
-                                       ])
+    conditions = [
+        ('date', '>', dt -
+         datetime.timedelta(
+             minutes=resolution)),
+        ('airmass', '<=',
+         minimum_airmass),
+    ]
+    if end_dt:
+        conditions += [('date', '<', end_dt), ]  # end_dt is a hard limit
+
+    try:
+        next_time = select_min_from_joined(cursor, ['observability'],
+                                           'date',
+                                           conditions=conditions)
+    except:
+        return None
+
     return next_time
 
 
