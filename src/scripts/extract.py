@@ -1111,7 +1111,7 @@ def select_having(cursor, table, column,
         logging.debug('Running query: %s' % query_string)
         cursor.execute(query_string)
         column_values = cursor.fetchall()
-        return column_values[column]
+        return column_values
 
     return query_string
 
