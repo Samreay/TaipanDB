@@ -78,6 +78,9 @@ def get_fields_available_pointing(cursor, dt,
                                 datetime.timedelta(days=pointing_time)),
                            ],
                            having=[('airmass', '<=', minimum_airmass)])
+
+    # Strip the result down to a singular list
+    result = [_[0] for _ in result]
     return result
 
 
