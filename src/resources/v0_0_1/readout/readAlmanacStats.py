@@ -123,6 +123,7 @@ def next_time_available(cursor, dt, end_dt=None,
         next_time = select_min_from_joined(cursor, ['observability'],
                                            'date',
                                            conditions=conditions)
+    # FIXME This catch needs to be updated to include the correct Exception
     except:
         return None
 
