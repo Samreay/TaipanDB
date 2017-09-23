@@ -1109,8 +1109,9 @@ def select_having(cursor, table, column,
 
     if cursor is not None:
         logging.debug('Running query: %s' % query_string)
-        column_values = cursor.execute(query_string)
-        return column_values.fetchall()
+        cursor.execute(query_string)
+        column_values = cursor.fetchall()
+        return column_values
 
     return query_string
 
