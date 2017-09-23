@@ -38,7 +38,8 @@ def check_almanac_finish(cursor):
 def get_fields_available_pointing(cursor, dt,
                                   minimum_airmass=2.0,
                                   resolution=15.,
-                                  pointing_time=ts.POINTING_TIME):
+                                  pointing_time=ts.POINTING_TIME,
+                                  active_only=True):
     """
     Get the fields available for observation from now until the end of a
     complete pointing time
