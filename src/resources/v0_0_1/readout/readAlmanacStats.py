@@ -78,7 +78,7 @@ def get_fields_available_pointing(cursor, dt,
                                 datetime.timedelta(days=pointing_time)),
                            ],
                            having=[('airmass', '<=', minimum_airmass)])
-    return result['field_id']
+    return result
 
 
 def next_time_available(cursor, dt, end_dt=None,
