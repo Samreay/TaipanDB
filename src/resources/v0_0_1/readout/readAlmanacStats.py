@@ -81,6 +81,14 @@ def get_fields_available_pointing(cursor, dt,
 
     # Strip the result down to a singular list
     result = [_[0] for _ in result]
+
+    if active_only:
+        result = extract_from(cursor, 'field',
+                              conditions=[
+                                  ('field_id', 'IN', result,),
+                              ],
+                              columns=['field_id'])
+
     return result
 
 
