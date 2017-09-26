@@ -15,6 +15,12 @@ import copy
 import datetime
 import logging
 
+DT_RANGE_FUDGE = datetime.timedelta(seconds=1.)
+"""
+This is padding added to start and end of a searched-for date range - it
+prevents floating point errors causing the system to report, e.g., that
+nothing is available for observation
+"""
 
 def check_almanac_finish(cursor):
     """
@@ -72,10 +78,12 @@ def get_fields_available_pointing(cursor, dt,
     result = select_having(cursor, 'observability', 'field_id',
                            conditions=[
                                ('date', '>=', dt -
-                                datetime.timedelta(minutes=resolution/2.)),
+                                datetime.timedelta(minutes=resolution/2.) -
+                                DT_RANGE_FUDGE),
                                ('date', '<=', dt +
                                 datetime.timedelta(minutes=resolution / 2.) +
-                                datetime.timedelta(days=pointing_time)),
+                                datetime.timedelta(days=pointing_time) +
+                                DT_RANGE_FUDGE),
                            ],
                            having=[('airmass', '<=', minimum_airmass)])
 
@@ -124,12 +132,12 @@ def next_time_available(cursor, dt, end_dt=None,
     conditions = [
         ('date', '>', dt -
          datetime.timedelta(
-             minutes=resolution)),
+             minutes=resolution) - DT_RANGE_FUDGE),
         ('airmass', '<=',
          minimum_airmass),
     ]
     if end_dt:
-        conditions += [('date', '<', end_dt), ]  # end_dt is a hard limit
+        conditions += [('date', '<', end_dt + DT_RANGE_FUDGE), ]  # end_dt is a hard limit
 
     try:
         next_time = select_min_from_joined(cursor, ['observability'],
@@ -169,9 +177,9 @@ def get_fields_available(cursor, dt,
                           conditions=[
                               ('airmass', '<=', minimum_airmass),
                               ('date', '<=', dt + datetime.timedelta(
-                                  minutes=resolution/2.0)),
+                                  minutes=resolution/2.0) - DT_RANGE_FUDGE),
                               ('date', '>=', dt - datetime.timedelta(
-                                  minutes=resolution/2.0)),
+                                  minutes=resolution/2.0) + DT_RANGE_FUDGE),
                           ])['field_id']
     return result
 
@@ -269,11 +277,12 @@ def find_fields_available(cursor, datetime_from, datetime_to=None,
 
     conditions = [
         ('date', '>=', datetime_from - datetime.timedelta(minutes=resolution)),
-        ('date', '<=', datetime_to + datetime.timedelta(minutes=resolution)),
+        # ('date', '<=', datetime_to + datetime.timedelta(minutes=resolution)),
         ('airmass', '<=', minimum_airmass),
     ]
     if datetime_to:
-        conditions += [('date', '<=', datetime_to)]
+        conditions += [('date', '<=', datetime_to +
+                        datetime.timedelta(minutes=resolution))]
     if dark:
         conditions += [('dark', '=', True)]
     if grey:
@@ -349,7 +358,8 @@ def next_observable_period(cursor, field_id, datetime_from, datetime_to=None,
 
     conditions = [
         ('field_id', '=', field_id),
-        ('date', '>=', datetime_from - datetime.timedelta(minutes=resolution)),
+        ('date', '>=', datetime_from - datetime.timedelta(minutes=resolution)
+         - DT_RANGE_FUDGE),
     ]
     if datetime_to:
         conditions += [('date', '<=', datetime_to)]
