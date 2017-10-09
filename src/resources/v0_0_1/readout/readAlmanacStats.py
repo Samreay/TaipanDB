@@ -15,7 +15,7 @@ import copy
 import datetime
 import logging
 
-DT_RANGE_FUDGE = datetime.timedelta(seconds=1.)
+DT_RANGE_FUDGE = datetime.timedelta(seconds=10.)
 """
 This is padding added to start and end of a searched-for date range - it
 prevents floating point errors causing the system to report, e.g., that
