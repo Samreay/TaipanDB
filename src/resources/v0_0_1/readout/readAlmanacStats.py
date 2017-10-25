@@ -133,7 +133,7 @@ def next_time_available(cursor, dt, end_dt=None,
     conditions = [
         ('date', '>', dt -
          datetime.timedelta(
-             minutes=resolution) + datetime.timedelta(seconds=DT_RANGE_FUDGE)),
+             minutes=resolution) + DT_RANGE_FUDGE),
         ('airmass', '<=',
          minimum_airmass),
     ]
