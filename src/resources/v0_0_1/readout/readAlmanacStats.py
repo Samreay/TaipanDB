@@ -22,6 +22,7 @@ prevents floating point errors causing the system to report, e.g., that
 nothing is available for observation
 """
 
+
 def check_almanac_finish(cursor):
     """
     Find the last date which the almanacs are calibrated for.
@@ -132,7 +133,7 @@ def next_time_available(cursor, dt, end_dt=None,
     conditions = [
         ('date', '>', dt -
          datetime.timedelta(
-             minutes=resolution)),
+             minutes=resolution) + datetime.timedelta(seconds=DT_RANGE_FUDGE)),
         ('airmass', '<=',
          minimum_airmass),
     ]
