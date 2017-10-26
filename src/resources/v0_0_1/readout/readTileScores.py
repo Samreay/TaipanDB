@@ -5,6 +5,7 @@ import numpy as np
 
 
 def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
+            ignore_empty=True,
             active_only=True, safety_check=False):
     """
     Read in the tile 'scores' for tiles awaiting observation
@@ -24,6 +25,9 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
     ignore_zeros: :obj:`bool`, optional
         Optional; Boolean value denoting whether to ignore any tiles in which
         any of the requested metrics are equal to zero. Defaults to False.
+    ignore_empty: :obj:`bool`, optional
+        Denotes whether to ignore any tiles with a recorded ``n_sci_alloc`` of
+        0 (i.e. no science targets are assigned). Defaults to True.
     active_only: :obj:`bool`, optional
         Optional; Boolean denoting whether to only return scores for active
         fields (True) or all fields (False). Defaults to True.
@@ -78,6 +82,10 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
     if active_only:
         conditions += [
             ('is_active', '=', True)
+        ]
+    if ignore_empty:
+        conditions += [
+            ('n_sci_alloc', '>', 0)
         ]
     if len(metrics) > 0 and ignore_zeros:
         conditions += [(metric, '>', 0.) for metric in metrics]
