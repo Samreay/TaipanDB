@@ -148,6 +148,7 @@ def multithread_task(fields,
                     columns=['field_id', 'n_sci_alloc'],
                     conditions=write_conds)
 
+
     # Read targets which are not assigned to any tile yet, nor observed
     # Note that this means we have to find any targets which either:
     # - Have no entries in target_field;
@@ -168,10 +169,12 @@ def multithread_task(fields,
         tgt_per_field_nil = [[field, len(field_per_tgt) -
                               np.count_nonzero(field_per_tgt - field)]
                              for field in fields]
-        logging.debug('Writing remaining target counts to database')
-        update_rows(cursor_internal, 'tiling_info', tgt_per_field_nil,
-                    columns=['field_id', 'n_sci_rem'],
-                    conditions=write_conds)
+    else:
+        tgt_per_field_nil = [[field, 0] for field in fields]
+    logging.debug('Writing remaining target counts to database')
+    update_rows(cursor_internal, 'tiling_info', tgt_per_field_nil,
+                columns=['field_id', 'n_sci_rem'],
+                conditions=write_conds)
 
     # Count the number of science targets marked with 'success' in the field
     # Don't worry about what they are
