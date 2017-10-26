@@ -85,7 +85,7 @@ def execute(cursor, metrics=None, unobserved_only=True, ignore_zeros=False,
         ]
     if ignore_empty:
         conditions += [
-            ('n_sci_alloc', '>', 0)
+            ('n_sci_alloc', '>', 0.)
         ]
     if len(metrics) > 0 and ignore_zeros:
         conditions += [(metric, '>', 0.) for metric in metrics]
