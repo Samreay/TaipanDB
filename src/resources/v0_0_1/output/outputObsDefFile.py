@@ -93,12 +93,11 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             )
         with open(output_dir + '/' +
                   '%s_tile%d_field%d_config.json' %
-                                  (tile.pk, tile.field_id,
-                                   local_tz.localize(
+                                  (local_tz.localize(
                                        config_time
                                    ).strftime(
                                        JSON_DTFORMAT_NAIVE
-                                   )
+                                   ), tile.pk, tile.field_id,
                                    ),
                   'w') as fileobj:
             logging.debug('Writing %s' % fileobj.name)
