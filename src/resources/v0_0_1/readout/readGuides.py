@@ -36,7 +36,7 @@ def execute(cursor, field_list=None, active_only=True):
     if active_only:
         conditions += [('is_active', '=', True)]
 
-    guides_db = extract_from_left_joined(cursor, ['target', 'target_posn'],
+    guides_db = extract_from_left_joined(cursor, ['target', 'target_posn', ],
                                          'target_id',
                                          conditions=conditions,
                                          columns=['target_id', 'ra', 'dec',
