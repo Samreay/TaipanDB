@@ -19,7 +19,8 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             output_dir='.',
             local_tz=ts.UKST_TIMEZONE):
     """
-    For all tiles matching the input parameters, export an observing definition file.
+    For all tiles matching the input parameters, export an observing definition
+    file.
     
     Parameters
     ----------
@@ -83,6 +84,8 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         # json_dict['origin'][0]['execDate'] = config_time.astimezone(
         #     local_tz
         # )
+        obs_time = [_['date_obs'] for _ in tile_obs_log if
+                    _['tile_pk'] == tile.pk][0]
         if tile.pk in tile_obs_log['tile_pk']:
             json_dict['fieldCentre']['UT'] = tile_obs_log[
                 tile_obs_log['tile_pk'] == tile.pk
@@ -92,9 +95,9 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
                 JSON_DTFORMAT_NAIVE
             )
         with open(output_dir + '/' +
-                  '%s_tile%d_field%d_config.json' %
+                  '%s_tile%7d_field%5d_config.json' %
                                   (local_tz.localize(
-                                       config_time
+                                       obs_time
                                    ).strftime(
                                        JSON_DTFORMAT_NAIVE
                                    ), tile.pk, tile.field_id,
