@@ -15,7 +15,7 @@ import taipan.scheduling as ts
 
 def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             config_time=datetime.datetime.now(),
-            obs_time=None,
+            obs_time=datetime.datetime.now(),
             output_dir='.',
             local_tz=ts.UKST_TIMEZONE):
     """
@@ -70,9 +70,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
     tile_pks = rTpk.execute(cursor, conditions=conditions)
     tiles = rT.execute(cursor, tile_pks=tile_pks)[0]
 
-    # Get the tile_obs_log for observed tiles
-    if unobserved is not None:
-        tile_obs_log = rTOI.execute(cursor)
+    tile_obs_log = rTOI.execute(cursor)
 
     for tile in tiles:
         json_dict = tile.generate_json_dict()
