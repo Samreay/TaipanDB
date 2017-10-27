@@ -110,14 +110,15 @@ def execute(cursor, tile_pks=None, field_ids=None,
         # something to build the tiles from
         logging.debug('Reading in list of guide targets from DB')
         return_targets = True
-        guide_targets = rG.execute(cursor)
+        guide_targets = rG.execute(cursor, field_list=fibreassigns['field_id'])
 
     if standard_targets is None:
         # Will need to read the targets in from the database so we have
         # something to build the tiles from
         logging.debug('Reading in list of standard targets from DB')
         return_targets = True
-        standard_targets = rSt.execute(cursor)
+        standard_targets = rSt.execute(cursor,
+                                       field_list=fibreassigns['field_id'])
 
     all_targets = candidate_targets + guide_targets + standard_targets
     logging.debug('Sorting all-targets list...')
