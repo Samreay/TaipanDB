@@ -95,7 +95,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
                 JSON_DTFORMAT_NAIVE
             )
         with open(output_dir + '/' +
-                  '%s_tile%7d_field%5d_config.json' %
+                  '%s_tile%07d_field%05d_config.json' %
                                   (local_tz.localize(
                                        obs_time_log
                                    ).strftime(
