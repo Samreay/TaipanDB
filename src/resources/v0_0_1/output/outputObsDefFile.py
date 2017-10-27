@@ -84,8 +84,10 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         # json_dict['origin'][0]['execDate'] = config_time.astimezone(
         #     local_tz
         # )
-        obs_time = [_['date_obs'] for _ in tile_obs_log if
-                    _['tile_pk'] == tile.pk][0]
+        obs_time_log = [_['date_obs'] for _ in tile_obs_log if
+                        _['tile_pk'] == tile.pk][0]
+        if obs_time_log is None:
+            obs_time_log = obs_time
         if tile.pk in tile_obs_log['tile_pk']:
             json_dict['fieldCentre']['UT'] = tile_obs_log[
                 tile_obs_log['tile_pk'] == tile.pk
@@ -97,7 +99,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         with open(output_dir + '/' +
                   '%s_tile%7d_field%5d_config.json' %
                                   (local_tz.localize(
-                                       obs_time
+                                       obs_time_log
                                    ).strftime(
                                        JSON_DTFORMAT_NAIVE
                                    ), tile.pk, tile.field_id,
