@@ -97,7 +97,7 @@ def execute(cursor, tile_pks=None, field_ids=None,
                                                 'dec',
                                                 'bug_id',
                                                 'target_id'])
-    pdb.set_trace()
+    # pdb.set_trace()
 
     if candidate_targets is None:
         # Will need to read the targets in from the database so we have
