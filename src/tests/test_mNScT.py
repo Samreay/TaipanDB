@@ -8,6 +8,20 @@ import psycopg2
 import logging
 
 def execute(cursor):
+    """
+    Test the output of :any:`src.resources.stable.manipulate.makeNSciTargets.execute`.
+
+    This function works by manually inspecting the database behind
+    :any:`TaipanDB`, and comparing the manually-derived science target counts
+    against those recorded in the database by :any:`makeNSciTargets.execute`.
+    Abnormal test results are printed to the terminal.
+
+
+    Parameters
+    ----------
+    cursor : :any:`psycopg.connection.cursor`
+        Cursor for connecting to the database.
+    """
     # Need to determine the field_ids in the system
     cursor.execute('SELECT DISTINCT field_id FROM field ORDER BY field_id ASC')
     field_ids = [f[0] for f in cursor.fetchall()]

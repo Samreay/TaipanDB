@@ -3,7 +3,7 @@ import os
 import sys
 import pandas as pd
 
-from src.scripts.extract import generate_conditions_string
+import src.scripts.extract as sse
 
 
 # -----
@@ -137,7 +137,7 @@ def create_tables(cursor, tables_dir):
             delim_whitespace=True, comment="#", dtype=str,
             header=0, quotechar='"', skipinitialspace=True)
         pks = []
-        for date, column in tab.T.iteritems():
+        for date, column in tab.T.items():
             col_name = column["name"].replace(" ", "_").lower()
             string += col_name + " "
             col_type = column["type"]
@@ -372,7 +372,7 @@ def create_child_table(cursor, table, parent_table, check_conds=[],
     parent_table = str(parent_table)
 
     # Generate the conditions string
-    conds_string = generate_conditions_string(check_conds)
+    conds_string = sse.generate_conditions_string(check_conds)
 
     logging.info('Creating table %s, child of %s' % (table, parent_table,))
 

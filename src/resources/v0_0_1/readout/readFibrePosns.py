@@ -3,7 +3,6 @@
 
 import logging
 from ....scripts.extract import extract_from_joined
-from readCentroids import execute as rCexec
 from taipan.core import TaipanTile, targets_in_range, TILE_DIAMETER
 
 import numpy as np

@@ -1,8 +1,11 @@
 # Insert data into existing DB rows
 import logging
-from utils import str_psql, str_special, str_dts, generate_conditions_string
-from create import insert_many_rows, create_index
-from extract import extract_from
+import utils as tdbu
+# from utils import str_psql, str_special, str_dts, generate_conditions_string
+import src.scripts.create as tdbc
+# from create import insert_many_rows, create_index
+# import extract as tdbe
+# from extract import extract_from
 import numpy as np
 
 
@@ -49,11 +52,11 @@ def update_rows_all(cursor, table, data, columns=None, conditions=None):
 
     # Generate the PSQL string
     string = 'UPDATE %s SET ' % table
-    string += ', '.join([' = '.join([columns[i], str_psql(data[i])])
+    string += ', '.join([' = '.join([columns[i], tdbu.str_psql(data[i])])
                          for i in range(len(columns))])
 
     if conditions:
-        conditions_string = generate_conditions_string(conditions)
+        conditions_string = tdbu.generate_conditions_string(conditions)
         string += ' WHERE %s' % conditions_string
 
     logging.debug(string)
@@ -131,11 +134,11 @@ def update_rows(cursor, table, data, columns=None,
     # Note that the first item isn't written to the database (it's the
     # matching reference)
     values_string = ", ".join([str(tuple(
-        [str_special(_) for _ in row]
+        [tdbu.str_special(_) for _ in row]
         # row
     )) for row in data])
     values_string = "( values %s )" % values_string
-    values_string = str_dts(values_string)
+    values_string = tdbu.str_dts(values_string)
     logging.debug(values_string)
 
     string = "UPDATE %s AS t SET %s " % (table,
@@ -163,7 +166,7 @@ def update_rows(cursor, table, data, columns=None,
         #     else:
         #         raise ValueError('condition %s is not a correct length' %
         #                          str(conditions[i]))
-        conditions_string = generate_conditions_string(conditions)
+        conditions_string = tdbu.generate_conditions_string(conditions)
         # Note we use AND here, because WHERE has already been invoked above
         string += ' AND %s' % conditions_string
 
@@ -261,11 +264,11 @@ def update_rows_temptable(cursor, table, data, columns=None,
                    )
     # Insert the data into the temporary table
     logging.debug('Writing to temp table')
-    insert_many_rows(cursor, 'update_rows_temp', data,
-                     columns=columns)
+    tdbc.insert_many_rows(cursor, 'update_rows_temp', data,
+                          columns=columns)
     # Create an index on the columns_to_match to increase speed
-    create_index(cursor, 'update_rows_temp',
-                 columns[:columns_to_match])
+    tdbc.create_index(cursor, 'update_rows_temp',
+                      columns[:columns_to_match])
 
     # Copy the data from the temporary table to the 'live' table
     logging.debug('Copying data to live table')
@@ -355,7 +358,7 @@ def increment_rows(cursor, table, column, ref_column=None, ref_values=None,
     string = 'UPDATE %s ' % (table, )
     string += 'SET %s = %s + %d ' % (column, column, inc)
     if ref_column is not None:
-        conditions_string = generate_conditions_string([
+        conditions_string = tdbu.generate_conditions_string([
             (ref_column, 'IN', tuple(ref_values)),
         ])
         string += 'WHERE ' + conditions_string
@@ -433,11 +436,11 @@ def upsert_many_rows(cursor, table, data, columns=None):
     # Note that the first item isn't written to the database (it's the
     # matching reference)
     values_string = ", ".join([str(tuple(
-        [str_special(_) for _ in row]
+        [tdbu.str_special(_) for _ in row]
         # row
     )) for row in data])
     values_string = "( values %s )" % values_string
-    values_string = str_dts(values_string)
+    values_string = tdbu.str_dts(values_string)
     logging.debug(values_string)
 
     # Generate the string to insert the values

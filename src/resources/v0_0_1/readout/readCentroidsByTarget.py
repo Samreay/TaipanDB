@@ -3,7 +3,6 @@
 import logging
 from ....scripts.extract import extract_from, extract_from_left_joined, \
     count_grouped_from_joined
-from readCentroids import execute as rCexec
 from taipan.core import TaipanTile, targets_in_range, TILE_DIAMETER
 
 import numpy as np

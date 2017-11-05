@@ -1,11 +1,8 @@
-src.tests package
-=================
+:any:`src.tests` package
+========================
 
-Submodules
-----------
-
-src.tests.test_mNScT module
----------------------------
+:any:`src.tests.test_mNScT` module
+----------------------------------
 
 .. automodule:: src.tests.test_mNScT
     :members:

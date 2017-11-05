@@ -6,7 +6,6 @@
     :undoc-members:
     :show-inheritance:
 
-
 :any:`src.resources.v0_0_1.readout.readAlmanacStats`
 ----------------------------------------------------
 

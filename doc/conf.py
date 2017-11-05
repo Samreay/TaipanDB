@@ -260,6 +260,8 @@ latex_elements = {
      # Latex figure (float) alignment
      #
      # 'figure_align': 'htbp',
+    'preamble':
+        r'\let\oldmultirow\multirow\def\multirow#1#2{\oldmultirow{#1}{=}}',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples

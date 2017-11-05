@@ -13,6 +13,8 @@ directory of the resources folder.
 .. toctree::
     :maxdepth: 1
 
+    catalogues
+
     00.version
     01.target
     02.field

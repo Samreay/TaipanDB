@@ -6,7 +6,7 @@
 Welcome to TaipanDB documentation!
 ==================================
 
-.. automodule:: TaipanDB
+.. automodule:: src
     :members:
     :undoc-members:
     :show-inheritance:

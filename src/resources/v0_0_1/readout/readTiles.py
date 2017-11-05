@@ -3,9 +3,13 @@ from ....scripts.extract import extract_from, extract_from_joined
 from taipan.core import TaipanTile, BUGPOS_OFFSET
 from ...v0_0_1 import SKY_TARGET_ID
 
-import readScience as rS
-import readGuides as rG
-import readStandards as rSt
+import src.resources.v0_0_1.readout.readScience as rS
+import src.resources.v0_0_1.readout.readGuides as rG
+import src.resources.v0_0_1.readout.readStandards as rSt
+
+# from readScience import execute as rScexec
+# from readGuides import execute as rGexec
+# from readStandards import execute as rSexec
 
 from bisect import bisect_left
 

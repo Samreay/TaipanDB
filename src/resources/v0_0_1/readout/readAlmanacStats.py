@@ -224,7 +224,7 @@ def find_fields_available(cursor, datetime_from, datetime_to=None,
                           minimum_airmass=2.0, dark=True, grey=False,
                           resolution=15., active=True):
     """
-    Get a list of all field_ids which will be available at some point during
+    Get a list of all field_ids which will be a¡vailable at some point during
     the specified period. Arguments are as for next_observable_period.
 
     Parameters
