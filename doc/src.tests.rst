@@ -1,10 +1,10 @@
-:any:`src.tests` package
+:any:`taipandb.tests` package
 ========================
 
-:any:`src.tests.test_mNScT` module
+:any:`taipandb.tests.test_mNScT` module
 ----------------------------------
 
-.. automodule:: src.tests.test_mNScT
+.. automodule:: taipandb.tests.test_mNScT
     :members:
     :undoc-members:
     :show-inheritance:
@@ -13,7 +13,7 @@
 Module contents
 ---------------
 
-.. automodule:: src.tests
+.. automodule:: taipandb.tests
     :members:
     :undoc-members:
     :show-inheritance:

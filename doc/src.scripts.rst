@@ -1,58 +1,58 @@
-:any:`src.scripts` package
+:any:`taipandb.scripts` package
 ==========================
 
-:any:`src.scripts.connection` module
+:any:`taipandb.scripts.connection` module
 ------------------------------------
 
-.. automodule:: src.scripts.connection
+.. automodule:: taipandb.scripts.connection
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.create` module
+:any:`taipandb.scripts.create` module
 --------------------------------
 
-.. automodule:: src.scripts.create
+.. automodule:: taipandb.scripts.create
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.delete` module
+:any:`taipandb.scripts.delete` module
 --------------------------------
 
-.. automodule:: src.scripts.delete
+.. automodule:: taipandb.scripts.delete
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.extract` module
+:any:`taipandb.scripts.extract` module
 ---------------------------------
 
-.. automodule:: src.scripts.extract
+.. automodule:: taipandb.scripts.extract
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.manipulate` module
+:any:`taipandb.scripts.manipulate` module
 ------------------------------------
 
-.. automodule:: src.scripts.manipulate
+.. automodule:: taipandb.scripts.manipulate
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.update` module
+:any:`taipandb.scripts.update` module
 --------------------------------
 
-.. automodule:: src.scripts.update
+.. automodule:: taipandb.scripts.update
     :members:
     :undoc-members:
     :show-inheritance:
 
-:any:`src.scripts.utils` module
+:any:`taipandb.scripts.utils` module
 -------------------------------
 
-.. automodule:: src.scripts.utils
+.. automodule:: taipandb.scripts.utils
     :members:
     :undoc-members:
     :show-inheritance:
@@ -61,7 +61,7 @@
 Module contents
 ---------------
 
-.. automodule:: src.scripts
+.. automodule:: taipandb.scripts
     :members:
     :undoc-members:
     :show-inheritance:

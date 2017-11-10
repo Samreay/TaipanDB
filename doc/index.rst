@@ -6,7 +6,7 @@
 Welcome to TaipanDB documentation!
 ==================================
 
-.. automodule:: src
+.. automodule:: taipandb
     :members:
     :undoc-members:
     :show-inheritance:
@@ -22,7 +22,7 @@ API
 .. toctree::
    :maxdepth: 2
 
-   src
+   taipandb
 
 
 Indices and tables

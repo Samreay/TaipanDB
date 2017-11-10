@@ -1,7 +1,7 @@
-:any:`src`
-==========
+:any:`taipandb`
+===============
 
-.. automodule:: src
+.. automodule:: taipandb
     :members:
     :undoc-members:
     :show-inheritance:
