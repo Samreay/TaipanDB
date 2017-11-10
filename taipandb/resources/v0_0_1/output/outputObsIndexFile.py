@@ -78,8 +78,8 @@ def execute(cursor,
 
     # Construct the DB query conditions
     if datetime_to:
-        conditions = [('obs_time', '>=', datetime_from - rAS.DT_RANGE_FUDGE),
-                      ('obs_time', '<=', datetime_to + rAS.DT_RANGE_FUDGE)]
+        conditions = [('date_obs', '>=', datetime_from - rAS.DT_RANGE_FUDGE),
+                      ('date_obs', '<=', datetime_to + rAS.DT_RANGE_FUDGE)]
         tile_list = rTPK.execute(cursor, conditions=conditions,
                                  tables_to_join=['tiling_config', ])
     tile_list = list(tile_list)
@@ -118,8 +118,9 @@ def execute(cursor,
             'date',
             conditions=
             time_conditions_generic +
-            [('date', '<', tile['date_obs']), ],
-            conditions_combine=time_conditions_generic_comb + ['AND']
+            [('date', '<', tile['date_obs']),
+             ('field_id', '=', tile['field_id']), ],
+            conditions_combine=time_conditions_generic_comb + ['AND', 'AND']
         )
         if earliest_time is None:
             earliest_time = tile['date_obs']
@@ -135,8 +136,9 @@ def execute(cursor,
             'date',
             conditions=
             time_conditions_generic +
-            [('date', '>', tile['date_obs']), ],
-            conditions_combine=time_conditions_generic_comb + ['AND']
+            [('date', '>', tile['date_obs']),
+             ('field_id', '=', tile['field_id']), ],
+            conditions_combine=time_conditions_generic_comb + ['AND', 'AND']
         )
         if latest_time is None:
             latest_time = tile['date_obs']
