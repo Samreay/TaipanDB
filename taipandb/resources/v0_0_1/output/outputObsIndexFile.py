@@ -104,11 +104,12 @@ def execute(cursor,
         ('', 'sun_alt', '<', ts.SOLAR_HORIZON, ''),
     ]
     if dark:
-        time_conditions_generic += [('', 'dark', '=', False, '')]
+        time_conditions_generic += [('', 'dark', '=', False, ')')]
     if grey:
-        time_conditions_generic += [('', 'dark', '=', True, '')]
-    # Close the OR brackets
-    time_conditions_generic[-1][4] = ')'
+        time_conditions_generic += [('', 'dark', '=', True, ')')]
+    if not dark and not grey:
+        time_conditions_generic[-1] = ('', 'sun_alt', '<',
+                                       ts.SOLAR_HORIZON, ')'),
     time_conditions_generic_comb = ['OR'] * (len(time_conditions_generic) - 1)
     for tile in tile_obs_log:
         # Earliest time
