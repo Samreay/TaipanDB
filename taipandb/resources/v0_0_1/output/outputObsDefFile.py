@@ -9,6 +9,8 @@ import logging
 from taipandb.resources.v0_0_1.readout import readTiles as rT
 from taipandb.resources.v0_0_1.readout import readTilePK as rTpk
 from taipandb.resources.v0_0_1.readout import readTileObservingInfo as rTOI
+from taipandb.resources.v0_0_1.readout import OBS_DEF_FILENAME, \
+    OBS_DEF_FILENAME_DTFMT
 
 from taipan.core import JSON_DTFORMAT_NAIVE, JSON_DTFORMAT_TZ
 import taipan.scheduling as ts
@@ -95,13 +97,12 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
                 JSON_DTFORMAT_NAIVE
             )
         with open(output_dir + '/' +
-                  '%s_tile%07d_field%05d_config.json' %
-                                  (local_tz.localize(
-                                       obs_time_log
-                                   ).strftime(
-                                       JSON_DTFORMAT_NAIVE
-                                   ), tile.pk, tile.field_id,
-                                   ),
+                  OBS_DEF_FILENAME % (local_tz.localize(
+                              obs_time_log
+                          ).strftime(
+                              JSON_DTFORMAT_NAIVE
+                          ), tile.pk, tile.field_id,
+                          ),
                   'w') as fileobj:
             logging.debug('Writing %s' % fileobj.name)
             json.dump(json_dict, fileobj, indent=2)
