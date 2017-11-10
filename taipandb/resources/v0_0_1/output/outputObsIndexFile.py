@@ -170,4 +170,6 @@ def execute(cursor,
 
     with open(output_dir + '/observing_index.ind', 'w') as outfile:
         outfile.write(write_str)
-        return os.path.realpath(outfile.name)
+        output_filename = os.path.realpath(outfile.name)
+
+    return output_filename
