@@ -32,7 +32,7 @@ def execute(cursor, conditions, tables_to_join=None):
         if len(tables_to_join) == 0:
             tables_to_join = None
         else:
-            if not np.all([isinstance(c, str) for c in conditions]):
+            if not np.all([isinstance(c, str) for c in tables_to_join]):
                 raise ValueError('tables_to_join must be a list of table '
                                  'names (i.e. strings)')
 
