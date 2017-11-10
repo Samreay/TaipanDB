@@ -98,7 +98,7 @@ def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
         Field ID
     chunk_size : :obj:`int`
         The field ID range of each child table of ``observability``. Defaults
-        to :any:'OBS_CHILD_CHUNK_SIZE`.
+        to :any:`OBS_CHILD_CHUNK_SIZE`.
 
     Returns
     -------
