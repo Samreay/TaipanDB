@@ -86,7 +86,7 @@ def execute(cursor,
     tile_list = list(tile_list)
 
     tile_obs_log = rTOI.execute(cursor)
-    tile_obs_log = tile_obs_log[np.in1d(tile_list, tile_obs_log['tile_pk'])]
+    tile_obs_log = tile_obs_log[np.in1d(tile_obs_log['tile_pk'], tile_list)]
     tile_obs_log.sort(order='date_obs')
 
     # For each tile in the obs_log, we need to construct a line of an
