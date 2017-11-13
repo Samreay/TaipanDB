@@ -100,6 +100,9 @@ def execute(cursor,
     write_str = ''
     files_in_dir = [OBS_DEF_FILENAME_REGEX.match(_) for _ in
                     os.listdir(output_dir)]
+    logging.info('Obs def file matches:')
+    logging.info([_.group(0) for _ in files_in_dir if _ is not None])
+
     time_conditions_generic = [
         ('(', 'airmass', '>=', minimum_airmass, ''),
         ('', 'sun_alt', '<', ts.SOLAR_HORIZON, ''),
