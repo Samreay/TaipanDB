@@ -73,6 +73,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
 
     # Pull the relevant tiles out of the database
     conditions = []
+    tables_to_join = []
     if tile_pks is not None:
         conditions += [('tile_pk', 'IN', tile_pks), ]
     if unobserved is not None:
@@ -81,9 +82,12 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         conditions += [('is_queued', '=', not unqueued), ]
     if min_dt is not None:
         conditions += [('date_obs', '>=', min_dt), ]
+        tables_to_join = ['tiling_config']
     if max_dt is not None:
         conditions += [('date_obs', '<=', max_dt), ]
-    tile_pks = rTpk.execute(cursor, conditions=conditions)
+        tables_to_join = ['tiling_config']
+    tile_pks = rTpk.execute(cursor, conditions=conditions,
+                            tables_to_join=tables_to_join)
     tiles = rT.execute(cursor, tile_pks=tile_pks)[0]
 
     tile_obs_log = rTOI.execute(cursor)
