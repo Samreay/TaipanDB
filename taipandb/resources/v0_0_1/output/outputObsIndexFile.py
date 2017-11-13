@@ -98,7 +98,7 @@ def execute(cursor,
     # - Tile id (pk)
     # - Absolute file path for configuration file
     write_str = ''
-    files_in_dir = [OBS_DEF_FILENAME_REGEX.match(_) for _ in
+    files_in_dir = [OBS_DEF_FILENAME_REGEX.match(_.split(os.sep)[-1]) for _ in
                     os.listdir(output_dir)]
     time_conditions_generic = [
         ('(', 'airmass', '>=', minimum_airmass, ''),
