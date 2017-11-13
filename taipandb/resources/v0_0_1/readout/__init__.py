@@ -21,4 +21,4 @@ OBS_DEF_FILENAME_REGEX = re.compile(r'^.*?(?P<dt>[0-9]{4}-[0-9]{2}-[0-9]{2}T'
 OBS_DEF_FILENAME_DTFMT = JSON_DTFORMAT_NAIVE
 
 # Best time, earliest time, last time, tile_pk, config file name
-OBS_IND_FILE_LINE = '%s %s %s %06d %s\n'
+OBS_IND_FILE_LINE = '%s %s %s %07d %s\n'

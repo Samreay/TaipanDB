@@ -153,7 +153,7 @@ def execute(cursor,
         matching_confs = [_ for _ in files_in_dir if
                           _ and int(_.group('tilepk')) == tile['tile_pk']]
         try:
-            conf_file = matching_confs[0]
+            conf_file = matching_confs[0].group(0)
         except IndexError:
             conf_file = '--'
 
