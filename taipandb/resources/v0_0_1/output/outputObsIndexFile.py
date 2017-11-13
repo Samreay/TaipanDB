@@ -3,6 +3,7 @@
 import numpy as np
 import os
 import datetime
+import logging
 
 import taipandb.scripts.extract as dbex
 
@@ -155,6 +156,7 @@ def execute(cursor,
             conf_file = matching_confs[0]
         except IndexError:
             conf_file = '--'
+
         # Add string for this file
         # Note that all times need to be converted to local
         write_str += OBS_IND_FILE_LINE % (
@@ -167,6 +169,9 @@ def execute(cursor,
             tile['tile_pk'],
             conf_file
         )
+
+    logging.info('Output string:')
+    logging.info(write_str)
 
     with open(output_dir + '/observing_index.ind', 'w') as outfile:
         outfile.write(write_str)
