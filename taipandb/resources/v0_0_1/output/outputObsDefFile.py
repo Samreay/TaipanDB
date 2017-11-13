@@ -15,7 +15,9 @@ from taipandb.resources.v0_0_1.readout import OBS_DEF_FILENAME, \
 from taipan.core import JSON_DTFORMAT_NAIVE, JSON_DTFORMAT_TZ
 import taipan.scheduling as ts
 
+
 def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
+            min_dt=None, max_dt=None,
             config_time=datetime.datetime.now(),
             obs_time=datetime.datetime.now(),
             output_dir='.',
@@ -37,6 +39,14 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         or ignore the observed status. Defaults to None.
     unqueued : :obj:`bool`, optional
         As for unobserved, but considers the queued status.
+    min_dt : :obj:`datetime.datetime`
+        Earliest allowed ``date_obs`` for a tile to have its observing
+        definition file written out. Defaults to :any:`None`. If given,
+        should be a naive object in UTC.
+    max_dt : :obj:`datetime.datetime`
+        Maximum allowed ``date_obs`` for a tile to have its observing
+        definition file written out. Defaults to :any:`None`. If given,
+        should be a naive object in UTC.
     config_time: :obj:`datetime.datetime`, timezone-aware, optional
         The time of generation for this file. Defaults to 
         datetime.datetime.now(), and a timezone from the core Taipan config.
@@ -69,6 +79,10 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         conditions += [('is_observed', '=', not unobserved), ]
     if unqueued is not None:
         conditions += [('is_queued', '=', not unqueued), ]
+    if min_dt is not None:
+        conditions += [('date_obs', '>=', min_dt), ]
+    if max_dt is not None:
+        conditions += [('date_obs', '<=', max_dt), ]
     tile_pks = rTpk.execute(cursor, conditions=conditions)
     tiles = rT.execute(cursor, tile_pks=tile_pks)[0]
 
