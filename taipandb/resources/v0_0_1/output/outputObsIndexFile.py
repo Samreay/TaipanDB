@@ -166,7 +166,7 @@ def execute(cursor,
                                tz=localtz).strftime('%H%M'),
             ts.localize_utc_dt(latest_time,
                                tz=localtz).strftime('%H%M'),
-            tile['tile_pk'],
+            int(tile['tile_pk']),
             conf_file
         )
         logging.info('Adding string:')
