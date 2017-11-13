@@ -151,7 +151,7 @@ def execute(cursor,
 
         # Find config file
         matching_confs = [_ for _ in files_in_dir if
-                          _ and _.group('tilepk') == tile['tile_pk']]
+                          _ and int(_.group('tilepk')) == tile['tile_pk']]
         try:
             conf_file = matching_confs[0]
         except IndexError:
