@@ -169,8 +169,8 @@ def execute(cursor,
             int(tile['tile_pk']),
             conf_file
         )
-        logging.info('Adding string:')
-        logging.info(str_to_add)
+        # logging.info('Adding string:')
+        # logging.info(str_to_add)
         write_str += str_to_add
 
     logging.info('Output string:')
