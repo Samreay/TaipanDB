@@ -159,7 +159,7 @@ def execute(cursor,
 
         # Add string for this file
         # Note that all times need to be converted to local
-        write_str += OBS_IND_FILE_LINE % (
+        str_to_add = OBS_IND_FILE_LINE % (
             ts.localize_utc_dt(tile['date_obs'],
                                tz=localtz).strftime('%H%M'),
             ts.localize_utc_dt(earliest_time,
@@ -169,6 +169,9 @@ def execute(cursor,
             tile['tile_pk'],
             conf_file
         )
+        logging.info('Adding string:')
+        logging.info(str_to_add)
+        write_str += str_to_add
 
     logging.info('Output string:')
     logging.info(write_str)
