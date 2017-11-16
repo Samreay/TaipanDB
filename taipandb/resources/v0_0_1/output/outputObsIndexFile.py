@@ -128,6 +128,7 @@ def execute(cursor,
             conditions_combine=time_conditions_generic_comb + ['AND', 'AND']
         )
         if earliest_time is None:
+            logging.info('Substituting obs time for earliest time')
             earliest_time = tile['date_obs']
         earliest_time += datetime.timedelta(minutes=resolution)
         # Look for & avoid floating point errors
@@ -146,6 +147,7 @@ def execute(cursor,
             conditions_combine=time_conditions_generic_comb + ['AND', 'AND']
         )
         if latest_time is None:
+            logging.info('Substituting obs time for earliest time')
             latest_time = tile['date_obs']
         latest_time -= datetime.timedelta(minutes=resolution)
         # Look for & avoid floating point errors
