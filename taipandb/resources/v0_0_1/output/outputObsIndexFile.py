@@ -130,7 +130,7 @@ def execute(cursor,
         if earliest_time is None:
             logging.info('Substituting obs time for earliest time')
             earliest_time = tile['date_obs']
-        elif earliest_time < ts.utc_local_time(
+        elif earliest_time < ts.utc_local_dt(
                 datetime.datetime.combine(
                     ts.localize_utc_dt(tile['date_obs'] -
                                                datetime.timedelta(
@@ -159,7 +159,7 @@ def execute(cursor,
         if latest_time is None:
             logging.info('Substituting obs time for earliest time')
             latest_time = tile['date_obs']
-        elif latest_time > ts.utc_local_time(
+        elif latest_time > ts.utc_local_dt(
                 datetime.datetime.combine(
                     ts.localize_utc_dt(tile['date_obs'] +
                                                datetime.timedelta(
