@@ -130,7 +130,17 @@ def execute(cursor,
         if earliest_time is None:
             logging.info('Substituting obs time for earliest time')
             earliest_time = tile['date_obs']
-        earliest_time += datetime.timedelta(minutes=resolution)
+        elif earliest_time < ts.utc_local_time(
+                datetime.datetime.combine(
+                    ts.localize_utc_dt(tile['date_obs'] -
+                                               datetime.timedelta(
+                                                   hours=12), tz=localtz
+                                       ).date(),
+                    datetime.time(12, 0, 0)), tz=localtz):
+            earliest_time = tile['date_obs']
+        else:
+            # The time extracted is actually the latest bad time before obs.
+            earliest_time += datetime.timedelta(minutes=resolution)
         # Look for & avoid floating point errors
         if earliest_time > tile['date_obs']:
             earliest_time = tile['date_obs']
@@ -149,7 +159,16 @@ def execute(cursor,
         if latest_time is None:
             logging.info('Substituting obs time for earliest time')
             latest_time = tile['date_obs']
-        latest_time -= datetime.timedelta(minutes=resolution)
+        elif latest_time > ts.utc_local_time(
+                datetime.datetime.combine(
+                    ts.localize_utc_dt(tile['date_obs'] +
+                                               datetime.timedelta(
+                                                   hours=12), tz=localtz,
+                                       ).date(),
+                    datetime.time(12, 0, 0)), tz=localtz):
+            latest_time = tile['date_obs']
+        else:
+            latest_time -= datetime.timedelta(minutes=resolution)
         # Look for & avoid floating point errors
         if latest_time < tile['date_obs']:
             latest_time = tile['date_obs']
