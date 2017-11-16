@@ -105,7 +105,7 @@ def execute(cursor,
 
     time_conditions_generic = [
         ('(', 'airmass', '>=', minimum_airmass, ''),
-        ('', 'sun_alt', '<', ts.SOLAR_HORIZON, ''),
+        ('', 'sun_alt', '>=', ts.SOLAR_HORIZON, ''),
     ]
     if dark:
         time_conditions_generic += [('', 'dark', '=', False, ')')]
