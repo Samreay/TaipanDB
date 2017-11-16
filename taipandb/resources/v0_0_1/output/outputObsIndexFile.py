@@ -197,8 +197,8 @@ def execute(cursor,
         # logging.info(str_to_add)
         write_str += str_to_add
 
-    logging.info('Output string:')
-    logging.info(write_str)
+    # logging.info('Output string:')
+    logging.info('\n' + write_str)
 
     with open(output_dir + '/observing_index.ind', 'w') as outfile:
         outfile.write(write_str)
