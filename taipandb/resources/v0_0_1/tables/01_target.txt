@@ -10,5 +10,6 @@ uz          double      False           None                None                
 is_science  boolean     False           None                None                False   None    None     "is a science target"
 is_guide    boolean     False           None                None                False   None    None     "is a guide star"
 is_standard boolean     False           None                None                False   None    None     "is a standard star"
+is_sky      boolean     False           None                None                False   None    None     "is a sky position"
 is_active   boolean     False           True                None                False   None    None     "is target available for assignment"
 
