@@ -79,6 +79,6 @@ def execute(cursor, standards_file=None, mark_active=True):
         logging.info('Inserting special sky target into DB')
         insert_row(cursor, "target", [SKY_TARGET_ID, 0.0, 0.0,  # ID, RA, DEC
                                       0.0, 0.0, 0.0,            # ux, uy, uz
-                                      False, False, False])     # sci, gui, stan
+                                      False, False, False, False])     # sci, gui, stan, sky
 
     return
