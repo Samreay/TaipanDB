@@ -4,7 +4,7 @@ from ....scripts.create import insert_many_rows, insert_row
 import logging
 from astropy.table import Table
 
-from ...v0_0_1 import SKY_TARGET_ID
+SKY_TARGET_ID = -1
 
 
 def execute(cursor, skies_file=None, mark_active=True):
