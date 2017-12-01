@@ -2,7 +2,6 @@ import logging
 from astropy.table import Table
 from ....scripts.create import insert_many_rows, insert_row
 from taipan.core import polar2cart
-from ...v0_0_1 import SKY_TARGET_ID
 
 
 def execute(cursor, standards_file=None, mark_active=True):
