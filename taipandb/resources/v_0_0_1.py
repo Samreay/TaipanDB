@@ -1,6 +1,6 @@
 from taipandb.scripts import create
 from taipandb.resources.v0_0_1.ingest import loadGuides, loadScience, \
-    loadCentroids, loadStandards
+    loadCentroids, loadStandards, loadSkies
 from taipandb.resources.v0_0_1.manipulate import makeScienceDiff, makeTargetPosn
 
 from taipandb.resources.v0_0_1.insert.insertAlmanac import execute as iAexec
@@ -227,13 +227,18 @@ def update(cursor):
     # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
                              # "reduced.guides_nodups.fits"
     # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    guides_file = data_dir + 'random_mock_guides_160930.fits'
+    guides_file = data_dir + 'Guide_UCAC4.fits'
     loadGuides.execute(cursor, guides_file=guides_file)
 
     # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
     #                             'reduced.standards_nodups.fits'
-    standards_file = data_dir + 'random_mock_standards_160928.fits'
+    standards_file = data_dir + 'Fstar_Panstarrs.fits'
     loadStandards.execute(cursor, standards_file=standards_file)
+    standards_file = data_dir + 'Fstar_skymapperdr1.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
+
+    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final.fits'
+    loadSkies.execute(cursor, skies_file=sky_file)
 
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
@@ -241,8 +246,8 @@ def update(cursor):
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
     # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
-    science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
-    loadScience.execute(cursor, science_file=science_file)
+    # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
+    # loadScience.execute(cursor, science_file=science_file)
     #
     # Commit here in case something further along fails
     logging.info('Committing raw target information...')
