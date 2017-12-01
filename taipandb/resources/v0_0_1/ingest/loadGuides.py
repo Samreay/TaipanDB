@@ -40,7 +40,7 @@ def execute(cursor, guides_file=None, mark_active=True):
                      float(row['DEC']),
                      False, False, True, False,
                     mark_active]
-                    + list(polar2cart((row['raj2000'], row['dej2000'])))
+                    + list(polar2cart((row['RA'], row['DEC'])))
                     for row in guides_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
