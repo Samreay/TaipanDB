@@ -7,6 +7,7 @@ from taipandb.resources.v0_0_1.readout.readScience import execute as rScexec
 from taipandb.resources.v0_0_1.readout.readStandards import execute as rSexec
 from taipandb.resources.v0_0_1.readout.readGuides import execute as rGexec
 from taipandb.resources.v0_0_1.readout.readCentroids import execute as rCexec
+from taipandb.resources.v0_0_1.readout.readSkies import execute as rSkexec
 
 from taipandb.scripts.create import insert_many_rows
 
@@ -58,6 +59,7 @@ def make_target_field_relationship(field, cursor=None,
 
 def execute(cursor, target_ids=None, field_ids=None,
             do_guides=True, do_standards=True, do_obs_targets=True,
+            do_skies=True,
             parallel_workers=8, active_only=True):
     """
     Compute and store target-field relationships
@@ -106,6 +108,8 @@ def execute(cursor, target_ids=None, field_ids=None,
         guides = rGexec(cursor)
     if do_standards:
         standards = rSexec(cursor)
+    if do_skies:
+        skies = rSkexec(cursor)
 
     # Extract all the requested fields
     fields = rCexec(cursor, field_ids=field_ids, active_only=active_only)
@@ -149,6 +153,11 @@ def execute(cursor, target_ids=None, field_ids=None,
             logging.debug('Adding in standards')
             target_field_relations += [(tgt.idn, field.field_id) for tgt in
                                        field.available_targets(standards)]
+
+        if do_skies:
+            logging.debug('Adding in skies')
+            target_field_relations += [(tgt.idn, field.field_id) for tgt in
+                                       field.available_targets(skies)]
 
         # Write the information back to the DB
         insert_many_rows(cursor, 'target_posn', target_field_relations,
