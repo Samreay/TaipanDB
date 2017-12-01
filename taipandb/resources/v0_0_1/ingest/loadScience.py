@@ -247,11 +247,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'Taipan_InputCat_v0.35_20170831.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False,
+                          True, False, False, False,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False,  # False,
                           row['z_obs'],

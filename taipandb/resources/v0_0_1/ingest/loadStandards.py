@@ -35,16 +35,36 @@ def execute(cursor, standards_file=None, mark_active=True):
     standards_table = Table.read(standards_file)
     # logging.debug(standards_table)
 
-    values_table = [[int(row['objID']),
-                     # + int(1e9)*row['reference'],
-                     float(row['ra_SCOS']),
-                     float(row['dec_SCOS']),
-                     False, True, False,
-                     True] +
-                    list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
-                    for row in standards_table]
+    if standards_file.split('/')[-1] == 'Fstar_Panstarrs.fits':
+        values_table = [[int(row.index) * 1e11,
+                         # + int(1e9)*row['reference'],
+                         float(row['RASTACK']),
+                         float(row['DECSTACK']),
+                         False, True, False, False,
+                         True] +
+                        list(polar2cart((row['RASTACK'], row['DECSTACK'])))
+                        for row in standards_table]
+    elif standards_file.split('/')[-1] == 'Fstar_skymapperdr1.fits':
+        values_table = [[int(row.index) * 5e11,
+                         # + int(1e9)*row['reference'],
+                         float(row['RAJ2000']),
+                         float(row['DEJ2000']),
+                         False, True, False, False,
+                         True] +
+                        list(polar2cart((row['RAJ2000'], row['DEJ2000'])))
+                        for row in standards_table]
+    else:
+        values_table = [[int(row['objID']),
+                         # + int(1e9)*row['reference'],
+                         float(row['ra_SCOS']),
+                         float(row['dec_SCOS']),
+                         False, True, False, False,
+                         True] +
+                        list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
+                        for row in standards_table]
+
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
+               "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

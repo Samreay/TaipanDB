@@ -35,15 +35,15 @@ def execute(cursor, guides_file=None, mark_active=True):
 
     values_table = [[
                      # int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
-                     int(row['ucacid']),
-                     float(row['raj2000']),
-                     float(row['dej2000']),
-                     False, False, True,
+                     int(row.index + 1e9),
+                     float(row['RA']),
+                     float(row['DEC']),
+                     False, False, True, False,
                     mark_active]
                     + list(polar2cart((row['raj2000'], row['dej2000'])))
                     for row in guides_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
+               "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:
