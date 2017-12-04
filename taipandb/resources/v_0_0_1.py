@@ -237,7 +237,7 @@ def update(cursor):
     # standards_file = data_dir + 'Fstar_skymapperdr1.fits'
     # loadStandards.execute(cursor, standards_file=standards_file)
 
-    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final.fits'
+    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
     loadSkies.execute(cursor, skies_file=sky_file)
 
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
