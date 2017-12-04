@@ -42,7 +42,7 @@ def execute(cursor, skies_file=None, mark_active=True):
                      float(row['dec']),
                      False, False, False, True,
                     mark_active]
-                    + list(polar2cart((row['raj2000'], row['dej2000'])))
+                    + list(polar2cart((row['ra'], row['dec'])))
                     for row in guides_table]
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
