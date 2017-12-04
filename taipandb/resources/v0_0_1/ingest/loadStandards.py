@@ -35,7 +35,7 @@ def execute(cursor, standards_file=None, mark_active=True):
     # logging.debug(standards_table)
 
     if standards_file.split('/')[-1] == 'Fstar_Panstarrs.fits':
-        values_table = [[int(row.index) * 1e11,
+        values_table = [[int(row.index + 1) * 1e11,
                          # + int(1e9)*row['reference'],
                          float(row['RASTACK']),
                          float(row['DECSTACK']),
@@ -44,7 +44,7 @@ def execute(cursor, standards_file=None, mark_active=True):
                         list(polar2cart((row['RASTACK'], row['DECSTACK'])))
                         for row in standards_table]
     elif standards_file.split('/')[-1] == 'Fstar_skymapperdr1.fits':
-        values_table = [[int(row.index) * 5e11,
+        values_table = [[int(row.index + 1) * 5e11,
                          # + int(1e9)*row['reference'],
                          float(row['RAJ2000']),
                          float(row['DEJ2000']),
