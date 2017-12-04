@@ -74,10 +74,11 @@ def execute(cursor, standards_file=None, mark_active=True):
         return values_table
 
     # Insert the special target to be used as the sky target
-    if cursor is not None:
-        logging.info('Inserting special sky target into DB')
-        insert_row(cursor, "target", [SKY_TARGET_ID, 0.0, 0.0,  # ID, RA, DEC
-                                      0.0, 0.0, 0.0,            # ux, uy, uz
-                                      False, False, False, False])     # sci, gui, stan, sky
+    # Now moved to loadSkies
+    # if cursor is not None:
+    #     logging.info('Inserting special sky target into DB')
+    #     insert_row(cursor, "target", [SKY_TARGET_ID, 0.0, 0.0,  # ID, RA, DEC
+    #                                   0.0, 0.0, 0.0,            # ux, uy, uz
+    #                                   False, False, False, False])     # sci, gui, stan, sky
 
     return

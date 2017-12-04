@@ -4,8 +4,7 @@ from ....scripts.create import insert_many_rows, insert_row
 import logging
 from astropy.table import Table
 
-SKY_TARGET_ID = -1
-
+from taipandb.resources.v0_0_1 import SKY_TARGET_ID
 
 def execute(cursor, skies_file=None, mark_active=True):
     """
