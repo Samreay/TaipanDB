@@ -37,7 +37,7 @@ def execute(cursor, skies_file=None, mark_active=True):
 
     values_table = [[
                      # int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
-                     int(row['pkeyid']) + int(1e12),
+                     int(row['pkey_id']) + int(1e12),
                      float(row['ra']),
                      float(row['dec']),
                      False, False, False, True,

@@ -216,26 +216,26 @@ def update(cursor):
     # logging.info('Removing science table')
     # cursor.execute('DROP TABLE science_target')
 
-    create.create_tables(cursor, table_dir)
-
-    # fields_file = data_dir + "pointing_centers.radec"
-    # loadCentroids.execute(cursor, fields_file=fields_file)
-    # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
-    # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
-    #                       mark_active=False)
-
-    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-                             # "reduced.guides_nodups.fits"
-    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    guides_file = data_dir + 'Guide_UCAC4.fits'
-    loadGuides.execute(cursor, guides_file=guides_file)
-
-    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    #                             'reduced.standards_nodups.fits'
-    standards_file = data_dir + 'Fstar_Panstarrs.fits'
-    loadStandards.execute(cursor, standards_file=standards_file)
-    standards_file = data_dir + 'Fstar_skymapperdr1.fits'
-    loadStandards.execute(cursor, standards_file=standards_file)
+    # create.create_tables(cursor, table_dir)
+    #
+    # # fields_file = data_dir + "pointing_centers.radec"
+    # # loadCentroids.execute(cursor, fields_file=fields_file)
+    # # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
+    # # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
+    # #                       mark_active=False)
+    #
+    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+    #                          # "reduced.guides_nodups.fits"
+    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    # guides_file = data_dir + 'Guide_UCAC4.fits'
+    # loadGuides.execute(cursor, guides_file=guides_file)
+    #
+    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    # #                             'reduced.standards_nodups.fits'
+    # standards_file = data_dir + 'Fstar_Panstarrs.fits'
+    # loadStandards.execute(cursor, standards_file=standards_file)
+    # standards_file = data_dir + 'Fstar_skymapperdr1.fits'
+    # loadStandards.execute(cursor, standards_file=standards_file)
 
     sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final.fits'
     loadSkies.execute(cursor, skies_file=sky_file)
