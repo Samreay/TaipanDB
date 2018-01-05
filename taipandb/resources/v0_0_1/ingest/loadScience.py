@@ -303,7 +303,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           0.0,
                           0.0,
                           -99.,
-                          0.0, row['glat'],
+                          0.0, 0.0,
                           False,
                           False,
                           False,
