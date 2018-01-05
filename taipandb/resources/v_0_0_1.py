@@ -237,8 +237,8 @@ def update(cursor):
     # standards_file = data_dir + 'Fstar_skymapperdr1.fits'
     # loadStandards.execute(cursor, standards_file=standards_file)
 
-    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
-    loadSkies.execute(cursor, skies_file=sky_file)
+    # sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
+    # loadSkies.execute(cursor, skies_file=sky_file)
 
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
@@ -247,7 +247,8 @@ def update(cursor):
     # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
     # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
     # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
-    # loadScience.execute(cursor, science_file=science_file)
+    science_file = data_dir + 'wsu_targetCatalog.fits'
+    loadScience.execute(cursor, science_file=science_file)
     #
     # Commit here in case something further along fails
     logging.info('Committing raw target information...')
@@ -256,7 +257,10 @@ def update(cursor):
     #
     #
     logging.info('Computing target-field relationships...')
-    makeTargetPosn.execute(cursor, do_guides=True, do_standards=True,
+    makeTargetPosn.execute(cursor,
+                           do_guides=False,
+                           do_standards=False,
+                           do_skies=False,
                            active_only=False,
                            parallel_workers=7)
     #
