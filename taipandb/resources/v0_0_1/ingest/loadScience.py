@@ -288,6 +288,45 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_FULL_VPEC_TARGET",
                     "HAS_SDSS_ZSPEC", "SUCCESS",
                     "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
+    elif science_file.split('/')[-1] in [
+        'wsu_targetCatalog.fits']:
+        values_table1 = [[row['target_id'],
+                          float(row['ra']), float(row['dec']),
+                          True, False, False, False,
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+                    "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
+        values_table2 = [[row['target_id'],
+                          False, False,  # False,
+                          0.0,
+                          0.0,
+                          0.0,
+                          -99.,
+                          0.0, row['glat'],
+                          False,
+                          False,
+                          False,
+                          False,  # New hurry-up flag
+                          False,
+                          False,
+                          False,
+                          False,
+                          False,
+                          0,
+                          0] for
+                         row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
+                    "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_SDSS_LEGACY",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS",
+                    "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
     else:
         logging.info("I don't know the structure of this file %s - aborting" %
                      science_file)
