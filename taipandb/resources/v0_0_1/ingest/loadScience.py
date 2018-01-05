@@ -290,14 +290,14 @@ def execute(cursor, science_file=None, mark_active=True):
                     "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
     elif science_file.split('/')[-1] in [
         'wsu_targetCatalog.fits']:
-        values_table1 = [[int(row['target_id']),
+        values_table1 = [[int(row['target_id'] + 1),
                           float(row['ra']), float(row['dec']),
                           True, False, False, False,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
                     "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
-        values_table2 = [[row['target_id'],
+        values_table2 = [[int(row['target_id'] + 1),
                           False, False,  # False,
                           float(0.0),
                           float(0.0),
