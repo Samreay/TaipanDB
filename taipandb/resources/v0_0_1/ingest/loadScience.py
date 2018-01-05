@@ -299,11 +299,11 @@ def execute(cursor, science_file=None, mark_active=True):
                     "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
         values_table2 = [[row['target_id'],
                           False, False,  # False,
-                          0.0,
-                          0.0,
-                          0.0,
-                          -99.,
-                          0.0, 0.0,
+                          float(0.0),
+                          float(0.0),
+                          float(0.0),
+                          float(-99.),
+                          float(0.0), float(0.0),
                           False,
                           False,
                           False,
@@ -313,8 +313,8 @@ def execute(cursor, science_file=None, mark_active=True):
                           False,
                           False,
                           False,
-                          0,
-                          0] for
+                          int(0),
+                          int(0)] for
                          row in science_table]
         columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
                     # "IS_LOWZ_TARGET",
