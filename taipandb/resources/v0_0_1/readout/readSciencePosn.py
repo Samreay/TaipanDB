@@ -38,10 +38,8 @@ def execute(cursor, field_list=None, target_list=None, active_only=True):
     if target_list:
         conditions += [('target.target_id', 'IN', target_list)]
     if active_only:
-        if field_list:
-            conditions += [('field.is_active', '=', True)]
-        elif target_list:
-            conditions += [('target.is_active', '=', True)]
+        conditions += [('field.is_active', '=', True)]
+        conditions += [('target.is_active', '=', True)]
 
     db_return = extract_from_left_joined(cursor,
                                          ['target',
