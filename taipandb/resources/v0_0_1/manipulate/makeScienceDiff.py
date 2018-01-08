@@ -13,7 +13,7 @@ import numpy as np
 
 def execute(cursor, use_only_notdone=True,
             priority_cut=True, target_list=None,
-            active_only=True):
+            active_only=True, batch_size=50000):
     """
     Compute and storethe difficulties of :any:`taipan.core.TaipanTarget`.
 
@@ -86,64 +86,66 @@ def execute(cursor, use_only_notdone=True,
 
     # Do the difficulty computation
     logging.info('Computing difficulties...')
-    if priority_cut:
-        # Rather than do a per-target calculation, do the efficient
-        # multi-target calculation for each priority, including all lower
-        # priorities. This will create a cascade effect that will leave all
-        # targets with the correct priorities.
-        # if target_list is not None:
-        #     priorities = list(set(targets_db[
-        #                               np.in1d(targets_db['target_id'],
-        #                                       target_list)]['priority']))
-        # else:
-        #     priorities = list(set(targets_db['priority']))
-        # priorities.sort()
-        #
-        # for p in priorities[::-1]:
-        #     logging.debug('Computing difficulties for priority %d targets' %
-        #                   p)
-        #     if target_list is not None:
-        #         compute_target_difficulties([o for o in return_objects if
-        #                                      o.priority == p and
-        #                                      o.idn in target_list],
-        #                                     full_target_list=[o for o in
-        #                                                       return_objects if
-        #                                                       o.priority <= p])
-        #     else:
-        #         compute_target_difficulties([o for o in return_objects if
-        #                                      o.priority <= p])
+    for i in range(0, len(return_objects), batch_size):
+        sublist = return_objects[i:i+batch_size]
+        if priority_cut:
+            # Rather than do a per-target calculation, do the efficient
+            # multi-target calculation for each priority, including all lower
+            # priorities. This will create a cascade effect that will leave all
+            # targets with the correct priorities.
+            # if target_list is not None:
+            #     priorities = list(set(targets_db[
+            #                               np.in1d(targets_db['target_id'],
+            #                                       target_list)]['priority']))
+            # else:
+            #     priorities = list(set(targets_db['priority']))
+            # priorities.sort()
+            #
+            # for p in priorities[::-1]:
+            #     logging.debug('Computing difficulties for priority %d targets' %
+            #                   p)
+            #     if target_list is not None:
+            #         compute_target_difficulties([o for o in return_objects if
+            #                                      o.priority == p and
+            #                                      o.idn in target_list],
+            #                                     full_target_list=[o for o in
+            #                                                       return_objects if
+            #                                                       o.priority <= p])
+            #     else:
+            #         compute_target_difficulties([o for o in return_objects if
+            #                                      o.priority <= p])
 
-        # Update 17-02-24: Compute difficulties in two tranches:
-        # >= TARGET_PRIORITY_MS and < TARGET_PRIORITY_MS
-        if target_list is not None:
-            compute_target_difficulties([o for o in return_objects if
-                                         o.idn in target_list and
-                                         o.priority < TARGET_PRIORITY_MS],
-                                        full_target_list=return_objects)
-            compute_target_difficulties([o for o in return_objects if
-                                         o.idn in target_list and
-                                         o.priority >= TARGET_PRIORITY_MS],
-                                        full_target_list=[o for o in
-                                                          return_objects if
-                                                          o.priority >=
-                                                          TARGET_PRIORITY_MS])
+            # Update 17-02-24: Compute difficulties in two tranches:
+            # >= TARGET_PRIORITY_MS and < TARGET_PRIORITY_MS
+            if target_list is not None:
+                compute_target_difficulties([o for o in sublist if
+                                             o.idn in target_list and
+                                             o.priority < TARGET_PRIORITY_MS],
+                                            full_target_list=return_objects)
+                compute_target_difficulties([o for o in sublist if
+                                             o.idn in target_list and
+                                             o.priority >= TARGET_PRIORITY_MS],
+                                            full_target_list=[o for o in
+                                                              return_objects if
+                                                              o.priority >=
+                                                              TARGET_PRIORITY_MS])
+            else:
+                compute_target_difficulties([o for o in sublist if
+                                             o.priority < TARGET_PRIORITY_MS],
+                                            full_target_list=return_objects)
+                compute_target_difficulties([o for o in sublist if
+                                             o.priority >= TARGET_PRIORITY_MS],
+                                            full_target_list=[o for o in
+                                                              return_objects if
+                                                              o.priority >=
+                                                              TARGET_PRIORITY_MS])
         else:
-            compute_target_difficulties([o for o in return_objects if
-                                         o.priority < TARGET_PRIORITY_MS],
-                                        full_target_list=return_objects)
-            compute_target_difficulties([o for o in return_objects if
-                                         o.priority >= TARGET_PRIORITY_MS],
-                                        full_target_list=[o for o in
-                                                          return_objects if
-                                                          o.priority >=
-                                                          TARGET_PRIORITY_MS])
-    else:
-        if target_list is not None:
-            compute_target_difficulties(
-                [o for o in return_objects if o.idn in target_list],
-                full_target_list=return_objects)
-        else:
-            compute_target_difficulties(return_objects)
+            if target_list is not None:
+                compute_target_difficulties(
+                    [o for o in sublist if o.idn in target_list],
+                    full_target_list=return_objects)
+            else:
+                compute_target_difficulties(return_objects)
 
 
     # Construct a data array to write back to the database
