@@ -87,7 +87,7 @@ def execute(cursor, use_only_notdone=True,
     # Do the difficulty computation
     logging.info('Computing difficulties...')
     for i in range(0, len(return_objects), batch_size):
-        logging.info('  Batch %d of %d' % (i + 1,
+        logging.info('  Batch %d of %d' % (i/batch_size + 1,
                                            len(return_objects)/batch_size + 1))
         sublist = return_objects[i:i+batch_size]
         if priority_cut:
