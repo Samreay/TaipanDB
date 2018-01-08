@@ -38,12 +38,14 @@ def execute(cursor, use_only_notdone=True,
         Difficulties are computed, and written back to the database.
     """
 
-    logging.info('Reading science targets from database')
+    logging.info('Computing difficulties for science targets')
 
     if use_only_notdone:
         conditions = [("done", "IS", "NULL")]
     else:
         conditions = []
+
+    conditions += [('is_science', '=', True)]
 
     if target_list is not None:
         target_list = list(target_list)
