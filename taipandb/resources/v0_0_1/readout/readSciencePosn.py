@@ -1,7 +1,7 @@
 import logging
 import sys
 import os
-from ....scripts.extract import extract_from_joined
+from ....scripts.extract import extract_from_left_joined
 from taipan.core import TaipanTarget
 from matplotlib.cbook import flatten
 
@@ -32,22 +32,24 @@ def execute(cursor, field_list=None, target_list=None, active_only=True):
 
     # Input checking
 
-    conditions = []
+    conditions = [('target.is_science', '=', True)]
     if field_list:
-        conditions += [('field_id', 'IN', field_list)]
+        conditions += [('field.field_id', 'IN', field_list)]
     if target_list:
-        conditions += [('target_id', 'IN', target_list)]
+        conditions += [('target.target_id', 'IN', target_list)]
     if active_only:
         if field_list:
             conditions += [('field.is_active', '=', True)]
         elif target_list:
             conditions += [('target.is_active', '=', True)]
 
-    db_return = extract_from_joined(cursor, ['target',
-                                             'target_posn',
-                                             'field'],
-                                    conditions=conditions,
-                                    columns=['target_id', 'field_id'])
+    db_return = extract_from_left_joined(cursor,
+                                         ['target_posn',
+                                          'target',
+                                          'field'],
+                                         ['target_id', 'field_id'],
+                                         conditions=conditions,
+                                         columns=['target_id', 'field_id'])
 
     logging.info('Extracted %d target positions from database' % len(db_return))
     return db_return
