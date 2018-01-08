@@ -44,12 +44,13 @@ def execute(cursor, field_list=None, target_list=None, active_only=True):
             conditions += [('target.is_active', '=', True)]
 
     db_return = extract_from_left_joined(cursor,
-                                         ['target_posn',
-                                          'target',
+                                         ['target',
+                                          'target_posn',
                                           'field'],
                                          ['target_id', 'field_id'],
                                          conditions=conditions,
-                                         columns=['target_id', 'field_id'])
+                                         columns=['target.target_id',
+                                                  'field.field_id'])
 
     logging.info('Extracted %d target positions from database' % len(db_return))
     return db_return
