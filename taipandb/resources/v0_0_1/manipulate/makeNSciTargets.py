@@ -187,6 +187,8 @@ def multithread_task(fields,
                                                       ('field_id', 'IN',
                                                        fields),
                                                   ])
+    logging.debug('Done target counts:')
+    logging.debug(done_target_count)
     done_target_count = [[_['field_id'], _['count']] for _ in done_target_count]
     update_rows(cursor_internal, 'tiling_info', done_target_count,
                 columns=['field_id', 'n_done'],
