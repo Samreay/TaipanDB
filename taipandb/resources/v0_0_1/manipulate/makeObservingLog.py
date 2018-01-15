@@ -5,7 +5,7 @@ import datetime
 from taipandb.resources.v0_0_1.readout import readScienceTile as rScTi
 from taipandb.resources.v0_0_1.readout import readScienceTypes as rScTy
 
-import taipandb.scripts.insert as ssi
+import taipandb.scripts.create as ssc
 
 import numpy as np
 from numpy.lib.recfunctions import append_fields
@@ -117,7 +117,7 @@ def execute(cursor, tile_pk, target_list, success_targets,
 
     logging.debug('Writing')
     # Write the information back into the observing_log database
-    ssi.insert_many_rows(cursor, 'observing_log',
+    ssc.insert_many_rows(cursor, 'observing_log',
                          tgt_info[['target_id',
                                    'is_h0_target',
                                    'is_vpec_target',
