@@ -48,7 +48,8 @@ def execute(cursor, field_list=None, target_list=None, active_only=True):
                                          ['target_id', 'field_id'],
                                          conditions=conditions,
                                          columns=['target.target_id',
-                                                  'field.field_id'])
+                                                  'field.field_id'],
+                                         distinct=True)
 
     logging.info('Extracted %d target positions from database' % len(db_return))
     return db_return
