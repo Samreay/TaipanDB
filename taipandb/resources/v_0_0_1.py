@@ -259,7 +259,7 @@ def update(cursor):
     # - Compute difficulties now;
     # - Remove any targets above a certain difficulty threshold;
     # - Disable any fields outside the SPT area
-    if science_file == 'wsu_targetCatalog.fits':
+    if science_file == data_dir + 'wsu_targetCatalog.fits':
         logging.info('Computing target difficulties...')
         makeScienceDiff.execute(cursor)
         cursor.connection.commit()
@@ -315,7 +315,7 @@ def update(cursor):
         mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
         i += batch_size
 
-    if science_file != 'wsu_targetCatalog.fits':
+    if science_file != data_dir + 'wsu_targetCatalog.fits':
         logging.info('Computing target difficulties...')
         makeScienceDiff.execute(cursor)
 
