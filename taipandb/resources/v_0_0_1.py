@@ -262,8 +262,8 @@ def update(cursor):
     if science_file == data_dir + 'wsu_targetCatalog.fits':
         cursor.execute('UPDATE field SET is_active=False WHERE '
                        'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
-        cursor.execute('DELETE FROM target WHERE dec > -45. OR dec < -65. OR '
-                       '(ra < 330. AND RA > 15.)')
+        cursor.execute('DELETE FROM target WHERE (dec > -45. OR dec < -65. OR '
+                       '(ra < 330. AND RA > 15.)) AND target_id >= 0')
 
         logging.info('Computing target difficulties...')
         makeScienceDiff.execute(cursor)
