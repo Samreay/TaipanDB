@@ -224,18 +224,18 @@ def update(cursor):
     # # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
     # #                       mark_active=False)
 
-    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-                             # "reduced.guides_nodups.fits"
-    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    # guides_file = data_dir + 'Guide_UCAC4.fits'
-    # loadGuides.execute(cursor, guides_file=guides_file)
-    #
-    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    # #                             'reduced.standards_nodups.fits'
-    # standards_file = data_dir + 'Fstar_Panstarrs.fits'
-    # loadStandards.execute(cursor, standards_file=standards_file)
-    # standards_file = data_dir + 'Fstar_skymapperdr1.fits'
-    # loadStandards.execute(cursor, standards_file=standards_file)
+    guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             "reduced.guides_nodups.fits"
+    guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    guides_file = data_dir + 'Guide_UCAC4.fits'
+    loadGuides.execute(cursor, guides_file=guides_file)
+
+    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    #                             'reduced.standards_nodups.fits'
+    standards_file = data_dir + 'Fstar_Panstarrs.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
+    standards_file = data_dir + 'Fstar_skymapperdr1.fits'
+    loadStandards.execute(cursor, standards_file=standards_file)
 
     sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
     loadSkies.execute(cursor, skies_file=sky_file)
@@ -266,6 +266,8 @@ def update(cursor):
 
         # Manually execute the necessary DB commands for restricting the
         # targets and fields
+        cursor.execute('DELETE FROM target WHERE dec > -45. OR dec < -65. OR '
+                       '(ra < 330. AND RA > 15.)')
         cursor.execute('DELETE FROM target WHERE target_id IN '
                        '(SELECT target_id FROM science_target WHERE '
                        'difficulty > 2000)')
