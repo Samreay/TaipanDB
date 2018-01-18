@@ -260,19 +260,20 @@ def update(cursor):
     # - Remove any targets above a certain difficulty threshold;
     # - Disable any fields outside the SPT area
     if science_file == data_dir + 'wsu_targetCatalog.fits':
+        cursor.execute('UPDATE field SET is_active=False WHERE '
+                       'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
+        cursor.execute('DELETE FROM target WHERE dec > -45. OR dec < -65. OR '
+                       '(ra < 330. AND RA > 15.)')
+
         logging.info('Computing target difficulties...')
         makeScienceDiff.execute(cursor)
         cursor.connection.commit()
 
         # Manually execute the necessary DB commands for restricting the
         # targets and fields
-        cursor.execute('DELETE FROM target WHERE dec > -45. OR dec < -65. OR '
-                       '(ra < 330. AND RA > 15.)')
         cursor.execute('DELETE FROM target WHERE target_id IN '
                        '(SELECT target_id FROM science_target WHERE '
                        'difficulty > 2000)')
-        cursor.execute('UPDATE field SET is_active=False WHERE '
-                       'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
 
     #
     #

@@ -70,8 +70,7 @@ def execute(cursor, use_only_notdone=True,
 
     # We need to read in *all* the targets, not just the ones we want to
     # re-compute difficulties for
-    targets_db = extract_from_joined(cursor, ['target', 'science_target',
-                                              'target_posn'],
+    targets_db = extract_from_joined(cursor, ['target', 'science_target', ],
                                      conditions=conditions,
                                      columns=['target_id', 'ra', 'dec',
                                               'ux', 'uy', 'uz', 'priority'],
