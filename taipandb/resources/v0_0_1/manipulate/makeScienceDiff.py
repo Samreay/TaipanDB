@@ -47,6 +47,8 @@ def execute(cursor, use_only_notdone=True,
 
     conditions += [('is_science', '=', True)]
 
+    query_tables = ['target', 'science_target', ]
+
     if target_list is not None:
         target_list = list(target_list)
 
@@ -64,13 +66,14 @@ def execute(cursor, use_only_notdone=True,
         # affected_fields = target_fields
 
         conditions += [('field_id', 'IN', affected_fields)]
+        query_tables += ['target_posn', ]
 
     if active_only:
         conditions += [('is_active', '=', True)]
 
     # We need to read in *all* the targets, not just the ones we want to
     # re-compute difficulties for
-    targets_db = extract_from_joined(cursor, ['target', 'science_target', ],
+    targets_db = extract_from_joined(cursor, query_tables,
                                      conditions=conditions,
                                      columns=['target_id', 'ra', 'dec',
                                               'ux', 'uy', 'uz', 'priority'],
