@@ -209,10 +209,10 @@ def update(cursor):
     # table_dir = resource_dir + os.sep + "tables"
     table_dir = '/data/resources/tables_to_replace'
 
-    # # Clear out the targets table
-    # logging.info('Removing existing target catalogues')
-    # cursor.execute('DELETE FROM target')
-    # # Destroy the existing science_targets table
+    # Clear out the targets table
+    logging.info('Removing existing target catalogues')
+    cursor.execute('DELETE FROM target')
+    # Destroy the existing science_targets table
     # logging.info('Removing science table')
     # cursor.execute('DROP TABLE science_target')
 
@@ -223,10 +223,10 @@ def update(cursor):
     # # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
     # # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
     # #                       mark_active=False)
-    #
-    # # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-    #                          # "reduced.guides_nodups.fits"
-    # # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+
+    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+                             # "reduced.guides_nodups.fits"
+    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
     # guides_file = data_dir + 'Guide_UCAC4.fits'
     # loadGuides.execute(cursor, guides_file=guides_file)
     #
@@ -237,8 +237,8 @@ def update(cursor):
     # standards_file = data_dir + 'Fstar_skymapperdr1.fits'
     # loadStandards.execute(cursor, standards_file=standards_file)
 
-    # sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
-    # loadSkies.execute(cursor, skies_file=sky_file)
+    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
+    loadSkies.execute(cursor, skies_file=sky_file)
 
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
@@ -254,6 +254,24 @@ def update(cursor):
     logging.info('Committing raw target information...')
     cursor.connection.commit()
     logging.info('...done!')
+
+    # If using the SPT catalogue, we want to:
+    # - Compute difficulties now;
+    # - Remove any targets above a certain difficulty threshold;
+    # - Disable any fields outside the SPT area
+    if science_file == 'wsu_targetCatalog.fits':
+        logging.info('Computing target difficulties...')
+        makeScienceDiff.execute(cursor)
+        cursor.connection.commit()
+
+        # Manually execute the necessary DB commands for restricting the
+        # targets and fields
+        cursor.execute('DELETE FROM target WHERE target_id IN '
+                       '(SELECT target_id FROM science_target WHERE '
+                       'difficulty > 2000)')
+        cursor.execute('UPDATE field SET is_active=False WHERE '
+                       'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
+
     #
     #
     logging.info('Computing target-field relationships...')
@@ -295,8 +313,9 @@ def update(cursor):
         mScPexec(cursor, target_types[i:i+batch_size]['target_id'], priorities)
         i += batch_size
 
-    logging.info('Computing target difficulties...')
-    makeScienceDiff.execute(cursor)
+    if science_file != 'wsu_targetCatalog.fits':
+        logging.info('Computing target difficulties...')
+        makeScienceDiff.execute(cursor)
 
     # Commit again
     logging.info('Committing target type/priority information...')
