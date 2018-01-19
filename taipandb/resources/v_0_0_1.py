@@ -279,10 +279,10 @@ def update(cursor):
     #
     logging.info('Computing target-field relationships...')
     makeTargetPosn.execute(cursor,
-                           do_guides=False,
-                           do_standards=False,
-                           do_skies=False,
-                           active_only=False,
+                           do_guides=True,
+                           do_standards=True,
+                           do_skies=True,
+                           active_only=True,
                            parallel_workers=7)
     #
     # Commit again
