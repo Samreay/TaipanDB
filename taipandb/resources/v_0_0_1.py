@@ -215,6 +215,8 @@ def update(cursor):
     # Destroy the existing science_targets table
     # logging.info('Removing science table')
     # cursor.execute('DROP TABLE science_target')
+    logging.info('Remove any existing tiles')
+    cursor.execute('DELETE FROM tile')
 
     # create.create_tables(cursor, table_dir)
     #
