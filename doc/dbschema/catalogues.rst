@@ -1,3 +1,5 @@
+.. _doc-prep-catalogues:
+
 Preparing catalogues
 ====================
 
@@ -6,6 +8,15 @@ Catalogue files should be provided as FITS tables.
 .. note::
     Database column names are typically case-insensitive; however,
     FITS table column names tend to be case-sensitive.
+
+Some use cases of this software may not require all of the database columns
+listed below. However, the existence of these columns is a requirement to
+keep both :any:`taipandb` and :any:`taipan` operational. Therefore, if a
+column is not required, it is recommended that you place a suitable dummy
+value in that column. It would also be necessary to check the priority
+computation function (:any:`taipan.simulate.logic`) you are using to make
+sure this dummy value does not cause unexpected behaviour. Alternatively,
+you could write your own priority computation funtion.
 
 Current ingest mapping
 ----------------------
@@ -97,6 +108,8 @@ This schema is applied regardless of the guides catalogue file provided.
 +------------------------------+-----------------------------------------------+
 | ``is_guide``                 | Set to ``True`` everywhere                    |
 +------------------------------+-----------------------------------------------+
+| ``is_sky``                   | Set to ``False`` everywhere                   |
++------------------------------+-----------------------------------------------+
 | ``is_standard``              | Set to ``False`` everywhere                   |
 +------------------------------+-----------------------------------------------+
 | ``ux``, ``uy``, ``uz``       | Auto-computed at ingest                       |
@@ -120,7 +133,34 @@ This schema is applied regardless of the guides catalogue file provided.
 +------------------------------+-----------------------------------------------+
 | ``is_guide``                 | Set to ``False`` everywhere                   |
 +------------------------------+-----------------------------------------------+
+| ``is_sky``                   | Set to ``False`` everywhere                   |
++------------------------------+-----------------------------------------------+
 | ``is_standard``              | Set to ``True`` everywhere                    |
++------------------------------+-----------------------------------------------+
+| ``ux``, ``uy``, ``uz``       | Auto-computed at ingest                       |
++------------------------------+-----------------------------------------------+
+
+Sky targets
+++++++++++++++++
+
+This schema is applied regardless of the guides catalogue file provided.
+
++------------------------------+-----------------------------------------------+
+| Database column              | Catalogue column                              |
++==============================+===============================================+
+| ``target_id``                | ``ucacid``                                    |
++------------------------------+-----------------------------------------------+
+| ``ra``                       | ``raj2000``                                   |
++------------------------------+-----------------------------------------------+
+| ``dec``                      | ``dec2000``                                   |
++------------------------------+-----------------------------------------------+
+| ``is_science``               | Set to ``False`` everywhere                   |
++------------------------------+-----------------------------------------------+
+| ``is_guide``                 | Set to ``False`` everywhere                   |
++------------------------------+-----------------------------------------------+
+| ``is_sky``                   | Set to ``True`` everywhere                    |
++------------------------------+-----------------------------------------------+
+| ``is_standard``              | Set to ``False`` everywhere                   |
 +------------------------------+-----------------------------------------------+
 | ``ux``, ``uy``, ``uz``       | Auto-computed at ingest                       |
 +------------------------------+-----------------------------------------------+

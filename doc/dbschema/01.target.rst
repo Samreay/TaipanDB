@@ -90,6 +90,14 @@ Columns
       - Is this a standard target?
       -
       -
+    * - ``is_standard``
+      - boolean
+      - None
+      -
+      - False
+      - Is this a sky target?
+      -
+      -
     * - ``is_active``
       - boolean
       - None
