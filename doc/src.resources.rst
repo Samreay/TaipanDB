@@ -1,6 +1,6 @@
-********************
+*************************
 :any:`taipandb.resources`
-********************
+*************************
 
 .. automodule:: taipandb.resources
     :members:
@@ -12,7 +12,7 @@
     src.resources.v0_0_1
 
 :any:`taipandb.resources.v_0_0_1`
-----------------------------
+---------------------------------
 
 .. automodule:: taipandb.resources.v_0_0_1
     :members:

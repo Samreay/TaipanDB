@@ -2,7 +2,7 @@ Table: ``target``
 =================
 
 Store basic target information. Further, science-spefic target
-information is stored in :doc:`02.science_target`.
+information is stored in :doc:`03.science_target`.
 
 Columns
 -------

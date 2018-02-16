@@ -1,5 +1,5 @@
 :any:`taipandb.resources.v0_0_1.delete`
-==================================
+=======================================
 
 .. automodule:: taipandb.resources.v0_0_1.delete
     :members:
@@ -7,7 +7,7 @@
     :show-inheritance:
 
 :any:`taipandb.resources.v0_0_1.delete.deleteTiles`
-----------------------------------------------
+---------------------------------------------------
 
 .. automodule:: taipandb.resources.v0_0_1.delete.deleteTiles
     :members:

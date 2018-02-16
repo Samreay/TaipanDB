@@ -2,7 +2,7 @@ Table: ``observing_log``
 ========================
 
 This table stores information about each time a target was observed. It is,
-in essence, a copy of the relevant columns of :doc:`02.science_target` (to
+in essence, a copy of the relevant columns of :doc:`03.science_target` (to
 preserve the information against future updates to that table), along with
 some datetime and tile information.
 

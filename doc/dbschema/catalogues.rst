@@ -6,17 +6,20 @@ Preparing catalogues
 Catalogue files should be provided as FITS tables.
 
 .. note::
-    Database column names are typically case-insensitive; however,
+    PostGres database column names are typically case-insensitive; however,
     FITS table column names tend to be case-sensitive.
 
-Some use cases of this software may not require all of the database columns
-listed below. However, the existence of these columns is a requirement to
-keep both :any:`taipandb` and :any:`taipan` operational. Therefore, if a
-column is not required, it is recommended that you place a suitable dummy
-value in that column. It would also be necessary to check the priority
-computation function (:any:`taipan.simulate.logic`) you are using to make
-sure this dummy value does not cause unexpected behaviour. Alternatively,
-you could write your own priority computation funtion.
+..
+    Some use cases of this software may not require all of the database columns
+    listed below. However, the existence of these columns is a requirement to
+    keep both :any:`taipandb` and :any:`taipan` operational. Therefore, if a
+    column is not required, it is recommended that you place a suitable dummy
+    value in that column. It would also be necessary to check the priority
+    computation function you are using (the main ones may be found in
+    :any:`taipan.simulate.logic`) to make
+    sure this dummy value does not cause unexpected behaviour. Alternatively,
+    you could write your own priority computation funtion which only looks at the
+    database information you are interested in.
 
 Current ingest mapping
 ----------------------
@@ -82,7 +85,7 @@ This ingest mapping is correct for the input catalogue
 +------------------------------+-----------------------------------------------+
 | ``has_sdss_zspec``           | ``zreference_cat = 1``                        |
 +------------------------------+-----------------------------------------------+
-| ``success``                  | ``zreference_cat = 1``, or                    |
+| ``success``                  | ``zreference_cat = 1``; or,                   |
 |                              | ``zreference_cat > 0`` and ``z_obs > 0.1``    |
 +------------------------------+-----------------------------------------------+
 | ``ancillary_flags``          | ``ancillary_flags``                           |
@@ -143,7 +146,7 @@ This schema is applied regardless of the guides catalogue file provided.
 Sky targets
 ++++++++++++++++
 
-This schema is applied regardless of the guides catalogue file provided.
+This schema is applied regardless of the sky catalogue file provided.
 
 +------------------------------+-----------------------------------------------+
 | Database column              | Catalogue column                              |

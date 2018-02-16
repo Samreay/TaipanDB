@@ -151,4 +151,4 @@ specified in :ref:`doc-prep-catalogues`.
 Note that initial data load can take a significant amount of time, up to the
 order of a week if Almanac calculation and ingest is required. It is
 *strongly* recommended that ``stable_load.py`` be run in an ``at``
-environment (or a non-Unix equivalent).
+environment (or its non-Unix equivalent).

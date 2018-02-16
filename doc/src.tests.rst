@@ -1,8 +1,8 @@
 :any:`taipandb.tests` package
-========================
+=============================
 
 :any:`taipandb.tests.test_mNScT` module
-----------------------------------
+---------------------------------------
 
 .. automodule:: taipandb.tests.test_mNScT
     :members:
