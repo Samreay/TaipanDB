@@ -102,10 +102,12 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         # json_dict['origin'][0]['execDate'] = config_time.astimezone(
         #     local_tz
         # )
-        obs_time_log = [_['date_obs'] for _ in tile_obs_log if
-                        _['tile_pk'] == tile.pk][0] | None
-        if obs_time_log is None:
+        try:
+            obs_time_log = [_['date_obs'] for _ in tile_obs_log if
+                            _['tile_pk'] == tile.pk][0]
+        except IndexError:
             obs_time_log = obs_time
+
         if tile.pk in tile_obs_log['tile_pk']:
             json_dict['fieldCentre']['UT'] = tile_obs_log[
                 tile_obs_log['tile_pk'] == tile.pk
@@ -114,6 +116,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             json_dict['fieldCentre']['UT'] = obs_time.strftime(
                 JSON_DTFORMAT_NAIVE
             )
+
         with open(output_dir + '/' +
                   OBS_DEF_FILENAME % (local_tz.localize(
                               obs_time_log
