@@ -103,7 +103,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         #     local_tz
         # )
         obs_time_log = [_['date_obs'] for _ in tile_obs_log if
-                        _['tile_pk'] == tile.pk][0]
+                        _['tile_pk'] == tile.pk][0] | None
         if obs_time_log is None:
             obs_time_log = obs_time
         if tile.pk in tile_obs_log['tile_pk']:
