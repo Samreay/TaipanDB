@@ -7,6 +7,7 @@ dec         double      False           None                None                
 ux          double      False           None                None                False   None    None     "x projection on unit sphere"
 uy          double      False           None                None                False   None    None     "y projection on unit sphere"
 uz          double      False           None                None                False   None    None     "z projection on unit sphere"
+mag         double      True            None                None                False   None    None     "X band magnitude"
 is_science  boolean     False           None                None                False   None    None     "is a science target"
 is_guide    boolean     False           None                None                False   None    None     "is a guide star"
 is_standard boolean     False           None                None                False   None    None     "is a standard star"

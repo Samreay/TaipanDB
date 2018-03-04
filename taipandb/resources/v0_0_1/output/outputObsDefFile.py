@@ -48,7 +48,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         definition file written out. Defaults to :any:`None`. If given,
         should be a naive object in UTC.
     config_time: :obj:`datetime.datetime`, timezone-aware, optional
-        The time of generation for this file. Defaults to 
+        The time of generation for this file. Defaults to tiles
         datetime.datetime.now(), and a timezone from the core Taipan config.
     obs_time: :obj:`datetime.datetime`, timezone-aware, optional
         As for config_time, but denotes when the tile is planned to be/is
