@@ -260,7 +260,7 @@ def execute(cursor, fields=None, use_pri_sci=True,
 
     # Read in the fields information
     # We need to read *all* fields so we can find the overlaps
-    field_tiles = rCexec(cursor)
+    field_tiles = rCexec(cursor, active_only=False)
 
     conds_pri_sci = []
     cond_combs_pri_sci = []
