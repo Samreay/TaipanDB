@@ -170,7 +170,7 @@ if __name__ == '__main__':
     conn = get_connection()
     cursor = conn.cursor()
 
-    fields = rCexec(cursor)
+    fields = rCexec(cursor, active_only=False)
 
     logging.info('Generating dark almanac...')
     dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
