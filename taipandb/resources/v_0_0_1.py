@@ -238,8 +238,9 @@ def update(cursor):
     create.create_tables(cursor, table_dir)
 
     # This code block loads the field centers into the database
-    # fields_file = data_dir + "pointing_centers.radec"
-    # loadCentroids.execute(cursor, fields_file=fields_file)
+    fields_file = data_dir + "pointing_centers.radec"
+    loadCentroids.execute(cursor, fields_file=fields_file,
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
     fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
     loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
                           mark_active=False,
