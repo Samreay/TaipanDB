@@ -4,7 +4,9 @@ import logging
 from astropy.table import Table
 
 
-def execute(cursor, guides_file=None, mark_active=True):
+def execute(cursor, guides_file=None, mark_active=True,
+            ra_col='RA', dec_col='DEC', mag_col='VMAG',
+            ra_ranges=[], dec_ranges=[]):
     """
     Insert guide targets from file into the database.
 
@@ -18,6 +20,9 @@ def execute(cursor, guides_file=None, mark_active=True):
     mark_active: :obj:`bool`
         Denotes whether these targets should be marked as active in the
         database. Defaults to True.
+    ra_col, dec_col, mag_col: str
+        The input catalogue columns names for target RA, Dec and V-band
+        magnitude, respectively.
 
     Returns
     -------
@@ -36,14 +41,25 @@ def execute(cursor, guides_file=None, mark_active=True):
     values_table = [[
                      # int(''.join(row['ucacid'].split('-')[1:])) + int(4e9),
                      int(row.index + 1e9),
-                     float(row['RA']),
-                     float(row['DEC']),
+                     float(row[ra_col]),
+                     float(row[dec_col]),
                      False, False, True, False,
+                     float(row[mag_col]),
                     mark_active]
-                    + list(polar2cart((row['RA'], row['DEC'])))
+                    + list(polar2cart((row[ra_col], row[dec_col])))
                     for row in guides_table]
-    columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
+    if ra_ranges:
+        values_table = [row for row in values_table if
+                        any([r[0] <= row[1] <= r[1] for r in ra_ranges])]
+    if dec_ranges:
+        values_table = [row for row in values_table if
+                        any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
+
+    columns = ["TARGET_ID",
+               "RA", "DEC",
+               "IS_SCIENCE", "IS_STANDARD", "IS_GUIDE", "IS_SKY",
+               "MAG",
+               "IS_ACTIVE", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

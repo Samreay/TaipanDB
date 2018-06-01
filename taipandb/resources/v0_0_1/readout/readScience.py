@@ -117,7 +117,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                           conditions_combine=
                                           combine + added_conds,
                                           columns=['target_id', 'ra', 'dec',
-                                                   'ux', 'uy', 'uz',
+                                                   'ux', 'uy', 'uz', 'mag',
                                                    'priority', 'difficulty',
                                                    'is_queued',
                                                    'is_observed'],
@@ -223,7 +223,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], priority=g['priority'],
         difficulty=g['difficulty'],
-        usposn=(g['ux'], g['uy'], g['uz']),
+        usposn=(g['ux'], g['uy'], g['uz']), mag=g['mag'],
         science=True,
         ) for g in targets_db]
 

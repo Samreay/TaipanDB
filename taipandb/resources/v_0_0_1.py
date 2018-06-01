@@ -203,82 +203,110 @@ def update(cursor):
     cursor : :obj:`psycopg2.connection.cursor`
         Cursor for communicating with the database.
     """
-    resource_dir = os.path.dirname(__file__) + os.sep + "v0_0_1" + os.sep
-    data_dir = "/data/resources/0.0.1/"
-    # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
-    # table_dir = resource_dir + os.sep + "tables"
-    table_dir = '/data/resources/tables_to_replace'
+    resource_dir = os.path.dirname(
+        os.path.realpath(__file__)
+    ) + os.sep + "v0_0_1" + os.sep
+    logging.info('resource_dir set to {}'.format(resource_dir))
+    # data_dir = "/data/resources/0.0.1/"
+    data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
+    table_dir = resource_dir + "tables"
+    # table_dir = '/data/resources/tables_to_replace'
 
-    # Clear out the targets table
-    logging.info('Removing existing target catalogues')
-    cursor.execute('DELETE FROM target')
-    # Destroy the existing science_targets table
-    # logging.info('Removing science table')
-    # cursor.execute('DROP TABLE science_target')
-    logging.info('Remove any existing tiles')
-    cursor.execute('DELETE FROM tile')
+    # Set up lists of lists for limiting the survey scope in RA & Dec
+    # Leave as empty lists or None to not apply any limits
+    # Limits are applied to everything *except* science targets
+    # ra_ranges = [[200., 265., ],
+    #              [305., 360., ], ]
+    # dec_ranges = [[-15., 15., ], ]
+    ra_ranges = []
+    dec_ranges = []
 
-    # create.create_tables(cursor, table_dir)
-    #
-    # # fields_file = data_dir + "pointing_centers.radec"
-    # # loadCentroids.execute(cursor, fields_file=fields_file)
-    # # fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
-    # # loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
-    # #                       mark_active=False)
 
-    guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-                             "reduced.guides_nodups.fits"
-    guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+    # Use this code block to preserve an existing table structure with
+    # already-computed Almanacs, but blank out existing targets and
+    # assignments
+    # logging.info('Removing existing target catalogues')
+    # cursor.execute('DELETE FROM target')
+    # # Destroy the existing science_targets table - only needed if target
+    # # catalogue structure has changed
+    # # logging.info('Removing science table')
+    # # cursor.execute('DROP TABLE science_target')
+    # logging.info('Remove any existing tiles')
+    # cursor.execute('DELETE FROM tile')
+
+    # # Alternatively, use this line to make all tables fresh
+    create.create_tables(cursor, table_dir)
+
+    # This code block loads the field centers into the database
+    # fields_file = data_dir + "pointing_centers.radec"
+    # loadCentroids.execute(cursor, fields_file=fields_file)
+    fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
+    loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
+                          mark_active=False,
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+
+    # The following code blocks load the target data (of all types)
+    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+    #                          "reduced.guides_nodups.fits"
+    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
     guides_file = data_dir + 'Guide_UCAC4.fits'
-    loadGuides.execute(cursor, guides_file=guides_file)
+    loadGuides.execute(cursor, guides_file=guides_file,
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
-    # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    #                             'reduced.standards_nodups.fits'
+    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+    # #                             'reduced.standards_nodups.fits'
     standards_file = data_dir + 'Fstar_Panstarrs.fits'
-    loadStandards.execute(cursor, standards_file=standards_file)
+    loadStandards.execute(cursor, standards_file=standards_file,
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
     standards_file = data_dir + 'Fstar_skymapperdr1.fits'
-    loadStandards.execute(cursor, standards_file=standards_file)
+    loadStandards.execute(cursor, standards_file=standards_file,
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
     sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
-    loadSkies.execute(cursor, skies_file=sky_file)
-
-    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-    # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
-    # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
-    # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
-    # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
-    # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
-    science_file = data_dir + 'wsu_targetCatalog.fits'
-    loadScience.execute(cursor, science_file=science_file)
+    loadSkies.execute(cursor, skies_file=sky_file,
+                      ra_ranges=ra_ranges, dec_ranges=dec_ranges)
     #
+    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
+    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
+    # # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
+    # # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
+    # # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
+    # # science_file = data_dir + 'wsu_targetCatalog.fits'
+    science_file = data_dir + 'mock1.fits'
+    loadScience.execute(cursor, science_file=science_file)
+
     # Commit here in case something further along fails
     logging.info('Committing raw target information...')
     cursor.connection.commit()
     logging.info('...done!')
 
-    # If using the SPT catalogue, we want to:
-    # - Compute difficulties now;
-    # - Remove any targets above a certain difficulty threshold;
-    # - Disable any fields outside the SPT area
-    if science_file == data_dir + 'wsu_targetCatalog.fits':
-        cursor.execute('UPDATE field SET is_active=False WHERE '
-                       'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
-        cursor.execute('DELETE FROM target WHERE (dec > -45. OR dec < -65. OR '
-                       '(ra < 330. AND RA > 15.)) AND target_id >= 0')
-
-        logging.info('Computing target difficulties...')
-        makeScienceDiff.execute(cursor)
-        cursor.connection.commit()
-
-        # Manually execute the necessary DB commands for restricting the
-        # targets and fields
-        cursor.execute('DELETE FROM target WHERE target_id IN '
-                       '(SELECT target_id FROM science_target WHERE '
-                       'difficulty > 2000)')
-
+    # # If using the SPT catalogue, we want to:
+    # # - Compute difficulties now;
+    # # - Remove any targets above a certain difficulty threshold;
+    # # - Disable any fields outside the SPT area
+    # if science_file == data_dir + 'wsu_targetCatalog.fits':
+    #     cursor.execute('UPDATE field SET is_active=False WHERE '
+    #                    'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
+    #     cursor.execute('DELETE FROM target WHERE (dec > -45. OR dec < -65. OR '
+    #                    '(ra < 330. AND RA > 15.)) AND target_id >= 0')
     #
+    #     logging.info('Computing target difficulties...')
+    #     makeScienceDiff.execute(cursor)
+    #     cursor.connection.commit()
     #
+    #     # Manually execute the necessary DB commands for restricting the
+    #     # targets and fields
+    #     cursor.execute('DELETE FROM target WHERE target_id IN '
+    #                    '(SELECT target_id FROM science_target WHERE '
+    #                    'difficulty > 2000)')
+
+    # --
+    # We are now done loading information - everything past this point
+    # is computed from whatever's been put into the database
+    # --
+
     logging.info('Computing target-field relationships...')
     makeTargetPosn.execute(cursor,
                            do_guides=True,
@@ -286,7 +314,7 @@ def update(cursor):
                            do_skies=True,
                            active_only=True,
                            parallel_workers=7)
-    #
+
     # Commit again
     logging.info('Committing computed target information...')
     cursor.connection.commit()
@@ -327,55 +355,63 @@ def update(cursor):
     cursor.connection.commit()
     logging.info('...done!')
 
-    # # Instantiate the Almanacs
-    # sim_start = datetime.date(2017, 4, 1)
-    # sim_end = datetime.date(2024, 1, 1)
-    # global_start = datetime.datetime.now()
+    # --
+    # The following code block computes the Almanacs (i.e. observability
+    # information) for each field. Think very carefully about if you actually
+    # need to this - it is a *very* long and intensive calculation!
+    # --
 
-    # # Create the child tables
-    # logging.info('Creating observability child tables')
-    # for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
-    #     child_table_name = obs_child_table_name(i)
-    #     create.create_child_table(cursor,
-    #                               child_table_name, 'observability',
-    #                               check_conds=[
-    #                                   ('field_id', '>', i - 1),
-    #                                   ('field_id', '<',
-    #                                    i + OBS_CHILD_CHUNK_SIZE)],
-    #                               primary_key=['field_id', 'date', ])
-    #     logging.debug('Created table %s' % child_table_name)
+    # Instantiate the Almanacs
+    # Make sure you cover all conceivable dates, otherwise the code
+    # will fail unexpectedly when it runs out of Almanac data
+    sim_start = datetime.date(2017, 4, 1)
+    sim_end = datetime.date(2024, 1, 1)
+    global_start = datetime.datetime.now()
 
-    #
-    # fields = rCexec(cursor, active_only=False)
-    #
-    # logging.info('Generating dark almanac...')
-    # dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
-    # logging.info('Done!')
-    #
-    # # i = 1
-    # # for field in fields:
-    # #     almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
-    # #                       minimum_airmass=2.0, populate=True, resolution=15.)
-    # #     logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
-    # #     iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
-    # #     # Commit after every Almanac due to the expense of computing
-    # #     cursor.connection.commit()
-    # #     logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
-    # #     i += 1
-    #
-    # # 170619 - Use multiprocessing to speed this up (hopefully)
-    # make_almanac_n_partial = partial(make_almanac_n,
-    #                                  sim_start=sim_start, sim_end=sim_end,
-    #                                  dark_alm=dark_alm)
-    # pool = multiprocessing.Pool(8)
-    # pool.map(make_almanac_n_partial, fields)
-    # pool.close()
-    # pool.join()
-    #
-    #
-    # cursor.connection.commit()
+    # Create the child tables
+    logging.info('Creating observability child tables')
+    for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
+        child_table_name = obs_child_table_name(i)
+        create.create_child_table(cursor,
+                                  child_table_name, 'observability',
+                                  check_conds=[
+                                      ('field_id', '>', i - 1),
+                                      ('field_id', '<',
+                                       i + OBS_CHILD_CHUNK_SIZE)],
+                                  primary_key=['field_id', 'date', ])
+        logging.debug('Created table %s' % child_table_name)
+
+    fields = rCexec(cursor, active_only=False)
+
+    logging.info('Generating dark almanac...')
+    dark_alm = DarkAlmanac(sim_start, end_date=sim_end)
+    logging.info('Done!')
+
+    # i = 1
+    # for field in fields:
+    #     almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
+    #                       minimum_airmass=2.0, populate=True, resolution=15.)
+    #     logging.info('Computed almanac %5d / %5d' % (i, len(fields),))
+    #     iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm)
+    #     # Commit after every Almanac due to the expense of computing
+    #     cursor.connection.commit()
+    #     logging.info('Inserted almanac %5d / %5d' % (i, len(fields),))
+    #     i += 1
+
+    # 170619 - Use multiprocessing to speed this up (hopefully)
+    make_almanac_n_partial = partial(make_almanac_n,
+                                     sim_start=sim_start, sim_end=sim_end,
+                                     dark_alm=dark_alm)
+    pool = multiprocessing.Pool(8)
+    pool.map(make_almanac_n_partial, fields)
+    pool.close()
+    pool.join()
+
+
+    cursor.connection.commit()
 
     # Create the table indices
+    # These speed table queries by cross-indexing as much as possible
     generate_indices(cursor)
     cursor.connection.commit()
 
@@ -418,6 +454,5 @@ if __name__ == '__main__':
     logging.debug('Getting connection')
     conn = get_connection()
     cursor = conn.cursor()
-    # Execute the simulation based on command-line arguments
     logging.debug('Doing update function')
     update(cursor)

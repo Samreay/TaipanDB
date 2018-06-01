@@ -53,11 +53,13 @@ def execute(cursor, science_file=None, mark_active=True):
         values_table1 = [[row['uniqid'] + int(1e9)*row['reference'],
                           float(row['ra']), float(row['dec']),
                           True, False, False,
+                          None,
                           mark_active]
                           + list(polar2cart((row['ra'], row['dec'])))
                          for row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "IS_ACTIVE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "IS_ACTIVE", "MAG",
+                    "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'] + int(1e9)*row['reference'],
                           row['priority'],
                           bool(row['is_H0']), bool(row['is_vpec']),
@@ -72,11 +74,11 @@ def execute(cursor, science_file=None, mark_active=True):
                                             id_start+len(science_table))
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False,
+                          True, False, False, None,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False, False,
                           row['z_obs'],
@@ -110,11 +112,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'Taipan_mock_inputcat_v1.3_170504.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False,
+                          True, False, False, None,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False, # False,
                           row['z_obs'],
@@ -153,11 +155,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'Taipan_mock_inputcat_v2.0_170518.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False,
+                          True, False, False, None,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False, # False,
                           row['z_obs'],
@@ -198,11 +200,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'Taipan_InputCat_v0.3_20170731.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False,
+                          True, False, False, None,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False,  # False,
                           row['z_obs'],
@@ -247,11 +249,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'Taipan_InputCat_v0.35_20170831.fits']:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
-                          True, False, False, False,
+                          True, False, False, False, None,
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "IS_SKY", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[row['uniqid'],
                           False, False,  # False,
                           row['z_obs'],
@@ -292,11 +294,11 @@ def execute(cursor, science_file=None, mark_active=True):
         'wsu_targetCatalog.fits']:
         values_table1 = [[int(row['target_id'] + 1),
                           float(row['ra']), float(row['dec']),
-                          True, False, False, False,
+                          True, False, False, False, None
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-                    "IS_GUIDE", "IS_SKY", "UX", "UY", "UZ"]
+                    "IS_GUIDE", "IS_SKY", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[int(row['target_id'] + 1),
                           False, False,  # False,
                           float(0.0),
@@ -320,6 +322,50 @@ def execute(cursor, science_file=None, mark_active=True):
                     # "IS_LOWZ_TARGET",
                     "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
                     "EBV", "GLAT",
+                    "IS_NIR", "IS_LRG", "IS_IBAND",
+                    "IS_LOWZ_TARGET",
+                    "IS_SDSS_LEGACY",
+                    "IS_PRISCI_VPEC_TARGET",
+                    "IS_FULL_VPEC_TARGET",
+                    "HAS_SDSS_ZSPEC", "SUCCESS",
+                    "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
+    elif science_file.split('/')[-1] in [
+        'mock1.fits']:
+        values_table1 = [[row['target_id'] + 1,
+                          float(row['ra'] % 360.), float(row['dec']),
+                          True, False, False, False,
+                          float(row['mag_J']),
+                          ] + list(polar2cart((row['ra'], row['dec']))) for
+                         row in science_table]
+        columns1 = ["TARGET_ID",
+                    "RA", "DEC",
+                    "IS_SCIENCE", "IS_STANDARD", "IS_GUIDE", "IS_SKY",
+                    "MAG",
+                    "UX", "UY", "UZ"]
+        values_table2 = [[row['target_id'] + 1,
+                          bool(row['is_h0_target']), bool(row['is_vpec_target']),  # False,
+                          row['zspec'],
+                          row['col_gi'],
+                          row['mag_J'],
+                          row['col_JK'] if not
+                          math.isnan(row['col_JK']) else -99.,
+                          row['ebv'], float(row['glat']), float(row['glon']),
+                          bool(row['is_nir']),
+                          bool(row['is_lrg']),
+                          bool(row['is_iband']),
+                          False,  # New hurry-up flag
+                          False, # SDSS legacy target flag
+                          bool(row['is_prisci_vpec_target']),  # Prisci vpec
+                          bool(row['is_vpec_target']),  # Full vpec
+                          False,  # Has SDSS spectrum?
+                          False,  # Already 'succesfully' observed?
+                          0,  # Ancillary program flags
+                          0]  # Ancillary program priority
+                         for row in science_table]
+        columns2 = ["TARGET_ID", "IS_H0_TARGET", "IS_VPEC_TARGET",
+                    # "IS_LOWZ_TARGET",
+                    "ZSPEC", "COL_GI", "MAG_J", "COL_JK",
+                    "EBV", "GLAT", "GLON",
                     "IS_NIR", "IS_LRG", "IS_IBAND",
                     "IS_LOWZ_TARGET",
                     "IS_SDSS_LEGACY",

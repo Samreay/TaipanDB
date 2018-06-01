@@ -40,12 +40,13 @@ def execute(cursor, field_list=None, active_only=True):
                                          'target_id',
                                          conditions=conditions,
                                          columns=['target_id', 'ra', 'dec',
+                                                  'mag',
                                                   'ux', 'uy', 'uz'],
                                          distinct=True)
 
     return_objects = [TaipanTarget(
         g['target_id'], g['ra'], g['dec'], guide=True, science=False,
-        usposn=(g['ux'], g['uy'], g['uz']),
+        usposn=(g['ux'], g['uy'], g['uz']), mag=g['mag'],
         ) for g in guides_db]
 
     logging.info('Extracted %d guides from database' % guides_db.shape[0])

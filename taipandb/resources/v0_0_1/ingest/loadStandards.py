@@ -4,7 +4,8 @@ from ....scripts.create import insert_many_rows, insert_row
 from taipan.core import polar2cart
 
 
-def execute(cursor, standards_file=None, mark_active=True):
+def execute(cursor, standards_file=None, mark_active=True,
+            ra_ranges=[], dec_ranges=[]):
     """
     Load standard targets from file into the database.
 
@@ -37,33 +38,40 @@ def execute(cursor, standards_file=None, mark_active=True):
     if standards_file.split('/')[-1] == 'Fstar_Panstarrs.fits':
         values_table = [[int(row.index) + 1e11,
                          # + int(1e9)*row['reference'],
-                         float(row['RASTACK']),
-                         float(row['DECSTACK']),
+                         float(row['RASTACK']),  # RASTACK
+                         float(row['DECSTACK']),  # DECSTACK
                          False, True, False, False,
-                         True] +
+                         True, None] +
                         list(polar2cart((row['RASTACK'], row['DECSTACK'])))
                         for row in standards_table]
     elif standards_file.split('/')[-1] == 'Fstar_skymapperdr1.fits':
         values_table = [[int(row.index) + 5e11,
                          # + int(1e9)*row['reference'],
-                         float(row['RAJ2000']),
-                         float(row['DEJ2000']),
+                         float(row['RAJ2000']),  # RAJ2000
+                         float(row['DEJ2000']),  # DEJ2000
                          False, True, False, False,
-                         True] +
+                         True, None] +
                         list(polar2cart((row['RAJ2000'], row['DEJ2000'])))
                         for row in standards_table]
     else:
         values_table = [[int(row['objID']),
                          # + int(1e9)*row['reference'],
-                         float(row['ra_SCOS']),
-                         float(row['dec_SCOS']),
+                         float(row['ra_SCOS']),  # ra_SCOS
+                         float(row['dec_SCOS']), # dec_SCOS
                          False, True, False, False,
-                         True] +
+                         True, None] +
                         list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
                         for row in standards_table]
 
+    if ra_ranges:
+        values_table = [row for row in values_table if
+                        any([r[0] <= row[1] <= r[1] for r in ra_ranges])]
+    if dec_ranges:
+        values_table = [row for row in values_table if
+                        any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
+
     columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
-               "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "UX", "UY", "UZ"]
+               "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "MAG", "UX", "UY", "UZ"]
 
     # Insert into database
     if cursor is not None:

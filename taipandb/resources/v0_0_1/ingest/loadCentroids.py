@@ -9,7 +9,8 @@ from ....scripts.extract import select_max_from_joined
 from taipan.core import polar2cart
 
 
-def execute(cursor, fields_file=None, mark_active=True):
+def execute(cursor, fields_file=None, mark_active=True,
+            ra_ranges=[], dec_ranges=[]):
     """
     Load field pointings from file to database
 
@@ -44,9 +45,18 @@ def execute(cursor, fields_file=None, mark_active=True):
     # Get centroids
     with open(fields_file, 'r') as fileobj:
         datatable = pd.read_csv(fileobj, delim_whitespace=True)
-    values = [[index + max_field_id + 1, row['ra'], row['dec'], mark_active]
+    values = [[int(index + max_field_id + 1),
+               float(row['ra']), float(row['dec']),
+               mark_active]
               + list(polar2cart((row['ra'], row['dec'])))
               for index, row in datatable.iterrows()]
+
+    if ra_ranges:
+        values = [row for row in values if
+                  any([r[0] <= row[1] <= r[1] for r in ra_ranges])]
+    if dec_ranges:
+        values = [row for row in values if
+                  any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
 
     columns = ["FIELD_ID", "RA", "DEC", "IS_ACTIVE", "UX", "UY", "UZ"]
 
