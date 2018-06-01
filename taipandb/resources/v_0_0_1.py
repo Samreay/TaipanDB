@@ -415,6 +415,9 @@ def update(cursor):
     generate_indices(cursor)
     cursor.connection.commit()
 
+    logging.info('-------')
+    logging.info('DATABASE PREP/UPLOAD COMPLETE')
+
     return
 
 
