@@ -115,7 +115,8 @@ def execute(cursor, tile_list, is_queued=False, is_observed=False,
 
     columns_to_tile = ['tile_id', 'field_id', 'is_queued', 'is_observed']
 
-    if np.all([_.pk is not None] for _ in tile_list):
+    if np.all([_.pk is not None for _ in tile_list]):
+        logging.info('  --- Appending existing tile PKs to insert')
         for i in range(len(tile_list)):
             write_to_tile[i].append(tile_list[i].pk)
         columns_to_tile.append('tile_pk')
