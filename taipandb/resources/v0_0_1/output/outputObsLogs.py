@@ -6,6 +6,8 @@ import pickle
 from taipandb.resources.v0_0_1.readout import readObservingLog as rOL
 from taipandb.resources.v0_0_1.readout import readTileObservingInfo as rTOI
 
+from taipandb.scripts.connection import get_connection
+
 
 def execute(cursor, dt=datetime.datetime.now(), flag='progress',
             output_path='.'):
@@ -43,3 +45,11 @@ def execute(cursor, dt=datetime.datetime.now(), flag='progress',
                '-%s' % flag if flag is not None else ''), 'w') as fileobj:
         pickle.dump(outputs, fileobj)
         return fileobj.name
+
+
+if __name__ == '__main__':
+    # Grab a cursor
+    cursor = get_connection().cursor()
+
+    # Run the function
+    execute(cursor, flag='cmdline')
