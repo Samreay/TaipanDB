@@ -33,7 +33,7 @@ def get_config(conf_filename="../../config.json"):
     return config
 
 
-def get_connection(autocommit=True):
+def get_connection(autocommit=True, conf_filename='../../config.json'):
     """
     Get a psycopg connection for interacting with the database.
 
@@ -42,7 +42,7 @@ def get_connection(autocommit=True):
     connection:
         A psycopg2 connection object.
     """
-    connection = psycopg2.connect(**get_config())
+    connection = psycopg2.connect(**get_config(conf_filename))
     if autocommit:
         connection.autocommit = True
     logging.debug("Got database connection")
