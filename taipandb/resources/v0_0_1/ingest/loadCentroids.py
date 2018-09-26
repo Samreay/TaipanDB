@@ -7,10 +7,12 @@ import sys
 from ....scripts.create import insert_many_rows
 from ....scripts.extract import select_max_from_joined
 from taipan.core import polar2cart
+from taipan.scheduling import POLE_EXCLUSION_RADIUS
 
 
 def execute(cursor, fields_file=None, mark_active=True,
-            ra_ranges=[], dec_ranges=[]):
+            ra_ranges=[], dec_ranges=[],
+            pole_exclusion_radius=POLE_EXCLUSION_RADIUS):
     """
     Load field pointings from file to database
 
@@ -24,6 +26,12 @@ def execute(cursor, fields_file=None, mark_active=True,
     mark_active: :obj:`bool`
         Denotes whether these targets should be marked as active in the
         database. Defaults to True.
+    ra_ranges, dec_ranges: List of two-tuples of ints
+        Specifies RA and/or Dec ranges that centroids should be restricted to
+        lie within. Multiple ranges may be specified for both RA and Dec.
+    pole_exclusion_radius: float, default :any:`taipan.scheduling.POLE_EXCLUSION_RADIUS`
+        Do not ingest any centroids within pole_exclusion_radius of a
+        celestial pole. Set to zero to have no effect.
 
     Returns
     -------
@@ -51,12 +59,18 @@ def execute(cursor, fields_file=None, mark_active=True,
               + list(polar2cart((row['ra'], row['dec'])))
               for index, row in datatable.iterrows()]
 
+    # Do pole exclusion
+    values = [row for row in values if
+              90. - abs(row[2]) < pole_exclusion_radius]
+
     if ra_ranges:
         values = [row for row in values if
                   any([r[0] <= row[1] <= r[1] for r in ra_ranges])]
     if dec_ranges:
         values = [row for row in values if
                   any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
+
+
 
     columns = ["FIELD_ID", "RA", "DEC", "IS_ACTIVE", "UX", "UY", "UZ"]
 
