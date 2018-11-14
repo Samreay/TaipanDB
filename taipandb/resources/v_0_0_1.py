@@ -114,6 +114,15 @@ SKIES_FILES = [
 Sky position files to be ingested.
 """
 
+# Instead of bulking up the execute function with an excessive number of
+# arguments, we'll keep infrequently changed parameters in module variables,
+# and change them from __main__ if required
+
+RUN_START = datetime.date(2017, 4, 1)
+RUN_END = datetime.date(2024, 1, 1)
+
+SCIENCE_FILE = 'mock1.fits'
+
 
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
     """
@@ -182,7 +191,8 @@ def generate_indices(cursor):
     return
 
 
-def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
+def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None,
+                   alm_dir=None):
     """
     Helper function for multithreaded entry of Almanac/``observability`` data
 
@@ -200,7 +210,8 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
     # Multiprocessing needs a fresh cursor per instance
     with get_connection().cursor() as cursor:
         almanac = Almanac(field.ra, field.dec, sim_start, end_date=sim_end,
-                          minimum_airmass=2.0, populate=True, resolution=15.)
+                          minimum_airmass=2.0, populate=True, resolution=15.,
+                          alm_file_path=alm_dir if alm_dir else './')
         logging.info('Computed almanac for field %5d' % (field.field_id, ))
         iAexec(cursor, field.field_id, almanac, dark_almanac=dark_alm,
                target_table=obs_child_table_name(field.field_id))
@@ -211,6 +222,7 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
 
 def update(cursor,
            data_dir="/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/",
+           alm_dir=None,
            table_dir=None,
            preserve_tables=False,
            ra_ranges=[],
@@ -235,7 +247,18 @@ def update(cursor,
       database
     - Create indices for tables, as per :any:`TABLE_INDICES`
 
-    The following setup is required to
+    The following setup is required:
+
+    - All catalogues (science, guides, standards, sky positions) must be placed
+      in the same read-accessible directory, given as the ``data_dir``
+      parameter.
+    - Existing Almanacs which have been saved to disk should be placed in a
+      directory, given as the ``alm_dir`` parameter. Note that the Almanac
+      parameters must *exactly* match the parameters requested by :any:`update`,
+      otherwise the Almanac will be recomputed.
+    - If you have custom tables you wish to use, these need to be placed in
+      a directory given by the ``tables_dir`` parameter. To use the standard
+      table structure, simply leave this as :obj:`None`.
 
     Parameters
     ----------
@@ -243,6 +266,9 @@ def update(cursor,
         Cursor for communicating with the database.
     data_dir : :obj:`str`
         Directory where the various catalogues for ingest are stored.
+    alm_dir : :obj:`str`
+        Directory where pre-computed :any:`Almanac` objects may be stored.
+        Defaults to :obj:`None`.
     table_dir : :obj:`str`
         Directory where the table description files are stored. Leave this as
         :obj:`None` to use the tables provided with :any:`taipandb`.
@@ -255,6 +281,11 @@ def update(cursor,
     dec_ranges : :obj:`list` of two-tuples of floats
         Dec range(s) that ingest should be restricted to, in decimal degrees.
         Defaults to the empty list (no range restriction).
+
+    Outputs
+    -------
+    A file named ``prep.log`` will be written to the present working directory,
+    recording all the log messages emitted during database preparation.
     """
     # Input checking
     for _ in ra_ranges:
@@ -311,34 +342,32 @@ def update(cursor,
         create.create_tables(cursor, table_dir)
 
     # This code block loads the field centers into the database
-    fields_file = data_dir + "pointing_centers.radec"
-    loadCentroids.execute(cursor, fields_file=fields_file,
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
-    fields_file_fullsurvey = data_dir + "pointing_centers_fullsurvey.radec"
-    loadCentroids.execute(cursor, fields_file=fields_file_fullsurvey,
-                          mark_active=False,
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+    for f in POINTING_CENTERS:
+        loadCentroids.execute(cursor,
+                              fields_file=os.path.join(data_dir, f),
+                              mark_active=False,
+                              ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
     # The following code blocks load the target data (of all types)
     # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
     #                          "reduced.guides_nodups.fits"
     # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    guides_file = data_dir + 'Guide_UCAC4.fits'
-    loadGuides.execute(cursor, guides_file=guides_file,
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+    for f in GUIDES_FILES:
+        loadGuides.execute(cursor,
+                           guides_file=os.path.join(data_dir, f),
+                              ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
     # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
     # #                             'reduced.standards_nodups.fits'
-    standards_file = data_dir + 'Fstar_Panstarrs.fits'
-    loadStandards.execute(cursor, standards_file=standards_file,
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
-    standards_file = data_dir + 'Fstar_skymapperdr1.fits'
-    loadStandards.execute(cursor, standards_file=standards_file,
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+    for f in STANDARDS_FILES:
+        loadStandards.execute(cursor,
+                              standards_file=os.path.join(data_dir, f),
+                              ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
-    sky_file = data_dir + 'skyfibers_v17_gaia_ucac4_final_fix.fits'
-    loadSkies.execute(cursor, skies_file=sky_file,
-                      ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+    for f in SKIES_FILES:
+        loadSkies.execute(cursor,
+                          skies_file=os.path.join(data_dir, f),
+                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
     #
     # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
     # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
@@ -348,7 +377,8 @@ def update(cursor,
     # # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
     # # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
     # # science_file = data_dir + 'wsu_targetCatalog.fits'
-    science_file = data_dir + 'mock1.fits'
+    # science_file = data_dir + 'mock1.fits'
+    science_file = os.path.join(data_dir, SCIENCE_FILE)
     loadScience.execute(cursor, science_file=science_file)
 
     # Commit here in case something further along fails
@@ -438,8 +468,8 @@ def update(cursor,
     # Instantiate the Almanacs
     # Make sure you cover all conceivable dates, otherwise the code
     # will fail unexpectedly when it runs out of Almanac data
-    sim_start = datetime.date(2017, 4, 1)
-    sim_end = datetime.date(2024, 1, 1)
+    sim_start = RUN_START
+    sim_end = RUN_END
     global_start = datetime.datetime.now()
 
     # Create the child tables
@@ -473,9 +503,11 @@ def update(cursor,
     #     i += 1
 
     # 170619 - Use multiprocessing to speed this up (hopefully)
+    # Note that, if a matching Almanac is found in alm_dir, it will be
+    # loaded off disk instead of re-computed
     make_almanac_n_partial = partial(make_almanac_n,
                                      sim_start=sim_start, sim_end=sim_end,
-                                     dark_alm=dark_alm)
+                                     dark_alm=dark_alm, alm_dir=alm_dir)
     pool = multiprocessing.Pool(8)
     pool.map(make_almanac_n_partial, fields)
     pool.close()
