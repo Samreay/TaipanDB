@@ -84,6 +84,37 @@ For each table (key), an index will be created based on the column(s) in
 each element of the index list (value)."""
 
 
+POINTING_CENTERS = [
+    "pointing_centers.radec",
+    "pointing_centers_fullsurvey.radec"
+]
+"""
+Standard pointing centers files to be ingested.
+"""
+
+GUIDES_FILES = [
+    'Guide_UCAC4.fits',
+]
+"""
+Standard guide star files to be ingested.
+"""
+
+STANDARDS_FILES = [
+    'Fstar_Panstarrs.fits',
+    'Fstar_skymapperdr1.fits'
+]
+"""
+Standard standard star files to be ingested.
+"""
+
+SKIES_FILES = [
+    'skyfibers_v17_gaia_ucac4_final_fix.fits',
+]
+"""
+Sky position files to be ingested.
+"""
+
+
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
     """
     Auto-generate the name of a child table of ``observability``
@@ -177,7 +208,13 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None):
         cursor.connection.commit()
         logging.info('Inserted almanac for field %5d' % (field.field_id,))
 
-def update(cursor):
+
+def update(cursor,
+           data_dir="/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/",
+           table_dir=None,
+           preserve_tables=False,
+           ra_ranges=[],
+           dec_ranges=[]):
     """
     Initialize the database for a run.
 
@@ -198,18 +235,57 @@ def update(cursor):
       database
     - Create indices for tables, as per :any:`TABLE_INDICES`
 
+    The following setup is required to
+
     Parameters
     ----------
     cursor : :obj:`psycopg2.connection.cursor`
         Cursor for communicating with the database.
+    data_dir : :obj:`str`
+        Directory where the various catalogues for ingest are stored.
+    table_dir : :obj:`str`
+        Directory where the table description files are stored. Leave this as
+        :obj:`None` to use the tables provided with :any:`taipandb`.
+    preserve_tables : :obj:`bool`, defaults to False
+        Instead of re-constructing tables from scratch, simply delete data
+        in the existing tables. Defaults to False.
+    ra_ranges : :obj:`list` of two-tuples of floats
+        RA range(s) that ingest should be restricted to, in decimal degrees.
+        Defaults to the empty list (no range restriction).
+    dec_ranges : :obj:`list` of two-tuples of floats
+        Dec range(s) that ingest should be restricted to, in decimal degrees.
+        Defaults to the empty list (no range restriction).
     """
+    # Input checking
+    for _ in ra_ranges:
+        try:
+            if len(_) != 2:
+                raise ValueError('ra_ranges must be a list of two-tuples')
+        except TypeError:
+            raise ValueError('ra_ranges must be a list of two-tuples')
+
+    for _ in dec_ranges:
+        try:
+            if len(_) != 2:
+                raise ValueError('ra_ranges must be a list of two-tuples')
+        except TypeError:
+            raise ValueError('ra_ranges must be a list of two-tuples')
+
+    try:
+        _ = os.listdir(data_dir)
+    except OSError:
+        raise ValueError('Unable to access data_dir {}'.format(data_dir))
+
+
+
     resource_dir = os.path.dirname(
         os.path.realpath(__file__)
     ) + os.sep + "v0_0_1" + os.sep
     logging.info('resource_dir set to {}'.format(resource_dir))
     # data_dir = "/data/resources/0.0.1/"
-    data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
-    table_dir = resource_dir + "tables"
+    # data_dir = "/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/"
+    if table_dir is None:
+        table_dir = resource_dir + "tables"
     # table_dir = '/data/resources/tables_to_replace'
 
     # Set up lists of lists for limiting the survey scope in RA & Dec
@@ -218,24 +294,21 @@ def update(cursor):
     # ra_ranges = [[200., 265., ],
     #              [305., 360., ], ]
     # dec_ranges = [[-15., 15., ], ]
-    ra_ranges = []
-    dec_ranges = []
+    # ra_ranges = []
+    # dec_ranges = []
 
 
     # Use this code block to preserve an existing table structure with
     # already-computed Almanacs, but blank out existing targets and
     # assignments
-    # logging.info('Removing existing target catalogues')
-    # cursor.execute('DELETE FROM target')
-    # # Destroy the existing science_targets table - only needed if target
-    # # catalogue structure has changed
-    # # logging.info('Removing science table')
-    # # cursor.execute('DROP TABLE science_target')
-    # logging.info('Remove any existing tiles')
-    # cursor.execute('DELETE FROM tile')
-
-    # # Alternatively, use this line to make all tables fresh
-    create.create_tables(cursor, table_dir)
+    if preserve_tables:
+        logging.info('Removing existing target catalogues')
+        cursor.execute('DELETE FROM target')
+        logging.info('Remove any existing tiles')
+        cursor.execute('DELETE FROM tile')
+    else:
+        # # Alternatively, use this line to make all tables fresh
+        create.create_tables(cursor, table_dir)
 
     # This code block loads the field centers into the database
     fields_file = data_dir + "pointing_centers.radec"

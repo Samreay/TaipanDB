@@ -7,12 +7,12 @@ import sys
 from ....scripts.create import insert_many_rows
 from ....scripts.extract import select_max_from_joined
 from taipan.core import polar2cart
-from taipan.scheduling import POLE_EXCLUSION_RADIUS
+from taipan.scheduling import POLE_EXCLUSION_DISTANCE
 
 
 def execute(cursor, fields_file=None, mark_active=True,
             ra_ranges=[], dec_ranges=[],
-            pole_exclusion_radius=POLE_EXCLUSION_RADIUS):
+            pole_exclusion_radius=POLE_EXCLUSION_DISTANCE):
     """
     Load field pointings from file to database
 
