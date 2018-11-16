@@ -203,6 +203,22 @@ Columns
       - Target priority value
       -
       -
+    * - ``ancillary_flags``
+      - Integer
+      - 0
+      - False
+      - False
+      - Bit mask containing ancillary program flags
+      -
+      -
+    * - ``ancillary_priority``
+      - Integer
+      - 0
+      - False
+      - False
+      - Ancillary program priority
+      -
+      -
     * - ``difficulty``
       - Integer
       - 1

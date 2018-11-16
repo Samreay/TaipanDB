@@ -432,7 +432,15 @@ epub_exclude_files = ['search.html']
 # epub_use_index = True
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'https://docs.python.org/': None,
+    '/Users/marc/Documents/taipan/tiling-code/taipan/doc/_build/html': None,
+    'https://docs.scipy.org/doc/numpy-1.13.0': None,
+    'https://docs.scipy.org/doc/scipy/reference/': None,
+    'https://pythonhosted.org/pytz/': None,
+    'https://rhodesmill.org/pyephem/': None,
+    'http://initd.org/psycopg/docs/': None,
+}
 
 # -----
 # AUTODOC CONFIG

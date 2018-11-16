@@ -66,6 +66,14 @@ Columns
       - z-coord. of target position on unit sphere
       -
       -
+    * - ``mag``
+      - double
+      - None
+      - True
+      - False
+      - 'X'-band target magnitude. Used for standards & guides.
+      -
+      -
     * - ``is_science``
       - boolean
       - None
@@ -90,7 +98,7 @@ Columns
       - Is this a standard target?
       -
       -
-    * - ``is_standard``
+    * - ``is_sky``
       - boolean
       - None
       -

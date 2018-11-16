@@ -33,7 +33,7 @@ Columns
       - Datetime when this tile was generated
       -
       -
-    * - ``date_config``
+    * - ``date_obs``
       - timestamp
       -
       - True

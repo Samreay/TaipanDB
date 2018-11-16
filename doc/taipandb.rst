@@ -1,4 +1,4 @@
-:any:`taipandb`
+:mod:`taipandb`
 ===============
 
 .. automodule:: taipandb

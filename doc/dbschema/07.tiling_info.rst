@@ -116,12 +116,12 @@ Columns
       - How 'combined weights' is defined is specified at runtime within the
         simulator/tiling code
       -
-    * - ``cw_sum``
+    * - ``cw_prod``
       - integer
       -
       -
       -
-      - The sum of the 'combined weights' of the targets assigned to
+      - The product of the 'combined weights' of the targets assigned to
         this tile
-      - Currently not used - often causes bit overflows
+      - Currently not used - often causes bit overflows due to large values
       -

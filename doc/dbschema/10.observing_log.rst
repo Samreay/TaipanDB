@@ -179,6 +179,14 @@ Columns
         either by Taipan or beforehand?
       -
       -
+    * - ``success_before``
+      - Boolean
+      - False
+      - False
+      - False
+      - What was the state of the ``success`` flag prior to this observation?
+      -
+      -
     * - ``tile_pk``
       - serial
       -
@@ -187,3 +195,19 @@ Columns
       - Unique tile id
       -
       - Reference to :doc:`04.tile`, and related tables
+    * - ``ancillary_flags``
+      - Integer
+      - 0
+      - False
+      - False
+      - Bit mask containing ancillary program flags
+      -
+      -
+    * - ``ancillary_priority``
+      - Integer
+      - 0
+      - False
+      - False
+      - Ancillary program priority
+      -
+      -

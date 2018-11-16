@@ -12,7 +12,7 @@ def execute(cursor):
     Test the output of :any:`taipandb.resources.stable.manipulate.makeNSciTargets.execute`.
 
     This function works by manually inspecting the database behind
-    :any:`TaipanDB`, and comparing the manually-derived science target counts
+    :mod:`taipandb`, and comparing the manually-derived science target counts
     against those recorded in the database by :any:`makeNSciTargets.execute`.
     Abnormal test results are printed to the terminal.
 
