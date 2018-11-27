@@ -71,7 +71,8 @@ Columns
       - None
       - True
       - False
-      - 'X'-band target magnitude. Used for standards & guides.
+      - 'X'-band target magnitude, where 'X' is arbitrary.
+        Used for standards & guides.
       -
       -
     * - ``is_science``

@@ -9,7 +9,8 @@ import logging
 
 def execute(cursor):
     """
-    Test the output of :any:`taipandb.resources.stable.manipulate.makeNSciTargets.execute`.
+    Test the output of
+    :any:`taipandb.resources.stable.manipulate.makeNSciTargets.execute`.
 
     This function works by manually inspecting the database behind
     :mod:`taipandb`, and comparing the manually-derived science target counts
