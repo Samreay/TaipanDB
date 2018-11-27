@@ -440,6 +440,7 @@ intersphinx_mapping = {
     'https://pythonhosted.org/pytz/': None,
     'https://rhodesmill.org/pyephem/': None,
     'http://initd.org/psycopg/docs/': None,
+    'https://docs.pytest.org/en/latest/': None,
 }
 
 # -----

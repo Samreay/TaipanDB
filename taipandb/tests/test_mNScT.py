@@ -20,6 +20,8 @@ def execute(cursor):
 
     Note that this test requires that the database be populated.
 
+    This test is :any:`pytest`-compatible.
+
     Parameters
     ----------
     cursor : :any:`psycopg.connection.cursor`
