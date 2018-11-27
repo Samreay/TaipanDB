@@ -7,6 +7,7 @@ from taipandb.scripts.connection import get_connection
 import psycopg2
 import logging
 
+
 def execute(cursor):
     """
     Test the output of
@@ -17,6 +18,7 @@ def execute(cursor):
     against those recorded in the database by :any:`makeNSciTargets.execute`.
     Abnormal test results are printed to the terminal.
 
+    Note that this test requires that the database be populated.
 
     Parameters
     ----------
@@ -72,23 +74,32 @@ def execute(cursor):
 
         # Do comparison
         fault_detected = False
-        if n_sci_obs != n_sci_obs_manual and n_sci_obs is not None and n_sci_obs_manual is not None:
-            print('n_sci_obs   mismatch in field %s - db value %5d, '
-                  'actual value %5d' % (field_id, n_sci_obs, n_sci_obs_manual))
-            fault_detected = True
-        if n_sci_alloc != n_sci_alloc_manual and n_sci_alloc is not None and n_sci_alloc_manual is not None:
-            print('n_sci_alloc mismatch in field %s - db value %5d, '
-                  'actual value %5d' % (field_id, n_sci_alloc,
-                                        n_sci_alloc_manual))
-            fault_detected = True
-        if n_sci_obs != n_sci_obs_manual and n_sci_rem is not None and n_sci_rem_manual is not None:
-            print('n_sci_rem   mismatch in field %s - db value %5d, '
-                  'actual value %5d' % (field_id, n_sci_rem, n_sci_rem_manual))
-            fault_detected = True
-        if not fault_detected:
-            print('All good for field %d' % field_id)
+        assert (n_sci_obs != n_sci_obs_manual and
+                n_sci_obs is not None and
+                n_sci_obs_manual is not None), 'n_sci_obs   mismatch in ' \
+                                               'field %s - db value %5d, ' \
+                                               'actual value %5d' % (
+            field_id, n_sci_obs, n_sci_obs_manual
+        )
+
+        assert (n_sci_alloc != n_sci_alloc_manual and
+                n_sci_alloc is not None and
+                n_sci_alloc_manual is not None), 'n_sci_alloc mismatch ' \
+                                                 'in field %s - db value ' \
+                                                 '%5d, actual value %5d' % (
+            field_id, n_sci_alloc, n_sci_alloc_manual
+        )
+
+        assert(n_sci_obs != n_sci_obs_manual and
+               n_sci_rem is not None and
+               n_sci_rem_manual is not None), 'n_sci_rem mismatch in field ' \
+                                              '%s - db value %5d, actual ' \
+                                              'value %5d' % (
+            field_id, n_sci_rem, n_sci_rem_manual
+        )
 
     return
+
 
 if __name__ == '__main__':
     logging.debug('Getting connection')
