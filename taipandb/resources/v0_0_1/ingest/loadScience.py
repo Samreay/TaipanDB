@@ -294,10 +294,13 @@ def execute(cursor, science_file=None, mark_active=True):
         'wsu_targetCatalog.fits']:
         values_table1 = [[int(row['target_id'] + 1),
                           float(row['ra']), float(row['dec']),
+                          0.0, 0.0,
                           True, False, False, False, None
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
-        columns1 = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+        columns1 = ["TARGET_ID", "RA", "DEC",
+                    "PM_RA", "PM_DEC",
+                    "IS_SCIENCE", "IS_STANDARD",
                     "IS_GUIDE", "IS_SKY", "MAG", "UX", "UY", "UZ"]
         values_table2 = [[int(row['target_id'] + 1),
                           False, False,  # False,
@@ -333,12 +336,14 @@ def execute(cursor, science_file=None, mark_active=True):
         'mock1.fits']:
         values_table1 = [[row['target_id'] + 1,
                           float(row['ra'] % 360.), float(row['dec']),
+                          0.0, 0.0,
                           True, False, False, False,
                           float(row['mag_J']),
                           ] + list(polar2cart((row['ra'], row['dec']))) for
                          row in science_table]
         columns1 = ["TARGET_ID",
                     "RA", "DEC",
+                    "PM_RA", "PM_DEC",
                     "IS_SCIENCE", "IS_STANDARD", "IS_GUIDE", "IS_SKY",
                     "MAG",
                     "UX", "UY", "UZ"]

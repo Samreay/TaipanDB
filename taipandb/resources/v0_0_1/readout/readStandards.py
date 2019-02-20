@@ -40,11 +40,13 @@ def execute(cursor, field_list=None, active_only=True):
                                             'target_id',
                                             conditions=conditions,
                                             columns=['target_id', 'ra', 'dec',
+                                                     'pm_ra', 'pm_dec'
                                                      'mag',
                                                      'ux', 'uy', 'uz'],
                                             distinct=True)
 
     return_objects = [TaipanTarget(s['target_id'], s['ra'], s['dec'],
+                                   pm_ra=s['pm_ra'], pm_dec=s['pm_dec'],
                                    standard=True, science=False, mag=s['mag'],
                                    usposn=(s['ux'], s['uy'],
                                            s['uz'])) for s in standards_db]

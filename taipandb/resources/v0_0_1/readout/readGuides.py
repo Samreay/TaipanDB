@@ -40,12 +40,15 @@ def execute(cursor, field_list=None, active_only=True):
                                          'target_id',
                                          conditions=conditions,
                                          columns=['target_id', 'ra', 'dec',
+                                                  'pm_ra', 'pm_dec',
                                                   'mag',
                                                   'ux', 'uy', 'uz'],
                                          distinct=True)
 
     return_objects = [TaipanTarget(
-        g['target_id'], g['ra'], g['dec'], guide=True, science=False,
+        g['target_id'], g['ra'], g['dec'],
+        pm_ra=g['pm_ra'], pm_dec=g['pm_dec'],
+        guide=True, science=False,
         usposn=(g['ux'], g['uy'], g['uz']), mag=g['mag'],
         ) for g in guides_db]
 

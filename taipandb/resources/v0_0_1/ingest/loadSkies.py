@@ -44,6 +44,7 @@ def execute(cursor, skies_file=None, mark_active=True,
                         int(row['pkey_id']) + int(1e12),
                         float(row[ra_col]),
                         float(row[dec_col]),
+                        0.0, 0.0,
                         False, False, False, True,
                         mark_active, None,]
                     + list(polar2cart((row[ra_col], row[dec_col])))
@@ -55,7 +56,9 @@ def execute(cursor, skies_file=None, mark_active=True,
         values_table = [row for row in values_table if
                         any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
 
-    columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+    columns = ["TARGET_ID", "RA", "DEC",
+               "PM_RA", "PM_DEC",
+               "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "MAG", "UX", "UY", "UZ"]
 
     # Insert into database
@@ -68,6 +71,7 @@ def execute(cursor, skies_file=None, mark_active=True,
             logging.info('Inserting special sky target into DB')
             insert_row(cursor, "target",
                        [SKY_TARGET_ID, 0.0, 0.0,  # ID, RA, DEC
+                        0.0, 0.0,  # PM_RA, PM_DEC
                         0.0, 0.0, 0.0,  # ux, uy, uz
                         None,  # mag
                         False, False, False, False])  # sci, gui, stan, sky

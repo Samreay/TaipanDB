@@ -24,7 +24,7 @@ def execute(cursor):
 
     Parameters
     ----------
-    cursor : :any:`psycopg.connection.cursor`
+    cursor : :any:`psycopg2.connection.cursor`
         Cursor for connecting to the database.
     """
     # Need to determine the field_ids in the system

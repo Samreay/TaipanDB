@@ -6,6 +6,7 @@ from astropy.table import Table
 
 def execute(cursor, guides_file=None, mark_active=True,
             ra_col='RA', dec_col='DEC', mag_col='VMAG',
+            pm_ra_col='PMRAC', pm_dec_col='PMDEC',
             ra_ranges=[], dec_ranges=[]):
     """
     Insert guide targets from file into the database.
@@ -43,6 +44,8 @@ def execute(cursor, guides_file=None, mark_active=True,
                      int(row.index + 1e9),
                      float(row[ra_col]),
                      float(row[dec_col]),
+                     float(row[pm_ra_col]),
+                     float(row[pm_dec_col]),
                      False, False, True, False,
                      float(row[mag_col]),
                     mark_active]
@@ -57,6 +60,7 @@ def execute(cursor, guides_file=None, mark_active=True,
 
     columns = ["TARGET_ID",
                "RA", "DEC",
+               "PM_RA", "PM_DEC",
                "IS_SCIENCE", "IS_STANDARD", "IS_GUIDE", "IS_SKY",
                "MAG",
                "IS_ACTIVE", "UX", "UY", "UZ"]

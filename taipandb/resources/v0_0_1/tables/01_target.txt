@@ -4,6 +4,8 @@ name        type        nullable        default_value       foreign_key_table   
 target_id   bigint      None            None                None                True    None    None     "Target id (internal)"
 ra          double      False           None                None                False   deg     None     "Right ascension"
 dec         double      False           None                None                False   deg     None     "Declination"
+pm_ra       double      False           0.0                 None                False   deg     None     "Proper motion RA"
+pm_dec      double      False           0.0                 None                False   deg     None     "Proper motion dec"
 ux          double      False           None                None                False   None    None     "x projection on unit sphere"
 uy          double      False           None                None                False   None    None     "y projection on unit sphere"
 uz          double      False           None                None                False   None    None     "z projection on unit sphere"

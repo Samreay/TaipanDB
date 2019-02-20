@@ -40,6 +40,7 @@ def execute(cursor, standards_file=None, mark_active=True,
                          # + int(1e9)*row['reference'],
                          float(row['RASTACK']),  # RASTACK
                          float(row['DECSTACK']),  # DECSTACK
+                         0.0, 0.0,
                          False, True, False, False,
                          True, None] +
                         list(polar2cart((row['RASTACK'], row['DECSTACK'])))
@@ -49,6 +50,7 @@ def execute(cursor, standards_file=None, mark_active=True,
                          # + int(1e9)*row['reference'],
                          float(row['RAJ2000']),  # RAJ2000
                          float(row['DEJ2000']),  # DEJ2000
+                         0.0, 0.0,
                          False, True, False, False,
                          True, None] +
                         list(polar2cart((row['RAJ2000'], row['DEJ2000'])))
@@ -56,8 +58,9 @@ def execute(cursor, standards_file=None, mark_active=True,
     else:
         values_table = [[int(row['objID']),
                          # + int(1e9)*row['reference'],
-                         float(row['ra_SCOS']),  # ra_SCOS
-                         float(row['dec_SCOS']), # dec_SCOS
+                         float(row['ra_SCOS']),   # ra_SCOS
+                         float(row['dec_SCOS']),  # dec_SCOS
+                         0.0, 0.0,
                          False, True, False, False,
                          True, None] +
                         list(polar2cart((row['ra_SCOS'], row['dec_SCOS'])))
@@ -70,7 +73,9 @@ def execute(cursor, standards_file=None, mark_active=True,
         values_table = [row for row in values_table if
                         any([r[0] <= row[2] <= r[1] for r in dec_ranges])]
 
-    columns = ["TARGET_ID", "RA", "DEC", "IS_SCIENCE", "IS_STANDARD",
+    columns = ["TARGET_ID", "RA", "DEC",
+               "PM_RA", "PM_DEC",
+               "IS_SCIENCE", "IS_STANDARD",
                "IS_GUIDE", "IS_SKY", "IS_ACTIVE", "MAG", "UX", "UY", "UZ"]
 
     # Insert into database

@@ -56,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Taipan Database Interface'
-copyright = u'2017, Marc White'
+copyright = u'2018, Marc White'
 author = u'Marc White, Samuel Hinton'
 
 # The version info for the project you're documenting, acts as replacement for

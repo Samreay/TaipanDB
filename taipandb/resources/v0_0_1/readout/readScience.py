@@ -117,6 +117,7 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
                                           conditions_combine=
                                           combine + added_conds,
                                           columns=['target_id', 'ra', 'dec',
+                                                   'pm_ra', 'pm_dec',
                                                    'ux', 'uy', 'uz', 'mag',
                                                    'priority', 'difficulty',
                                                    'is_queued',
@@ -221,7 +222,9 @@ def execute(cursor, unobserved=False, unassigned=False, unqueued=False,
 
     logging.debug('Forming return TaipanTarget objects')
     return_objects = [TaipanTarget(
-        g['target_id'], g['ra'], g['dec'], priority=g['priority'],
+        g['target_id'], g['ra'], g['dec'], 
+        pm_ra=g['pm_ra'], pm_dec=g['pm_dec'],
+        priority=g['priority'],
         difficulty=g['difficulty'],
         usposn=(g['ux'], g['uy'], g['uz']), mag=g['mag'],
         science=True,
