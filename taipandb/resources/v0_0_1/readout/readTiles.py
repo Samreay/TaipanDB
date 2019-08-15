@@ -154,7 +154,7 @@ def execute(cursor, tile_pks=None, field_ids=None,
                               field_id=bugs[0]['field_id'],
                               pk=bugs[0]['tile_pk'])
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         # Assign the targets
         logging.debug('Assigning targets')
         for bugassign in bugs:
