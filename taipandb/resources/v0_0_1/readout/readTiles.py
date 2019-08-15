@@ -160,8 +160,11 @@ def execute(cursor, tile_pks=None, field_ids=None,
         for bugassign in bugs:
             if bugassign['target_id'] != SKY_TARGET_ID:
                 new_tile.set_fibre(bugassign['bug_id'],
-                                   all_targets[index(all_targets_ids,
-                                                     bugassign['target_id']
+                                   all_targets[
+                                       # index(all_targets_ids,
+                                             # bugassign['target_id']
+                                       all_targets_ids.index(
+                                           bugassign['target_id']
                                    )])
             else:
                 new_tile.set_fibre(bugassign['bug_id'], 'sky')
