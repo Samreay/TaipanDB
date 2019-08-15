@@ -211,7 +211,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           row['gminusi_AB'],
                           row['Jmag_Vega_2MASS'],
                           row['JminusK_Vega_2MASS'] if not
-                          math.isnan(row['JminusK_Vega_2MASS']) else -99.,
+                          math.isnan(row['JminusK_Vega_2MASS']) else 15.,
                           row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
                           False,
@@ -260,7 +260,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           row['gminusi_AB'],
                           row['Jmag_Vega_2MASS'],
                           row['JminusK_Vega_2MASS'] if not
-                          math.isnan(row['JminusK_Vega_2MASS']) else -99.,
+                          math.isnan(row['JminusK_Vega_2MASS']) else 15.,
                           row['extBV'], row['glat'],
                           bool(row['is_nircol_selected']),
                           False,
@@ -307,7 +307,7 @@ def execute(cursor, science_file=None, mark_active=True):
                           float(0.0),
                           float(0.0),
                           float(0.0),
-                          float(-99.),
+                          float(15.),
                           float(0.0), float(0.0),
                           False,
                           False,
