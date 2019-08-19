@@ -94,7 +94,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
     tiles = rT.execute(cursor, tile_pks=tile_pks,
                        candidate_targets=candidate_targets,
                        standard_targets=standard_targets,
-                       guide_targets=guide_targets)[0]
+                       guide_targets=guide_targets)
 
     tile_obs_log = rTOI.execute(cursor)
 
