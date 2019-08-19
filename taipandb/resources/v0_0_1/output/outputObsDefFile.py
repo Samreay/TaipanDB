@@ -21,7 +21,10 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             config_time=datetime.datetime.now(),
             obs_time=datetime.datetime.now(),
             output_dir='.',
-            local_tz=ts.UKST_TIMEZONE):
+            local_tz=ts.UKST_TIMEZONE,
+            candidate_targets=None,
+            standard_targets=None,
+            guide_targets=None):
     """
     For all tiles matching the input parameters, export an observing definition
     file.
@@ -88,7 +91,10 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
         tables_to_join = ['tiling_config']
     tile_pks = rTpk.execute(cursor, conditions=conditions,
                             tables_to_join=tables_to_join)
-    tiles = rT.execute(cursor, tile_pks=tile_pks)[0]
+    tiles = rT.execute(cursor, tile_pks=tile_pks,
+                       candidate_targets=candidate_targets,
+                       standard_targets=standard_targets,
+                       guide_targets=guide_targets)[0]
 
     tile_obs_log = rTOI.execute(cursor)
 
