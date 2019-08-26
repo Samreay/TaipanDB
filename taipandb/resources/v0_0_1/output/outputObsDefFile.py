@@ -99,7 +99,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
     tile_obs_log = rTOI.execute(cursor)
 
     for tile in tiles:
-        json_dict = tile.generate_json_dict()
+        json_dict = tile.generate_json_dict(level=1)
         json_dict['origin'][0]['execDate'] = local_tz.localize(
             config_time
         ).strftime(
