@@ -24,7 +24,8 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
             local_tz=ts.UKST_TIMEZONE,
             candidate_targets=None,
             standard_targets=None,
-            guide_targets=None):
+            guide_targets=None,
+            json_level=1):
     """
     For all tiles matching the input parameters, export an observing definition
     file.
@@ -99,7 +100,7 @@ def execute(cursor, tile_pks=None, unobserved=None, unqueued=None,
     tile_obs_log = rTOI.execute(cursor)
 
     for tile in tiles:
-        json_dict = tile.generate_json_dict(level=1)
+        json_dict = tile.generate_json_dict(level=json_level)
         json_dict['origin'][0]['execDate'] = local_tz.localize(
             config_time
         ).strftime(
