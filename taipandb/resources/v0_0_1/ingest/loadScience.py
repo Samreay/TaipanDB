@@ -246,7 +246,9 @@ def execute(cursor, science_file=None, mark_active=True):
                     "HAS_SDSS_ZSPEC", "SUCCESS",
                     "ANCILLARY_FLAGS", "ANCILLARY_PRIORITY"]
     elif science_file.split('/')[-1] in [
-        'Taipan_InputCat_v0.35_20170831.fits']:
+        'Taipan_InputCat_v0.35_20170831.fits',
+        'Taipan_InputCat_v0.4_20171103.fits',
+    ]:
         values_table1 = [[row['uniqid'],
                           float(row['ra']), float(row['dec']),
                           True, False, False, False, None,
