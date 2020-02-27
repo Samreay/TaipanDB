@@ -222,7 +222,7 @@ def make_almanac_n(field, sim_start=None, sim_end=None, dark_alm=None,
 
 
 def update(cursor,
-           data_dir="/Users/marc/Documents/taipan/tiling-code/TaipanCatalogues/",
+           data_dir="/data/resources/0.0.1/",
            alm_dir=None,
            table_dir=None,
            preserve_tables=False,
