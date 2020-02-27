@@ -118,10 +118,11 @@ Sky position files to be ingested.
 # arguments, we'll keep infrequently changed parameters in module variables,
 # and change them from __main__ if required
 
-RUN_START = datetime.date(2017, 4, 1)
+RUN_START = datetime.date(2020, 1, 1)
 RUN_END = datetime.date(2024, 1, 1)
 
-SCIENCE_FILE = 'mock1.fits'
+SCIENCE_FILE = 'Taipan_InputCat_v0.4_20171103.fits'
+# SCIENCE_FILE = 'mock1.fits'
 
 
 def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
@@ -564,4 +565,4 @@ if __name__ == '__main__':
     conn = get_connection()
     cursor = conn.cursor()
     logging.debug('Doing update function')
-    update(cursor)
+    update(cursor, alm_dir='/data/resources/0.0.1/alms/')
