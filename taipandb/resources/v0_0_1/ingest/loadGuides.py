@@ -5,8 +5,8 @@ from astropy.table import Table
 
 
 def execute(cursor, guides_file=None, mark_active=True,
-            ra_col='raj2000', dec_col='dej2000', mag_col='magv',
-            pm_ra_col='pmra', pm_dec_col='pmde',
+            ra_col='RA', dec_col='DEC', mag_col='VMAG',
+            pm_ra_col='PMRAC', pm_dec_col='PMDC',
             ra_ranges=[], dec_ranges=[]):
     """
     Insert guide targets from file into the database.
