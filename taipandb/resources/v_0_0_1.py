@@ -226,6 +226,7 @@ def update(cursor,
            alm_dir=None,
            table_dir=None,
            preserve_tables=False,
+           skip_ingest=False,
            ra_ranges=[],
            dec_ranges=[]):
     """
@@ -329,83 +330,83 @@ def update(cursor,
     # ra_ranges = []
     # dec_ranges = []
 
+    if not skip_ingest:
+        # Use this code block to preserve an existing table structure with
+        # already-computed Almanacs, but blank out existing targets and
+        # assignments
+        if preserve_tables:
+            logging.info('Removing existing target catalogues')
+            cursor.execute('DELETE FROM target')
+            logging.info('Remove any existing tiles')
+            cursor.execute('DELETE FROM tile')
+        else:
+            # # Alternatively, use this line to make all tables fresh
+            create.create_tables(cursor, table_dir)
 
-    # Use this code block to preserve an existing table structure with
-    # already-computed Almanacs, but blank out existing targets and
-    # assignments
-    if preserve_tables:
-        logging.info('Removing existing target catalogues')
-        cursor.execute('DELETE FROM target')
-        logging.info('Remove any existing tiles')
-        cursor.execute('DELETE FROM tile')
-    else:
-        # # Alternatively, use this line to make all tables fresh
-        create.create_tables(cursor, table_dir)
+        # This code block loads the field centers into the database
+        for f in POINTING_CENTERS:
+            loadCentroids.execute(cursor,
+                                  fields_file=os.path.join(data_dir, f),
+                                  mark_active=False,
+                                  ra_ranges=ra_ranges, dec_ranges=dec_ranges)
 
-    # This code block loads the field centers into the database
-    for f in POINTING_CENTERS:
-        loadCentroids.execute(cursor,
-                              fields_file=os.path.join(data_dir, f),
-                              mark_active=False,
+        # The following code blocks load the target data (of all types)
+        # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
+        #                          "reduced.guides_nodups.fits"
+        # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
+        for f in GUIDES_FILES:
+            loadGuides.execute(cursor,
+                               guides_file=os.path.join(data_dir, f),
+                                  ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+
+        # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
+        # #                             'reduced.standards_nodups.fits'
+        for f in STANDARDS_FILES:
+            loadStandards.execute(cursor,
+                                  standards_file=os.path.join(data_dir, f),
+                                  ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+
+        for f in SKIES_FILES:
+            loadSkies.execute(cursor,
+                              skies_file=os.path.join(data_dir, f),
                               ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+        #
+        # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
+        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
+        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
+        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
+        # # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
+        # # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
+        # # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
+        # # science_file = data_dir + 'wsu_targetCatalog.fits'
+        # science_file = data_dir + 'mock1.fits'
+        science_file = os.path.join(data_dir, SCIENCE_FILE)
+        loadScience.execute(cursor, science_file=science_file)
 
-    # The following code blocks load the target data (of all types)
-    # guides_file = data_dir + "SCOSxAllWISE.photometry.forTAIPAN." \
-    #                          "reduced.guides_nodups.fits"
-    # guides_file = data_dir + 'guides_UCAC4_btrim.fits'
-    for f in GUIDES_FILES:
-        loadGuides.execute(cursor,
-                           guides_file=os.path.join(data_dir, f),
-                              ra_ranges=ra_ranges, dec_ranges=dec_ranges)
+        # Commit here in case something further along fails
+        logging.info('Committing raw target information...')
+        cursor.connection.commit()
+        logging.info('...done!')
 
-    # # standards_file = data_dir + 'SCOSxAllWISE.photometry.forTAIPAN.' \
-    # #                             'reduced.standards_nodups.fits'
-    for f in STANDARDS_FILES:
-        loadStandards.execute(cursor,
-                              standards_file=os.path.join(data_dir, f),
-                              ra_ranges=ra_ranges, dec_ranges=dec_ranges)
-
-    for f in SKIES_FILES:
-        loadSkies.execute(cursor,
-                          skies_file=os.path.join(data_dir, f),
-                          ra_ranges=ra_ranges, dec_ranges=dec_ranges)
-    #
-    # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
-    # # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
-    # # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
-    # # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
-    # # science_file = data_dir + 'wsu_targetCatalog.fits'
-    # science_file = data_dir + 'mock1.fits'
-    science_file = os.path.join(data_dir, SCIENCE_FILE)
-    loadScience.execute(cursor, science_file=science_file)
-
-    # Commit here in case something further along fails
-    logging.info('Committing raw target information...')
-    cursor.connection.commit()
-    logging.info('...done!')
-
-    # # If using the SPT catalogue, we want to:
-    # # - Compute difficulties now;
-    # # - Remove any targets above a certain difficulty threshold;
-    # # - Disable any fields outside the SPT area
-    # if science_file == data_dir + 'wsu_targetCatalog.fits':
-    #     cursor.execute('UPDATE field SET is_active=False WHERE '
-    #                    'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
-    #     cursor.execute('DELETE FROM target WHERE (dec > -45. OR dec < -65. OR '
-    #                    '(ra < 330. AND RA > 15.)) AND target_id >= 0')
-    #
-    #     logging.info('Computing target difficulties...')
-    #     makeScienceDiff.execute(cursor)
-    #     cursor.connection.commit()
-    #
-    #     # Manually execute the necessary DB commands for restricting the
-    #     # targets and fields
-    #     cursor.execute('DELETE FROM target WHERE target_id IN '
-    #                    '(SELECT target_id FROM science_target WHERE '
-    #                    'difficulty > 2000)')
+        # # If using the SPT catalogue, we want to:
+        # # - Compute difficulties now;
+        # # - Remove any targets above a certain difficulty threshold;
+        # # - Disable any fields outside the SPT area
+        # if science_file == data_dir + 'wsu_targetCatalog.fits':
+        #     cursor.execute('UPDATE field SET is_active=False WHERE '
+        #                    'dec > -45. OR dec < -65 OR (ra < 330. AND ra > 15.)')
+        #     cursor.execute('DELETE FROM target WHERE (dec > -45. OR dec < -65. OR '
+        #                    '(ra < 330. AND RA > 15.)) AND target_id >= 0')
+        #
+        #     logging.info('Computing target difficulties...')
+        #     makeScienceDiff.execute(cursor)
+        #     cursor.connection.commit()
+        #
+        #     # Manually execute the necessary DB commands for restricting the
+        #     # targets and fields
+        #     cursor.execute('DELETE FROM target WHERE target_id IN '
+        #                    '(SELECT target_id FROM science_target WHERE '
+        #                    'difficulty > 2000)')
 
     # --
     # We are now done loading information - everything past this point
@@ -565,4 +566,4 @@ if __name__ == '__main__':
     conn = get_connection()
     cursor = conn.cursor()
     logging.debug('Doing update function')
-    update(cursor, alm_dir='/data/resources/0.0.1/alms/')
+    update(cursor, alm_dir='/data/resources/0.0.1/alms/', skip_ingest=True)
