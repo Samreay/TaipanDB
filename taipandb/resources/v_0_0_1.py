@@ -330,6 +330,8 @@ def update(cursor,
     # ra_ranges = []
     # dec_ranges = []
 
+    science_file = os.path.join(data_dir, SCIENCE_FILE)
+
     if not skip_ingest:
         # Use this code block to preserve an existing table structure with
         # already-computed Almanacs, but blank out existing targets and
@@ -370,17 +372,7 @@ def update(cursor,
             loadSkies.execute(cursor,
                               skies_file=os.path.join(data_dir, f),
                               ra_ranges=ra_ranges, dec_ranges=dec_ranges)
-        #
-        # # science_file = data_dir + 'priority_science.v0.101_20160331.fits'
-        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.1_170208.fits'
-        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.2_170303.fits'
-        # # science_file = data_dir + 'Taipan_mock_inputcat_v1.3_170504.fits'
-        # # science_file = data_dir + 'Taipan_mock_inputcat_v2.0_170518.fits'
-        # # science_file = data_dir + 'Taipan_InputCat_v0.3_20170731.fits'
-        # # science_file = data_dir + 'Taipan_InputCat_v0.35_20170831.fits'
-        # # science_file = data_dir + 'wsu_targetCatalog.fits'
-        # science_file = data_dir + 'mock1.fits'
-        science_file = os.path.join(data_dir, SCIENCE_FILE)
+
         loadScience.execute(cursor, science_file=science_file)
 
         # Commit here in case something further along fails
