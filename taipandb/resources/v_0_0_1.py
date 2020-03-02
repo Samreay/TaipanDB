@@ -69,14 +69,14 @@ TABLE_INDICES = {
         'tile_pk',
         'field_id',
     ],
-    # 'observability': [
-    #     'date',
-    #     'field_id',
-    #     ['date', 'airmass', ],
-    #     ['field_id', 'date', 'airmass', ],
-    #     ['field_id', 'dark', 'airmass', 'date', ],
-    #     ['field_id', 'dark', 'airmass', 'sun_alt', 'date', ],
-    # ]
+    'observability': [
+        'date',
+        'field_id',
+        ['date', 'airmass', ],
+        ['field_id', 'date', 'airmass', ],
+        ['field_id', 'dark', 'airmass', 'date', ],
+        ['field_id', 'dark', 'airmass', 'sun_alt', 'date', ],
+    ]
 }
 """Dictionary of indices to be created on tables
 
