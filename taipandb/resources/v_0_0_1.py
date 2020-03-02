@@ -179,7 +179,7 @@ def generate_indices(cursor, tables=None):
                                     [field, ] if not isinstance(field, list)
                                     else field,
                                     ordering=None)
-                create.vacuum_analyze(cursor, table=tab)
+            create.vacuum_analyze(cursor, table=tab)
         else:
             for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
                 child_table_name = obs_child_table_name(i)
@@ -584,5 +584,5 @@ if __name__ == '__main__':
     conn = get_connection()
     cursor = conn.cursor()
     logging.debug('Doing update function')
-    update(cursor, alm_dir='/data/resources/0.0.1/alms/', skip_ingest=False,
+    update(cursor, alm_dir='/data/resources/0.0.1/alms/', skip_ingest=True,
            dec_ranges=[(-90., 45.)])
