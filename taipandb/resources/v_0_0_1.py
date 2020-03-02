@@ -86,7 +86,7 @@ each element of the index list (value)."""
 
 POINTING_CENTERS = [
     "pointing_centers.radec",
-    "pointing_centers_fullsurvey.radec"
+    # "pointing_centers_fullsurvey.radec"
 ]
 """
 Standard pointing centers files to be ingested.
@@ -584,4 +584,5 @@ if __name__ == '__main__':
     conn = get_connection()
     cursor = conn.cursor()
     logging.debug('Doing update function')
-    update(cursor, alm_dir='/data/resources/0.0.1/alms/', skip_ingest=True)
+    update(cursor, alm_dir='/data/resources/0.0.1/alms/', skip_ingest=True,
+           dec_ranges=[(-90., 45.)])
