@@ -151,7 +151,7 @@ def obs_child_table_name(field_id, chunk_size=OBS_CHILD_CHUNK_SIZE):
     return 'obs_%06d_to_%06d' % (low_val, high_val, )
 
 
-def generate_indices(cursor):
+def generate_indices(cursor, tables=None):
     """
     Generate indices on each table, based on :any:`TABLE_INDICES`
 
@@ -163,8 +163,14 @@ def generate_indices(cursor):
     cursor : :obj:`psycopg2.connection.cursor`
         Cursor for communicating with the database
     """
+    if tables is None:
+        tables_dict = TABLE_INDICES
+    else:
+        tables_dict = {k: TABLE_INDICES[k] for k in tables}
+
+
     logging.info('Generating table indices')
-    for tab, fields in TABLE_INDICES.items():
+    for tab, fields in tables_dict.items():
         if tab != 'observability':
             for field in fields:
                 logging.info('Starting to index table %s on field %s' %
@@ -173,6 +179,7 @@ def generate_indices(cursor):
                                     [field, ] if not isinstance(field, list)
                                     else field,
                                     ordering=None)
+                create.vacuum_analyze(cursor, table=tab)
         else:
             for i in range(1, MAX_FIELDS, OBS_CHILD_CHUNK_SIZE):
                 child_table_name = obs_child_table_name(i)
@@ -380,6 +387,12 @@ def update(cursor,
         cursor.connection.commit()
         logging.info('...done!')
 
+        # Perform indexing of new tables
+        logging.info('Generating indices for target tables...')
+        generate_indices(cursor, tables=['target', 'field', ])
+        cursor.connection.commit()
+        logging.info('...done!')
+
         # # If using the SPT catalogue, we want to:
         # # - Compute difficulties now;
         # # - Remove any targets above a certain difficulty threshold;
@@ -418,6 +431,12 @@ def update(cursor,
     cursor.connection.commit()
     logging.info('...done!')
 
+    # Perform indexing of new tables
+    logging.info('Generating indices for position tables...')
+    generate_indices(cursor, tables=['target_posn', ])
+    cursor.connection.commit()
+    logging.info('...done!')
+
     # Compute target priorities and types
     target_types_init = rScTyexec(cursor)
     # Compute and store target types
@@ -450,6 +469,12 @@ def update(cursor,
 
     # Commit again
     logging.info('Committing target type/priority information...')
+    cursor.connection.commit()
+    logging.info('...done!')
+
+    # Perform indexing of new tables
+    logging.info('Generating indices for science target table...')
+    generate_indices(cursor, tables=['science_target', ])
     cursor.connection.commit()
     logging.info('...done!')
 
@@ -512,7 +537,8 @@ def update(cursor,
 
     # Create the table indices
     # These speed table queries by cross-indexing as much as possible
-    generate_indices(cursor)
+    generate_indices(cursor, tables=['observability',
+                                     'tile', 'tiling_config', 'tiling_info', ])
     cursor.connection.commit()
 
     logging.info('-------')
