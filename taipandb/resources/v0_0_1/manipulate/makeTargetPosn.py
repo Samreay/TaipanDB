@@ -186,7 +186,7 @@ if __name__ == '__main__':
 
     # Set the logging to write to terminal AND file
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         filename='./prep_target_posn.log',
         filemode='w'
     )
