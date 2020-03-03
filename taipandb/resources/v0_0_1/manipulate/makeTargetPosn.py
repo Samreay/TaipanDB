@@ -191,9 +191,9 @@ if __name__ == '__main__':
         filemode='w'
     )
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    console.setLevel(logging.DEBUG)
     logging.info('*** COMMENCING DATABASE PREP')
 
     # Get a cursor
